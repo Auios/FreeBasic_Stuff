@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>ThreadWait</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">ThreadWait</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Waits for a thread to finish execution and releases the thread handle<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<a href="KeyPgDeclare.html">Declare</a> <a href="KeyPgSub.html">Sub</a> <b>ThreadWait</b> ( <a href="KeyPgByval.html">ByVal</a> <i>id</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgAny.html">Any</a> <a href="KeyPgPtr.html">Ptr</a> )<br \>
+</tt><br \>
+</div><div class="fb_sect_title">Usage</div><div class="fb_sect_cont"><tt><br \>
+<b>ThreadWait</b>( <i>id</i> )<br \>
+</tt><br \>
+</div><div class="fb_sect_title">Parameters</div><div class="fb_sect_cont"><br \>
+<tt><i>id</i></tt><br \>
+<div class="fb_indent"><tt><a href="KeyPgAny.html">Any</a> <a href="KeyPgPtr.html">Ptr</a></tt> handle of a thread created by <tt><a href="KeyPgThreadCreate.html">ThreadCreate</a></tt> or <tt><a href="KeyPgThreadCall.html">Threadcall</a></tt><br \>
+<br \>
+</div></div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+<b>ThreadWait</b> waits for a thread created by <tt><a href="KeyPgThreadCreate.html">ThreadCreate</a></tt> or <tt><a href="KeyPgThreadCall.html">Threadcall</a></tt> to finish execution, and then releases the resources associated with the thread handle. <b>ThreadWait</b> does not return until the thread designated by <tt><i>id</i></tt> ends. <br \>
+<br \>
+In order to release a thread handle without waiting for the thread to finish, use <tt><a href="KeyPgThreadDetach.html">Threaddetach</a></tt>.<br \>
+<br \>
+<b>ThreadWait</b> does not force the thread to end; if a thread requires a signal to force its end, a mechanism such as shared variables and mutexes must be used.<br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+See the <tt><a href="KeyPgThreadCreate.html">ThreadCreate</a></tt> examples.<br \>
+<br \>
+</div><div class="fb_sect_title">Dialect Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> Threading is not allowed in the <i><a href="CompilerOptlang.html">-lang qb</a></i> dialect.<br \>
+<br \>
+</ul></div><div class="fb_sect_title">Platform Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> <b>ThreadWait</b> is not available with the DOS version of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.<br \>
+<br \>
+</ul></div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> New to FreeBASIC<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <tt><a href="KeyPgThreadCreate.html">ThreadCreate</a></tt><br \>
+<li> <tt><a href="KeyPgThreadDetach.html">Threaddetach</a></tt><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

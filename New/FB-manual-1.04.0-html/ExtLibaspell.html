@@ -1,0 +1,80 @@
+<html>
+<head>
+<title>GNU Aspell</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">GNU Aspell</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Free and Open Source spell checker.<br \>
+<br \>
+Website: http://aspell.net/<br \>
+Platforms supported: Win32, Linux<br \>
+Headers to include: aspell.bi<br \>
+Header version: 0.60.6.1<br \>
+<br \>
+<div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;GNU-ASspell&nbsp;example,&nbsp;converted&nbsp;from&nbsp;http://aspell.net/win32/</span><br />
+<br />
+<span class="def">#include&nbsp;once&nbsp;"aspell.bi"<br />
+</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">AspellConfig</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">spell_config</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">new_aspell_config</span><span class="oth">()</span><br />
+<br />
+<span class="com">''&nbsp;Change&nbsp;this&nbsp;to&nbsp;suit&nbsp;the&nbsp;installed&nbsp;dictionary&nbsp;language&nbsp;if&nbsp;desired</span><br />
+<span class="wrd">aspell_config_replace</span><span class="oth">(</span><span class="wrd">spell_config</span><span class="oth">,</span>&nbsp;<span class="quo">"lang"</span><span class="oth">,</span>&nbsp;<span class="quo">"en_CA"</span><span class="oth">)</span><br />
+<br />
+<span class="com">''&nbsp;Create&nbsp;speller&nbsp;object</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">AspellCanHaveError</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">possible_err</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">new_aspell_speller</span><span class="oth">(</span><span class="wrd">spell_config</span><span class="oth">)</span><br />
+<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">aspell_error_number</span><span class="oth">(</span><span class="wrd">possible_err</span><span class="oth">)</span>&nbsp;<span class="oth">&lt;&gt;</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="oth">*</span><span class="wrd">aspell_error_message</span><span class="oth">(</span><span class="wrd">possible_err</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">AspellSpeller</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">speller</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">to_aspell_speller</span><span class="oth">(</span><span class="wrd">possible_err</span><span class="oth">)</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span>&nbsp;<span class="wrd">word</span><br />
+<span class="key">Do</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Input</span>&nbsp;<span class="quo">"Enter&nbsp;a&nbsp;word&nbsp;(blank&nbsp;to&nbsp;quit):&nbsp;"</span><span class="oth">,</span>&nbsp;<span class="wrd">word</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="key">Len</span><span class="oth">(</span><span class="wrd">word</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Exit</span>&nbsp;<span class="key">Do</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">aspell_speller_check</span><span class="oth">(</span><span class="wrd">speller</span><span class="oth">,</span>&nbsp;<span class="key">StrPtr</span><span class="oth">(</span><span class="wrd">word</span><span class="oth">),</span>&nbsp;<span class="key">Len</span><span class="oth">(</span><span class="wrd">word</span><span class="oth">))</span>&nbsp;<span class="oth">&lt;&gt;</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Word&nbsp;is&nbsp;Correct"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Else</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Suggestions:"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">AspellStringEnumeration</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">elements</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">aspell_word_list_elements</span><span class="oth">(</span><span class="wrd">aspell_speller_suggest</span><span class="oth">(</span><span class="wrd">speller</span><span class="oth">,</span>&nbsp;<span class="key">StrPtr</span><span class="oth">(</span><span class="wrd">word</span><span class="oth">),</span>&nbsp;<span class="key">Len</span><span class="oth">(</span><span class="wrd">word</span><span class="oth">)))</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Do</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">ZString</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">w</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">aspell_string_enumeration_next</span><span class="oth">(</span><span class="wrd">elements</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">w</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Exit</span>&nbsp;<span class="key">Do</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"&nbsp;&nbsp;&nbsp;"</span><span class="oth">;</span>&nbsp;<span class="oth">*</span><span class="wrd">w</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Loop</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">delete_aspell_string_enumeration</span><span class="oth">(</span><span class="wrd">elements</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'&nbsp;-&nbsp;Report&nbsp;the&nbsp;replacement</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'aspell_speller_store_repl(speller,&nbsp;misspelled_word,&nbsp;size,</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;correctly_spelled_word,&nbsp;size);</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'&nbsp;-&nbsp;Add&nbsp;to&nbsp;session&nbsp;or&nbsp;personal&nbsp;dictionary</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'aspell_speller_add_to_session|personal(speller,&nbsp;word,&nbsp;size)</span><br />
+<span class="key">Loop</span><br />
+<br />
+<span class="wrd">delete_aspell_speller</span><span class="oth">(</span><span class="wrd">speller</span><span class="oth">)</span><br />
+</div></tt><br />
+<br \>
+</div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

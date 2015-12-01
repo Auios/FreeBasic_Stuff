@@ -1,0 +1,85 @@
+<html>
+<head>
+<title>Locate</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Locate</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Sets the current cursor position<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<a href="KeyPgDeclare.html">Declare</a> <a href="KeyPgFunction.html">Function</a> <b>Locate</b>( <i>row</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgLong.html">Long</a> = 0, <i>column</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgLong.html">Long</a> = 0, <i>state</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgLong.html">Long</a> = -1, <i>start</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgLong.html">Long</a> = 0, <i>stop</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgLong.html">Long</a> = 0 ) <a href="KeyPgAs.html">As</a> <a href="KeyPgLong.html">Long</a><br \>
+</tt><br \>
+</div><div class="fb_sect_title">Usage</div><div class="fb_sect_cont"><tt><br \>
+<b>Locate</b> [<i>row</i>], [<i>column</i>], [<i>state</i>]<br \>
+<br \>
+<i>result</i> = <b>Locate</b>( [<i>row</i>], [<i>column</i>], [<i>state</i>] )<br \>
+<i>new_column</i> = <a href="KeyPgLobyte.html">LoByte</a>( <i>result</i> )<br \>
+<i>new_row</i> = <a href="KeyPgHibyte.html">HiByte</a>( <i>result</i> )<br \>
+<i>new_state</i> = <a href="KeyPgHiword.html">HiWord</a>( <i>result</i> )<br \>
+</tt><br \>
+</div><div class="fb_sect_title">Parameters</div><div class="fb_sect_cont"><br \>
+<tt><i>row</i></tt><br \>
+<div class="fb_indent">the 1-based vertical character position in the console.<br \>
+</div><tt><i>column</i></tt><br \>
+<div class="fb_indent">the 1-based horizontal character position in the console.<br \>
+</div><tt><i>state</i></tt><br \>
+<div class="fb_indent">the state of the cursor. <tt>0</tt> is off, <tt>1</tt> is on (console-mode only).<br \>
+</div><tt><i>start</i></tt><br \>
+<div class="fb_indent">Ignored. Allowed for <i><a href="CompilerOptlang.html">-lang qb</a></i> dialect compatibility only.<br \>
+</div><tt><i>stop</i></tt><br \>
+<div class="fb_indent">Ignored. Allowed for <i><a href="CompilerOptlang.html">-lang qb</a></i> dialect compatibility only.<br \>
+<br \>
+</div></div><div class="fb_sect_title">Return Value</div><div class="fb_sect_cont"><br \>
+Returns a 32 bit <tt><a href="KeyPgLong.html">Long</a></tt> containing the current cursor position and state. The <a href="KeyPgLobyte.html">Low Byte Of The Low Word</a> contains the column, the <a href="KeyPgHibyte.html">High Byte Of The Low Word</a> contains the row, and the <a href="KeyPgHiword.html">High Word</a> contains the cursor state.<br \>
+<br \>
+If any of the <i>row</i>, <i>column</i> or <i>state</i> parameters were just set by the call to <b>Locate</b>, then the return value will reflect these new values, not the previous ones. If any of the parameters were omitted in the call to <b>Locate</b>, then the return value will reflect the current values, which are the same as before the call to <b>Locate</b>.<br \>
+<br \>
+</div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+Sets the text cursor in both graphics and console modes.<br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="key">Locate</span>&nbsp;<span class="num">10</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"Current&nbsp;line:"</span><span class="oth">;</span>&nbsp;<span class="key">CsrLin</span><br />
+</div></tt><br />
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Text&nbsp;cursor&nbsp;+&nbsp;mouse&nbsp;tracking</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">x</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><span class="oth">,</span>&nbsp;<span class="wrd">y</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><span class="oth">,</span>&nbsp;<span class="wrd">dx</span><span class="oth">,</span>&nbsp;<span class="wrd">dy</span><br />
+<br />
+<span class="key">Cls</span><br />
+<span class="key">Locate</span>&nbsp;<span class="oth">,</span>&nbsp;<span class="oth">,</span>&nbsp;<span class="num">1</span><br />
+<br />
+<span class="key">While</span>&nbsp;<span class="key">Inkey</span>&nbsp;<span class="oth">&lt;&gt;</span>&nbsp;<span class="key">Chr</span><span class="oth">(</span><span class="num">27</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">GetMouse</span>&nbsp;<span class="wrd">dx</span><span class="oth">,</span>&nbsp;<span class="wrd">dy</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span><span class="oth">(</span>&nbsp;<span class="wrd">dx</span>&nbsp;<span class="oth">&lt;&gt;</span>&nbsp;<span class="wrd">x</span>&nbsp;<span class="key">Or</span>&nbsp;<span class="wrd">dy</span>&nbsp;<span class="oth">&lt;&gt;</span>&nbsp;<span class="wrd">y</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Locate</span>&nbsp;<span class="wrd">y</span><span class="oth">+</span><span class="num">1</span><span class="oth">,</span>&nbsp;<span class="wrd">x</span><span class="oth">+</span><span class="num">1</span><span class="oth">:</span>&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"&nbsp;"</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">x</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">dx</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">y</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">dy</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Locate</span>&nbsp;<span class="num">1</span><span class="oth">,</span>&nbsp;<span class="num">1</span><span class="oth">:</span>&nbsp;<span class="key">Print</span>&nbsp;<span class="wrd">x</span><span class="oth">,</span>&nbsp;<span class="wrd">y</span><span class="oth">,</span>&nbsp;<span class="quo">""</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Locate</span>&nbsp;<span class="wrd">y</span><span class="oth">+</span><span class="num">1</span><span class="oth">,</span>&nbsp;<span class="wrd">x</span><span class="oth">+</span><span class="num">1</span><span class="oth">:</span>&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"X"</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<span class="key">Wend</span><br />
+</div></tt><br />
+<br \>
+</div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> The <tt><i>start</i></tt> and <tt><i>stop</i></tt> arguments have no effect in FreeBASIC.<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <tt><a href="KeyPgCsrlin.html">CsrLin</a></tt><br \>
+<li> <tt><a href="KeyPgPos.html">Pos</a></tt><br \>
+<li> <tt><a href="KeyPgPrint.html">Print</a></tt><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

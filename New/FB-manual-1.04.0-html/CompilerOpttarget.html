@@ -1,0 +1,89 @@
+<html>
+<head>
+<title>Compiler Option: -target</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Compiler Option: -target</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Set the target platform for cross compilation<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<div class="fb_indent"><b>-target</b> &lt; <i>platform</i> &gt;<br \>
+</div></tt><br \>
+</div><div class="fb_sect_title">Parameters</div><div class="fb_sect_cont"><br \>
+<div class="fb_indent"><tt><i>platform</i></tt><br \>
+<div class="fb_indent">The target platform. Recognized values:<br \>
+<br \>
+</div></div><ul><ul><ul><li> <tt>dos</tt><br \>
+<li> <tt>win32</tt><br \>
+<li> <tt>win64</tt><br \>
+<li> <tt>xbox</tt><br \>
+<li> <tt>&lt;os&gt;-&lt;arch&gt;</tt><br \>
+</ul></ul></ul><div class="fb_indent"><div class="fb_indent"><div class="fb_indent"><div class="fb_indent"><tt>&lt;os&gt;</tt> can be one of:<br \>
+</div></div></div></div><ul><ul><ul><ul><ul><li> <tt>linux</tt><br \>
+<li> <tt>cygwin</tt><br \>
+<li> <tt>darwin</tt><br \>
+<li> <tt>freebsd</tt><br \>
+<li> <tt>netbsd</tt><br \>
+<li> <tt>openbsd</tt><br \>
+</ul></ul></ul></ul></ul><div class="fb_indent"><div class="fb_indent"><div class="fb_indent"><div class="fb_indent"><tt>&lt;arch&gt;</tt> can be one of:<br \>
+</div></div></div></div><ul><ul><ul><ul><ul><li> <tt>x86</tt><br \>
+<li> <tt>x86_64</tt><br \>
+<li> <tt>arm</tt><br \>
+<li> <tt>aarch64</tt><br \>
+</ul></ul></ul></ul></ul><div class="fb_indent"><div class="fb_indent"><div class="fb_indent"><div class="fb_indent">Examples:<br \>
+</div></div></div></div><ul><ul><ul><ul><ul><li> <tt>linux-x86</tt><br \>
+<li> <tt>linux-x86_64</tt><br \>
+<li> <tt>linux-arm</tt><br \>
+<li> <tt>linux-aarch64</tt><br \>
+<li> <tt>freebsd-x86</tt><br \>
+<li> <tt>freebsd-x86_64</tt><br \>
+<li> <tt>...</tt><br \>
+</ul></ul><li> For backwards compatibility, the following values are recognized. They will select the corresponding operating system, together with the compiler's default architecture (same as the host), because these values do not specify an architecture explicitly.<br \>
+<ul><li> <tt>linux</tt><br \>
+<li> <tt>cygwin</tt><br \>
+<li> <tt>darwin</tt><br \>
+<li> <tt>freebsd</tt><br \>
+<li> <tt>netbsd</tt><br \>
+<li> <tt>openbsd</tt><br \>
+</ul><li> The <a href="DevNormalVsStandalone.html">Normal</a> fbc (e.g. FB-linux release) additionally recognizes GNU triplets, for example:<br \>
+<ul><li> <tt>i686-w64-mingw32</tt><br \>
+<li> <tt>x86_64-w64-mingw32</tt><br \>
+<li> <tt>i686-pc-linux-gnu</tt><br \>
+<li> <tt>arm-linux-gnueabihf</tt><br \>
+<li> <tt>...</tt><br \>
+<br \>
+</ul></ul></ul></ul></div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+<div class="fb_indent">The <tt>-target</tt> compiler option can be used to create an executable for a platform which is different from the host on which the source code is being compiled and linked. Appropriate libraries and cross compilation tools (assembler, linker) must be installed for cross compilation to work (also see <a href="DevCrossCompiling.html">FB and cross-compiling</a>). <br \>
+<br \>
+If <tt>-target &lt;platform&gt;</tt> is given, the compiler will compile programs more or less as if they were compiled on the given platform. This affects which <tt>__FB_*__</tt> operating-system-specific symbol will be pre-defined, the default calling convention, the object and executable file format (e.g. ELF/COFF), the available runtime libraries and functions, etc.<br \>
+<br \>
+With a standalone FB setup such as the FB-dos or FB-win32 releases:<br \>
+<br \>
+</div><ul><ul><li> Specifying <tt>-target &lt;platform&gt;</tt> causes the compiler to use the compiler tools in the <tt>bin/&lt;platform&gt;/</tt> directory, and target-specific libraries in the <tt>lib/&lt;platform&gt;/</tt> directory. For example, <tt>-target win32</tt> causes the compiler to compile for Win32 and use tools from <tt>bin/win32/</tt> and libraries from <tt>lib/win32/</tt>.<br \>
+<li> It is unnecessary (but safe) to specify a <tt>-target</tt> option that matches the host (for example <tt>-target win32</tt> on <tt>win32</tt>). It does not make a difference to the compilation process.<br \>
+<li> If <tt>-target</tt> is not specified, the compiler defaults to compiling for the native system. It will then use the compiler tools and libraries from the <tt>bin/</tt> and <tt>lib/</tt> directories corresponding to the native system.<br \>
+</ul></ul><div class="fb_indent">With a normal FB setup such as the FB-linux release:<br \>
+<br \>
+</div><ul><ul><li> Specifying <tt>-target &lt;platform&gt;</tt> causes the compiler to prefix the <tt>&lt;platform&gt;-</tt> string to the executable names of binutils and gcc. For example, specifying <tt>-target i686-w64-mingw32</tt> causes the compiler to invoke <tt>i686-w64-mingw32-ld</tt> instead of <tt>ld</tt> (same for other tools besides the linker). This allows fbc to integrate with binutils/gcc cross-compiler toolchains and matches how cross-compiling tools are typically installed on Linux distributions.<br \>
+<li> Note that specifying something like <tt>-target win32</tt> does not usually make sense here. It causes the compiler to try to use <tt>win32-ld</tt> which usually does not exist, because binutils/gcc toolchains for cross-compilation to Windows typically have names such as <tt>i686-pc-mingw32</tt>, not just <tt>win32</tt>. Thus, it is necessary to specify something like <tt>-target i686-pc-mingw32</tt> instead of <tt>-target win32</tt>.<br \>
+<li> For backwards compatibility, if the given <i>platform</i> string describes the host and is an FB target name (the values accepted by the <tt>-target</tt> option with a standalone FB setup) instead of a GNU triplet, then the <tt>-target</tt> option will be ignored, and the <tt>&lt;platform&gt;-</tt> string will not be prefixed to compiler tools. For example, this allows <tt>-target linux</tt> to work with the FB-linux release. It will be ignored instead of causing the compiler to try to use <tt>linux-ld</tt> instead of <tt>ld</tt>.<br \>
+<li> If <tt>-target</tt> is not specified, the compiler defaults to compiling for the native system, and it will invoke binutils/gcc without a target-specific prefix. This allows fbc to integrate with usual Linux (and similar) systems where binutils/gcc for native compilation are installed without any target-specific prefix.<br \>
+<li> Libraries besides FB's own runtime libraries are located by running <tt>gcc -print-file-name=...</tt> (or <tt>&lt;platform&gt;-gcc -print-file-name=...</tt>). This allows fbc to use the system and gcc libraries installed on Linux and similar systems without knowing the exact installation directories.<br \>
+<br \>
+</ul></ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <a href="CompilerCmdLine.html">Using the Command Line</a><br \>
+<li> <a href="DevCrossCompiling.html">FB and cross-compiling</a><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

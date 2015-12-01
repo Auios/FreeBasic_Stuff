@@ -1,0 +1,38 @@
+<html>
+<head>
+<title>Structure packing/field alignment</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Structure packing/field alignment</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	<br \>
+The default layout of <tt>Type</tt> and <tt>Union</tt> structures in FreeBASIC is compatible to that of GCC, following the SysV (Linux/BSD) and Microsoft (Windows) ABIs. This allows for binary compatibility with GCC and other compilers.<br \>
+<br \>
+By default, fields are aligned to their natural boundaries, which are: <br \>
+<ul><li> A multiple of 1 for 1-byte data types<br \>
+<li> A multiple of 2 for 2-byte data types<br \>
+<li> A multiple of 4 for 4-byte data types<br \>
+<li> A multiple of 4 for 8-byte data types (32bit x86 DOS(DJGPP)/Linux/BSD)<br \>
+<li> A multiple of 8 for 8-byte data types (Win32/Win64, 32bit ARM Linux, 64bit x86_64/AArch64 Linux/BSD)<br \>
+<li> The largest natural boundary of the fields of <tt>Type</tt>/<tt>Union</tt> data types<br \>
+<li> Dynamic string descriptors are handled as <tt>Type</tt> structures with the data pointer field being the one with the largest natural alignment.<br \>
+<li> Fixed-length strings are aligned according to the alignment required for the character size.<br \>
+<li> Static arrays are aligned according to the alignment required for the element data type.<br \>
+<br \>
+</ul>The compiler aligns fields by inserting padding bytes in front of them in order to move them to an offset that corresponds to their natural boundary, or to a multiple of the value given with <tt><a href="KeyPgField.html">Field = N</a></tt>, if it is smaller than the field's natural alignment. On the x86 architecture, such proper alignment is not required but can result in better performance when accessing the fields. Other architectures might actually require proper alignment.<br \>
+<br \>
+In addition to field alignment, the whole structure's size is rounded up to a multiple of the largest natural alignment of its fields, by adding padding bytes at the end of the structure. This ensures that in an array of such structures, each individual one is properly aligned as required by the fields.<br \>
+<br \>
+<br \>
+
+</div>
+</div> 
+</div> 
+</body>
+</html>

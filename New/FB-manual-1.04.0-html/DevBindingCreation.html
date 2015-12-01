@@ -1,0 +1,170 @@
+<html>
+<head>
+<title>Creating FB bindings for C libraries</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Creating FB bindings for C libraries</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	<br \>
+This page aims to document the problems and solutions commonly encountered when creating FB bindings for C libraries.<br \>
+<br \>
+In general, FB and C/C++ are very similar. FB follows the same ABI as GCC where applicable, in order to be binary-compatible as much as possible. The language syntax is also similar to C/C++. As a result, a lot of type and procedure declarations can be translated directly 1:1 between C and FB. However, there also are constructs which cannot be translated directly, for example: typedefs declaring function types. FB has function pointer types, but not plain function types.<br \>
+<br \>
+<ul><li> The good news: We have tools (<a href="http://www.freebasic.net/forum/viewtopic.php?f=8&t=18712">fbfrog</a> and <a href="http://www.freebasic.net/forum/viewtopic.php?f=8&t=15364">h_2_bi</a>) which can do most of the translation automatically.<br \>
+<li> The bad news: There always are some problems which cannot be solved automatically and thus need to be fixed manually.<br \>
+<br \>
+</ul><b><u>Data types</u></b><br \>
+<br \>
+<div class="fb_indent"><div class="fb_table"><table><tr><td> C/C++ type </td><td> Size in bytes (GCC on Linux/Windows) </td><td> Corresponding FreeBASIC type </td></tr><tr><td> char </td><td> 1 </td><td> Byte </td></tr><tr><td> short [int] </td><td> 2 </td><td> Short </td></tr><tr><td> int </td><td> 4 </td><td> Long </td></tr><tr><td> enum (underlying type int) </td><td> 4 </td><td> Long </td></tr><tr><td> long long [int] </td><td> 8 </td><td> LongInt </td></tr><tr><td> float </td><td> 4 </td><td> Single </td></tr><tr><td> double </td><td> 8 </td><td> Double </td></tr><tr><td> long double </td><td> 12 on 32bit, 16 on 64bit </td><td> CLongDouble from crt/longdouble.bi </td></tr><tr><td> _Bool/bool </td><td> 1 </td><td> Byte </td></tr><tr><td> * (pointer) </td><td> 4 on 32bit, 8 on 64bit </td><td> Ptr/Pointer </td></tr><tr><td> ssize_t, intptr_t </td><td> 4 on 32bit, 8 on 64bit </td><td> Integer </td></tr><tr><td> size_t, uintptr_t </td><td> 4 on 32bit, 8 on 64bit </td><td> UInteger </td></tr><tr><td> long [int] </td><td> 4 on 32bit systems and Win64 (!), 8 on 64bit Linux/BSD </td><td> CLong from crt/long.bi </td></tr></table></div><br \>
+<br \>
+</div><ul><li> Caveat: <tt>int</tt>/<tt>long</tt> is not <tt>Integer</tt>/<tt>Long</tt>. In FB, <tt>Integer</tt> corresponds to <tt>Pointer</tt> - it's 32bit on 32bit and 64bit on 64bit (on all operating systems). <tt>Long</tt> stays 32bit everywhere. In C, <tt>int</tt> stays 32bit everywhere, and <tt>long</tt> only corresponds to pointers on Linux/BSD systems, but not on Win64, where <tt>long</tt> is still 32bit. On Win64, <tt>long long</tt> is the only 64bit integer type in C. Thus, neither C's <tt>int</tt> nor C's <tt>long</tt> are compatible to FB's <tt>Integer</tt>.<br \>
+<li> Caveat: <tt>long int</tt> is not <tt>LongInt</tt>. FB's <tt>LongInt</tt> corresponds to C's <tt>long long</tt>, not C's <tt>long</tt>.<br \>
+<li> <tt>int</tt> can be translated to <tt>Long</tt>, as both are 32bit consistently.<br \>
+<li> <tt>ssize_t</tt> or <tt>intptr_t</tt> can be translated to <tt>Integer</tt> because they typically have the same size as pointers.<br \>
+<li> <tt>long</tt> cannot be translated directly, but we have <tt>crt/long.bi</tt> which provides the target-specific <tt>clong</tt> and <tt>culong</tt> type aliases.<br \>
+<li> <tt>long double</tt> cannot be translated directly, but we have <tt>crt/longdouble.bi</tt> which provides the target-specific <tt>clongdouble</tt> type.<br \>
+<li> <tt>enum</tt> is a special case. Typically their underlying type is <tt>int</tt> (32bit), but in FB <tt>Enum</tt> uses <tt>Integer</tt> (32bit/64bit) and it does not allow changing that. Thus <tt>enums</tt> (used as data type in declarations) cannot be translated as <tt>Enums</tt>.<br \>
+</ul><div class="fb_indent"><div class="fb_indent">For example:<br \>
+<br \>
+<div class="fb_indent"><tt><div class="freebasic">
+<span class="key">Enum</span>&nbsp;<span class="wrd">MyEnum</span>&nbsp;<span class="oth">{</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">A</span><span class="oth">,</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">B</span><br />
+<span class="oth">}</span><br />
+</div></tt><br />
+</div>has to be translated as:<br \>
+<br \>
+<div class="fb_indent"><tt><div class="freebasic">
+<span class="key">Type</span>&nbsp;<span class="wrd">MyEnum</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Long</span><br />
+<span class="key">Enum</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">A</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">B</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Enum</span><br />
+</div></tt><br />
+</div></div></div><ul><li> <tt>BOOL</tt> from <tt>windows.h</tt> is just a typedef for <tt>int</tt>, and should not be confused with the C <tt>_Bool</tt> or C++ <tt>bool</tt> types.<br \>
+<br \>
+</ul><b><u>Symbol name conflicts</u></b><br \>
+<br \>
+<ul><li> C/C++ is case-sensitive, with ~50 keywords<br \>
+<li> FreeBASIC is case-insensitive, with ~400 keywords<br \>
+<li> C code sometimes uses FB keywords as symbol identifiers, for example <tt>INT</tt>, <tt>string</tt>, <tt>open</tt>. Such symbols must be renamed.<br \>
+<li> C code often contains identifiers which differ only in case, for example <tt>GET_VERSION</tt> and <tt>get_version</tt>. This is not allowed in FB; one of the symbols must be renamed.<br \>
+<li> In C, a macro can have the same identifier as a function. This is not allowed in FB; one of the symbols must be renamed.<br \>
+</ul><div class="fb_indent"><b>Examples</b><br \>
+<br \>
+<div class="fb_indent">C code using FB keywords as identifiers:<br \>
+<tt><div class="freebasic">
+<span class="wrd">typedef</span>&nbsp;<span class="key">Int</span>&nbsp;<span class="key">Int</span><span class="oth">;</span><br />
+<span class="wrd">void</span>&nbsp;<span class="key">Open</span><span class="oth">(</span><span class="wrd">void</span><span class="oth">);</span><br />
+</div></tt><br />
+<tt><div class="freebasic">
+<span class="key">Type</span>&nbsp;<span class="wrd">INT_</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Long</span><br />
+<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">open_</span>&nbsp;<span class="key">cdecl</span>&nbsp;<span class="key">Alias</span>&nbsp;<span class="quo">"open"</span><span class="oth">()</span><br />
+</div></tt><br />
+<br \>
+C code relying on case-sensitivity:<br \>
+<tt><div class="freebasic">
+<span class="wrd">void</span>&nbsp;<span class="wrd">foo</span><span class="oth">(</span><span class="wrd">void</span><span class="oth">);</span><br />
+<span class="wrd">void</span>&nbsp;<span class="wrd">Foo</span><span class="oth">(</span><span class="wrd">void</span><span class="oth">);</span><br />
+<span class="wrd">void</span>&nbsp;<span class="wrd">FOO</span><span class="oth">(</span><span class="wrd">void</span><span class="oth">);</span></div></tt><br />
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Wrong&nbsp;translation:</span><br />
+<span class="key">Extern</span>&nbsp;<span class="quo">"C"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">foo</span><span class="oth">()</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">Foo</span><span class="oth">()</span>&nbsp;&nbsp;<span class="com">''&nbsp;error:&nbsp;duplicate&nbsp;definition</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">FOO</span><span class="oth">()</span>&nbsp;&nbsp;<span class="com">''&nbsp;error:&nbsp;duplicate&nbsp;definition</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Extern</span><br />
+</div></tt><br />
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Correct&nbsp;translation:</span><br />
+<span class="key">Extern</span>&nbsp;<span class="quo">"C"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">foo</span><span class="oth">()</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">Foo_</span>&nbsp;<span class="key">Alias</span>&nbsp;<span class="quo">"Foo"</span><span class="oth">()</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">FOO__</span>&nbsp;<span class="key">Alias</span>&nbsp;<span class="quo">"FOO"</span><span class="oth">()</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Extern</span><br />
+</div></tt><br />
+<br \>
+Another classic example where this kind of conflict happens:<br \>
+<tt><div class="freebasic">
+<span class="def">#define&nbsp;GET_VERSION_NUMBER&nbsp;123<br />
+</span><span class="key">Int</span>&nbsp;<span class="wrd">get_version_number</span><span class="oth">(</span><span class="wrd">void</span><span class="oth">);</span><br />
+</div></tt><br />
+<tt><div class="freebasic">
+<span class="key">Extern</span>&nbsp;<span class="quo">"C"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="def">#define&nbsp;GET_VERSION_NUMBER_&nbsp;123&nbsp;&nbsp;''&nbsp;renamed&nbsp;to&nbsp;avoid&nbsp;conflict<br />
+</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Function</span>&nbsp;<span class="wrd">get_version_number</span><span class="oth">()</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Long</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Extern</span><br />
+</div></tt><br />
+<br \>
+Conflict between procedure and macro:<br \>
+<tt><div class="freebasic">
+<span class="wrd">void</span>&nbsp;<span class="wrd">f</span><span class="oth">(</span><span class="key">Int</span><span class="oth">);</span><br />
+<span class="def">#define&nbsp;f(i)&nbsp;f(i&nbsp;+&nbsp;1)<br />
+</span></div></tt><br />
+<tt><div class="freebasic">
+<span class="key">Extern</span>&nbsp;<span class="quo">"C"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">f</span><span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Long</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="def">#define&nbsp;f_(i)&nbsp;f(i&nbsp;+&nbsp;1)&nbsp;&nbsp;''&nbsp;renamed&nbsp;to&nbsp;avoid&nbsp;conflict<br />
+</span><span class="key">End</span>&nbsp;<span class="key">Extern</span><br />
+</div></tt><br />
+</div><b>Solutions</b><br \>
+<br \>
+</div><ul><ul><li> Symbols should be renamed by appending <tt>_</tt> underscores. This way we solve the conflicts and still stay close to the original API.<br \>
+<li> Renaming a symbol should not cause further renames (for example, if <tt>foo</tt> must be renamed, but <tt>foo_</tt> already exists, then <tt>foo</tt> should be renamed to <tt>foo__</tt> instead)<br \>
+<li> A list of renamed symbols should be available in the binding or in the binding's documentation such that users can identify such differences to the original API.<br \>
+<li> Fields inside structures do not need to be renamed just because they match an FB keyword. By using the "<tt>As DataType Name</tt>" syntax they can be use FB keywords as identifiers. This only works as long as it is a simple structure (plain old data), not a class.<br \>
+</ul></ul><div class="fb_indent"><div class="fb_indent"><div class="fb_indent"><tt><div class="freebasic">
+<span class="key">Type</span>&nbsp;<span class="wrd">UdtWithKeywordFields</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">As</span>&nbsp;<span class="key">ZString</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="key">String</span>&nbsp;&nbsp;<span class="com">''&nbsp;Field&nbsp;"String"&nbsp;of&nbsp;type&nbsp;ZString&nbsp;Ptr</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">As</span>&nbsp;<span class="key">Long</span>&nbsp;<span class="key">Type</span>&nbsp;&nbsp;<span class="com">''&nbsp;Field&nbsp;"Type"&nbsp;of&nbsp;type&nbsp;"Long"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">As</span>&nbsp;<span class="key">Long</span>&nbsp;<span class="key">As</span>&nbsp;&nbsp;<span class="com">''&nbsp;Field&nbsp;"As"&nbsp;of&nbsp;type&nbsp;"Long"</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Type</span></div></tt><br />
+<br \>
+</div></div></div><b><u>Function types</u></b><br \>
+<br \>
+<div class="fb_indent">In C it's possible to have typedefs with function types. Dereferencing a function pointer type results in a function type. FB only has function pointer types, but not function types.<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="oth">//</span>&nbsp;<span class="wrd">A</span>&nbsp;<span class="key">Function</span>&nbsp;<span class="wrd">typedef</span>&nbsp;<span class="oth">(</span><span class="key">Function</span>&nbsp;<span class="wrd">result</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">void</span><span class="oth">,</span>&nbsp;<span class="wrd">no</span>&nbsp;<span class="wrd">parameters</span><span class="oth">)</span><br />
+<span class="wrd">typedef</span>&nbsp;<span class="wrd">void</span>&nbsp;<span class="wrd">F</span><span class="oth">(</span><span class="wrd">void</span><span class="oth">);</span><br />
+<br />
+<span class="oth">//</span>&nbsp;<span class="key">Using</span>&nbsp;<span class="wrd">it</span>&nbsp;<span class="key">To</span>&nbsp;<span class="key">Declare</span>&nbsp;<span class="wrd">a</span>&nbsp;<span class="key">Function</span>&nbsp;<span class="wrd">called</span>&nbsp;<span class="wrd">f1</span><br />
+<span class="wrd">F</span>&nbsp;<span class="wrd">f1</span><span class="oth">;</span><br />
+<br />
+<span class="oth">//</span>&nbsp;<span class="wrd">Usually</span>&nbsp;<span class="wrd">f1</span>&nbsp;<span class="wrd">would</span>&nbsp;<span class="wrd">be</span>&nbsp;<span class="wrd">declared</span>&nbsp;<span class="wrd">like</span>&nbsp;<span class="key">This</span>&nbsp;<span class="oth">(</span><span class="wrd">use</span>&nbsp;<span class="wrd">of</span>&nbsp;<span class="key">Function</span>&nbsp;<span class="wrd">typedefs</span>&nbsp;<span class="key">Is</span>&nbsp;<span class="wrd">pretty</span>&nbsp;<span class="wrd">rare</span><span class="oth">):</span><br />
+<span class="wrd">void</span>&nbsp;<span class="wrd">f1</span><span class="oth">(</span><span class="wrd">void</span><span class="oth">);</span><br />
+<br />
+<span class="oth">//</span>&nbsp;<span class="wrd">A</span>&nbsp;<span class="wrd">more</span>&nbsp;<span class="key">Common</span>&nbsp;<span class="wrd">use</span>&nbsp;<span class="key">For</span>&nbsp;<span class="key">Function</span>&nbsp;<span class="wrd">typedefs</span>&nbsp;<span class="key">Is</span>&nbsp;<span class="key">To</span>&nbsp;<span class="key">Declare</span>&nbsp;<span class="wrd">pointers</span>&nbsp;<span class="key">To</span>&nbsp;<span class="wrd">them</span>&nbsp;<span class="oth">(</span><span class="key">Function</span>&nbsp;<span class="wrd">pointers</span><span class="oth">):</span><br />
+<span class="key">Extern</span>&nbsp;<span class="wrd">F</span>&nbsp;<span class="oth">*</span><span class="wrd">pf1</span><span class="oth">;</span><br />
+</div></tt><br />
+<br \>
+Since FB does not have function types, such typedefs have to be solved out, or turned into a function pointer:<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="key">Extern</span>&nbsp;<span class="quo">"C"</span><br />
+<br />
+<span class="key">Type</span>&nbsp;<span class="wrd">F</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Sub</span><span class="oth">()</span>&nbsp;&nbsp;<span class="com">''&nbsp;Function&nbsp;pointer&nbsp;type</span><br />
+<br />
+<span class="com">''&nbsp;Declaring&nbsp;procedures&nbsp;is&nbsp;only&nbsp;possible&nbsp;with&nbsp;Declare&nbsp;in&nbsp;FB</span><br />
+<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">f1</span><span class="oth">()</span><br />
+<br />
+<span class="com">''&nbsp;But&nbsp;at&nbsp;least&nbsp;FB&nbsp;has&nbsp;function&nbsp;pointer&nbsp;types.</span><br />
+<span class="com">''&nbsp;Since&nbsp;F&nbsp;already&nbsp;is&nbsp;the&nbsp;function&nbsp;pointer&nbsp;in&nbsp;the&nbsp;FB&nbsp;translation,&nbsp;there&nbsp;is&nbsp;no&nbsp;extra&nbsp;PTR&nbsp;here</span><br />
+<span class="key">Extern</span>&nbsp;<span class="wrd">pf1</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">F</span><br />
+<br />
+<span class="key">End</span>&nbsp;<span class="key">Extern</span><br />
+</div></tt><br />
+<br \>
+</div><br \>
+
+</div>
+</div> 
+</div> 
+</body>
+</html>

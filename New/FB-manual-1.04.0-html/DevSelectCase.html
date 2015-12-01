@@ -1,0 +1,157 @@
+<html>
+<head>
+<title>Select Case</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Select Case</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	<br \>
+<b><u>Basic implementation</u></b><br \>
+<br \>
+<div class="fb_indent"><pre class="fb_pre">
+dim i as integer		dim i as integer
+
+				scope
+select case i + 123			dim temp as integer = any
+					temp = i + 123
+
+case 1					if( temp <> 1 ) then goto cmplabel1
+					scope
+	print "1"				print "1"
+					end scope
+					goto endlabel
+
+case 2					cmplabel1:
+					if( temp <> 2 ) then goto cmplabel2
+					scope
+	print "2"				print "2"
+					end scope
+					goto endlabel
+
+case else				cmplabel2:
+					scope
+	print "else"				print "else"
+					end scope
+
+end select				cmplabel3:    '' unused only because in this example the last CASE is not conditional
+					endlabel:
+				end scope
+</pre><br \>
+</div><ul><li> SELECT CASE<br \>
+<ul><li> opens the implicit outer scope<br \>
+<li> declares the temp var<br \>
+<ul><li> when inside a procedure with STATIC, the temp var will be made STATIC<br \>
+<li> the FB_SYMBATTRIB_TEMP is removed from the temp var, because it lives longer than just one statement<br \>
+</ul><li> emits the assignment<br \>
+<li> declares the end label<br \>
+</ul><li> each CASE<br \>
+<ul><li> if there was a previous CASE<br \>
+<ul><li> closes the previous CASE's scope<br \>
+<li> emits a jump to the end label<br \>
+</ul><li> emits the label for this CASE<br \>
+<li> emits a conditional branch that jumps to the next CASE if the CASE condition is not met<br \>
+<li> opens the CASE's scope<br \>
+<li> CASE ELSE does not emit a conditional branch<br \>
+<li> once CASE ELSE was used, no further CASE blocks are allowed<br \>
+</ul><li> END SELECT<br \>
+<ul><li> closes the previous CASE's scope<br \>
+<li> emits an extra CASE label at the end (There is no CASE coming anymore, but this allows the last CASE to jump to the end, if it is a conditional CASE. The last CASE could jump to the SELECT's end label instead, but that would require some special case handling code.)<br \>
+<li> emits the end label<br \>
+</ul><li> any EXIT SELECTs jump immediately to the end label<br \>
+<br \>
+<br \>
+</ul><b><u>SELECT CASE on strings/zstrings/fixstrs</u></b><br \>
+<br \>
+<div class="fb_indent"><pre class="fb_pre">
+dim s as string			dim s as string
+
+				scope
+select case s + "1"			dim temp as string
+
+					fb_StrAssign( temp, s )
+					fb_StrConcatAssign( temp, "1" )
+
+case "1"				if( fb_StrCompare( temp, "1" ) <> 0 ) then goto cmplabel1
+					scope
+	print "1"				print "1"
+					end scope
+					goto endlabel
+
+					cmplabel1:
+end select				endlabel:
+					fb_StrDelete( temp )    '' destroying the temp var at scope end
+				end scope
+
+				fb_StrDelete( s )
+</pre><br \>
+</div><ul><li> SELECT CASE on string/zstring/fixstr expressions uses a string temp var<br \>
+<ul><li> probably because that's easiest<br \>
+<li> knowing the string length will potentially speed up the following comparisons<br \>
+<li> the dynamic memory allocation can be a slow down too<br \>
+</ul><li> the string temp var is destroyed at scope end or scope breaks (e.g. reaching END SELECT, or EXIT FUNCTION from within a CASE block)<br \>
+<br \>
+</ul><b><u>SELECT CASE on wstrings</u></b><br \>
+<br \>
+<div class="fb_indent"><pre class="fb_pre">
+dim w as wstring * 10			dim w as wstring * 10
+
+					scope
+select case w + wstr( "1" )			dim temp as wstring ptr
+
+						dim tempexpr as wstring ptr = w + wstr( "1" )
+						temp = fb_WstrAlloc( fb_WstrLen( tempexpr ) )
+						fb_WstrAssign( temp, tempexpr )
+
+case wstr( "1" )				if( fb_WstrCompare( temp, wstr( "1" ) ) <> 0 ) then goto cmplabel1
+						scope
+	print "1"					print "1"
+						end scope
+						goto endlabel
+
+						cmplabel1:
+end select					endlabel:
+						fb_WstrDelete( temp )    '' destroying the temp var at scope end
+					end scope
+</pre><br \>
+</div><ul><li> similar to SELECT CASE on zstrings, for wstring expressions a wstring is dynamically allocated<br \>
+<li> the temp wstring is treated much like a dynamic wstring object would be<br \>
+<ul><li> it is a VAR symbol with type WCHAR PTR<br \>
+<li> marked with FB_SYMBSTATS_WSTRING<br \>
+<li> this allows ctor/dtor checks to recognize it and give it the needed treatment<br \>
+</ul><li> this way, the temp wstring is destroyed at scope end or scope breaks<br \>
+<br \>
+<br \>
+</ul><b><u>SELECT CASE without temp var</u></b><br \>
+<br \>
+<div class="fb_indent">When the expression given to the <span ><tt>select</tt></span> statement is just a simple variable access, then no temporary variable needs to be created. In this case, the given variable itself will be used in the comparisons at each <span ><tt>case</tt></span> statement. For example:<br \>
+<br \>
+<pre class="fb_pre">
+dim i as integer		dim i as integer
+
+				scope
+select case i
+
+case 1					if( i <> 1 ) then goto cmplabel1
+					scope
+	print "1"				print "1"
+					end scope
+					goto endlabel
+
+end select				cmplabel1:
+					endlabel:
+				end scope
+</pre><br \>
+<br \>
+</div><br \>
+
+</div>
+</div> 
+</div> 
+</body>
+</html>

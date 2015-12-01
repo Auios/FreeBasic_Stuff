@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>Compiler Option: -print</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Compiler Option: -print</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Print out information<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<div class="fb_indent"><div class="fb_indent">-print <i>option</i><br \>
+</div></div></tt><br \>
+</div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+<div class="fb_indent">The <tt>-print</tt> option can be used to query the compiler for certain information which may be useful especially for build scripts. It does not prevent compilation of input files given besides the <tt>-print</tt> option, but the compiler also can be invoked with only a <tt>-print</tt> option and no input files, in which case it will not compile anything but only respond to the <tt>-print</tt> option.<br \>
+<br \>
+Currently, the following -print options are recognized:<br \>
+<br \>
+<div class="fb_table"><table><tr><td>option</td><td>effect</td></tr><tr><td>host</td><td>Prints the host system on which fbc is running</td></tr><tr><td>target</td><td>Prints the target system for which fbc is compiling (can be affected by the -target option)</td></tr><tr><td>x</td><td>Prints the file name of the output executable or library that fbc will or would generate (named after the -x option), depending on other command line options</td></tr></table></div><br \>
+<br \>
+</div></div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<div class="fb_indent">A <a href="http://en.wikipedia.org/wiki/Make_(software)">makefile</a> could use <tt>target := $(shell $(FBC) -print target)</tt> to find out the compilation target, which would even work when cross-compiling, with <tt>FBC</tt> set to something like <tt>fbc -target foo</tt>.<br \>
+<br \>
+<tt>fbc -print x</tt> alone will print out the executable file extension for the target system.<br \>
+<tt>fbc -print x -dll</tt> on the other hand will print out the dynamic library file name format.<br \>
+<tt>fbc -print x -m foo</tt> will print out the executable file name that would be used when compiling a module called foo.bas.<br \>
+<tt>fbc 1.bas 2.bas -lib -print x</tt> will compile 1.bas and 2.bas into a library, whose file name will be displayed.<br \>
+<br \>
+</div></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <a href="CompilerOptx.html">-x</a><br \>
+<li> <a href="CompilerOpttarget.html">-target</a><br \>
+<li> <a href="CompilerCmdLine.html">Using the Command Line</a><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

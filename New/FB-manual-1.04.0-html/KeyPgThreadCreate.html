@@ -1,0 +1,219 @@
+<html>
+<head>
+<title>ThreadCreate</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">ThreadCreate</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Starts a user-defined procedure in a separate execution thread<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<a href="KeyPgDeclare.html">Declare</a> <a href="KeyPgFunction.html">Function</a> <b>ThreadCreate</b> _<br \>
+<div class="fb_indent">( _<br \>
+<div class="fb_indent"><a href="KeyPgByval.html">ByVal</a> <i>procptr</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgSub.html">Sub</a> ( <a href="KeyPgByval.html">ByVal</a> <i>userdata</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgAny.html">Any</a> <a href="KeyPgPtr.html">Ptr</a> ), _<br \>
+<a href="KeyPgByval.html">ByVal</a> <i>param</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgAny.html">Any</a> <a href="KeyPgPtr.html">Ptr</a> = 0, _<br \>
+<a href="KeyPgByval.html">ByVal</a> <i>stack_size</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgInteger.html">Integer</a> = 0 _<br \>
+</div>) <a href="KeyPgAs.html">As</a> <a href="KeyPgAny.html">Any</a> <a href="KeyPgPtr.html">Ptr</a><br \>
+</div></tt><br \>
+</div><div class="fb_sect_title">Usage</div><div class="fb_sect_cont"><tt><br \>
+<i>result</i> = <b>ThreadCreate</b> ( <i>procptr</i> [, [ <i>param</i> ] [, <i>stack_size</i> ] ] )<br \>
+</tt><br \>
+</div><div class="fb_sect_title">Parameters</div><div class="fb_sect_cont"><br \>
+<tt><i>procptr</i></tt><br \>
+<div class="fb_indent">A pointer to the <tt><a href="KeyPgSub.html">Sub</a></tt> intended to work as a thread. The sub must have the following signature (same parameters, same calling convention) to be compatible to <i>procptr</i>:<br \>
+<tt><a href="KeyPgDeclare.html">Declare</a> <a href="KeyPgSub.html">Sub</a> myThread ( <a href="KeyPgByval.html">ByVal</a> <i>userdata</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgAny.html">Any</a> <a href="KeyPgPtr.html">Ptr</a> )</tt><br \>
+</div><tt><i>userdata</i></tt><br \>
+<div class="fb_indent">The <tt>Any Ptr</tt> parameter of the <tt><a href="KeyPgSub.html">Sub</a></tt> intended to work as a thread. FreeBASIC expects this parameter to be present, it must not be omitted! <br \>
+</div><tt><i>param</i></tt><br \>
+<div class="fb_indent"><tt>Any Ptr</tt> argument that will be passed to the thread <tt><a href="KeyPgSub.html">Sub</a></tt> pointed to by <tt><i>procptr</i></tt> through its <i>userdata</i> parameter. For example, this can be a pointer to a structure or an array containing various information for the thread sub to work with. If <i>param</i> is not given, <tt>0</tt> (zero) will be passed to the thread sub's <i>userdata</i> parameter instead.<br \>
+</div><tt><i>stack_size</i></tt><br \>
+<div class="fb_indent">Optional number of bytes to reserve for this thread's stack.<br \>
+<br \>
+</div></div><div class="fb_sect_title">Return Value</div><div class="fb_sect_cont"><br \>
+<b>ThreadCreate</b> returns an <tt>Any Ptr</tt> handle to the thread created, or a null pointer (<tt>0</tt>) on failure.<br \>
+<br \>
+</div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+The sub pointed to by <i>procptr</i> is started as a thread. It will be passed the content of <i>param</i>, or 0 (zero) if not specified, in its <i>userdata</i> parameter.<br \>
+<br \>
+The sub that was started as a thread will execute in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or by alternating between execution threads on a single processor. There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing.<br \>
+<br \>
+Before closing, programs should wait for the termination of all launched threads by using <tt><a href="KeyPgThreadWait.html">ThreadWait</a></tt>. Alternatively, if it's not necessary to safely wait for a thread to finish execution, <tt><a href="KeyPgThreadDetach.html">Threaddetach</a></tt> can be used. However, if a program exits while some threads are still active, those threads will be aborted by the system. For every thread created, programs should call either <tt><a href="KeyPgThreadWait.html">ThreadWait</a></tt> or <tt><a href="KeyPgThreadDetach.html">Threaddetach</a></tt> to ensure that the system resources associated with the thread handles are released. Otherwise, there may be memory or system resource leaks.<br \>
+<br \>
+Due to the nature of threads, no assumptions about execution order can be made. In order to exchange data between multiple threads, including a thread and the main part of the program, mutexes must be used. These mutual exclusion locks can be "owned" by a single thread while doing critical work, causing other threads to wait for their turn. See <tt><a href="KeyPgMutexCreate.html">MutexCreate</a></tt>, <tt><a href="KeyPgMutexLock.html">MutexLock</a></tt>, <tt><a href="KeyPgMutexUnlock.html">MutexUnlock</a></tt>, <tt><a href="KeyPgMutexDestroy.html">MutexDestroy</a></tt>.<br \>
+<br \>
+<tt><i>stack_size</i></tt> can be used to change the thread's stack size from the system's default. This can be useful when the program requires a big stack, for example due to lots of procedure recursion or when allocating huge strings/arrays on the stack. On some systems (Linux), the stack automatically grows beyond <tt><i>stack_size</i></tt> if more space is needed; on others (Win32), this is the fixed maximum allowed. Behavior is undefined when more stack is used than the reserved size on systems where stacks are not able to grow.<br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Threading&nbsp;synchronization&nbsp;using&nbsp;Mutexes</span><br />
+<span class="com">''&nbsp;If&nbsp;you&nbsp;comment&nbsp;out&nbsp;the&nbsp;lines&nbsp;containing&nbsp;"MutexLock"&nbsp;and&nbsp;"MutexUnlock",</span><br />
+<span class="com">''&nbsp;the&nbsp;threads&nbsp;will&nbsp;not&nbsp;be&nbsp;in&nbsp;sync&nbsp;and&nbsp;some&nbsp;of&nbsp;the&nbsp;data&nbsp;may&nbsp;be&nbsp;printed</span><br />
+<span class="com">''&nbsp;out&nbsp;of&nbsp;place.</span><br />
+<br />
+<span class="key">Const</span>&nbsp;<span class="wrd">MAX_THREADS</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">10</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="key">Shared</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">ttylock</span><br />
+<br />
+<span class="com">''&nbsp;Teletype&nbsp;unfurls&nbsp;some&nbsp;text&nbsp;across&nbsp;the&nbsp;screen&nbsp;at&nbsp;a&nbsp;given&nbsp;location</span><br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">teletype</span><span class="oth">(</span>&nbsp;<span class="key">ByRef</span>&nbsp;<span class="wrd">text</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">,</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">x</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">y</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;This&nbsp;MutexLock&nbsp;makes&nbsp;simultaneously&nbsp;running&nbsp;threads&nbsp;wait&nbsp;for&nbsp;each</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;other,&nbsp;so&nbsp;only&nbsp;one&nbsp;at&nbsp;a&nbsp;time&nbsp;can&nbsp;continue&nbsp;and&nbsp;print&nbsp;output.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Otherwise,&nbsp;their&nbsp;Locates&nbsp;would&nbsp;interfere,&nbsp;since&nbsp;there&nbsp;is&nbsp;only&nbsp;one</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;cursor.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;It's&nbsp;impossible&nbsp;to&nbsp;predict&nbsp;the&nbsp;order&nbsp;in&nbsp;which&nbsp;threads&nbsp;will&nbsp;arrive</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;here&nbsp;and&nbsp;which&nbsp;one&nbsp;will&nbsp;be&nbsp;the&nbsp;first&nbsp;to&nbsp;acquire&nbsp;the&nbsp;lock&nbsp;thus</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;causing&nbsp;the&nbsp;rest&nbsp;to&nbsp;wait.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexLock</span>&nbsp;<span class="wrd">ttylock</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="oth">(</span><span class="key">Len</span><span class="oth">(</span><span class="wrd">text</span><span class="oth">)</span>&nbsp;<span class="oth">-</span>&nbsp;<span class="num">1</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Locate</span>&nbsp;<span class="wrd">x</span><span class="oth">,</span>&nbsp;<span class="wrd">y</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="wrd">i</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="key">Chr</span><span class="oth">(</span><span class="wrd">text</span><span class="oth">[</span><span class="wrd">i</span><span class="oth">])</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span>&nbsp;<span class="num">25</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;MutexUnlock&nbsp;releases&nbsp;the&nbsp;lock&nbsp;and&nbsp;lets&nbsp;other&nbsp;threads&nbsp;acquire&nbsp;it.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexUnlock</span>&nbsp;<span class="wrd">ttylock</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">thread</span><span class="oth">(</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">userdata</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">id</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">CInt</span><span class="oth">(</span><span class="wrd">userdata</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">teletype</span>&nbsp;<span class="quo">"Thread&nbsp;("</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">id</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">")........."</span><span class="oth">,</span>&nbsp;<span class="num">1</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="wrd">id</span><span class="oth">,</span>&nbsp;<span class="num">1</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Create&nbsp;a&nbsp;mutex&nbsp;to&nbsp;syncronize&nbsp;the&nbsp;threads</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ttylock</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">MutexCreate</span><span class="oth">()</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Create&nbsp;child&nbsp;threads</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">handles</span><span class="oth">(</span><span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="wrd">MAX_THREADS</span><span class="oth">-</span><span class="num">1</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="wrd">MAX_THREADS</span><span class="oth">-</span><span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">handles</span><span class="oth">(</span><span class="wrd">i</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">ThreadCreate</span><span class="oth">(@</span><span class="wrd">thread</span><span class="oth">,</span>&nbsp;<span class="key">CPtr</span><span class="oth">(</span><span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="wrd">i</span><span class="oth">))</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="wrd">handles</span><span class="oth">(</span><span class="wrd">i</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Error&nbsp;creating&nbsp;thread:"</span><span class="oth">;</span>&nbsp;<span class="wrd">i</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Exit</span>&nbsp;<span class="key">For</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;This&nbsp;is&nbsp;the&nbsp;main&nbsp;thread.&nbsp;Now&nbsp;wait&nbsp;until&nbsp;all&nbsp;child&nbsp;threads&nbsp;have&nbsp;finished.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="wrd">MAX_THREADS</span><span class="oth">-</span><span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="wrd">handles</span><span class="oth">(</span><span class="wrd">i</span><span class="oth">)</span>&nbsp;<span class="oth">&lt;&gt;</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ThreadWait</span><span class="oth">(</span><span class="wrd">handles</span><span class="oth">(</span><span class="wrd">i</span><span class="oth">))</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Clean&nbsp;up&nbsp;when&nbsp;finished</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexDestroy</span><span class="oth">(</span><span class="wrd">ttylock</span><span class="oth">)</span><br />
+</div></tt><br />
+<br \>
+<tt><div class="freebasic">
+<span class="key">Sub</span>&nbsp;<span class="wrd">print_dots</span><span class="oth">(</span><span class="key">ByRef</span>&nbsp;<span class="wrd">char</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="num">29</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="wrd">char</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span>&nbsp;<span class="key">CInt</span><span class="oth">(</span><span class="key">Rnd</span><span class="oth">()</span>&nbsp;<span class="oth">*</span>&nbsp;<span class="num">100</span><span class="oth">),</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">mythread</span><span class="oth">(</span><span class="wrd">param</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Work&nbsp;(other&nbsp;thread)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">print_dots</span><span class="oth">(</span><span class="quo">"*"</span><span class="oth">)</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Randomize</span><span class="oth">(</span><span class="key">Timer</span><span class="oth">())</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"&nbsp;main&nbsp;thread:&nbsp;."</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"other&nbsp;thread:&nbsp;*"</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Launch&nbsp;another&nbsp;thread</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">thread</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">ThreadCreate</span><span class="oth">(@</span><span class="wrd">mythread</span><span class="oth">,</span>&nbsp;<span class="num">0</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Work&nbsp;(main&nbsp;thread)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">print_dots</span><span class="oth">(</span><span class="quo">"."</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Wait&nbsp;until&nbsp;other&nbsp;thread&nbsp;has&nbsp;finished,&nbsp;if&nbsp;needed</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ThreadWait</span><span class="oth">(</span><span class="wrd">thread</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span><br />
+</div></tt><br />
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Threaded&nbsp;consumer/producer&nbsp;example&nbsp;using&nbsp;mutexes</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="key">Shared</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">produced</span><span class="oth">,</span>&nbsp;<span class="wrd">consumed</span>&nbsp;<br />
+<br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">consumer</span><span class="oth">(</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">param</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="num">9</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexLock</span>&nbsp;<span class="wrd">produced</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">",&nbsp;consumer&nbsp;gets:"</span><span class="oth">,</span>&nbsp;<span class="wrd">i</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span>&nbsp;<span class="num">500</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexUnlock</span>&nbsp;<span class="wrd">consumed</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">producer</span><span class="oth">(</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">param</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="num">9</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Producer&nbsp;puts:"</span><span class="oth">,</span>&nbsp;<span class="wrd">i</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span>&nbsp;<span class="num">500</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexUnlock</span>&nbsp;<span class="wrd">produced</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexLock</span>&nbsp;<span class="wrd">consumed</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span>&nbsp;<span class="wrd">i</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">consumer_id</span><span class="oth">,</span>&nbsp;<span class="wrd">producer_id</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">produced</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">MutexCreate</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">consumed</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">MutexCreate</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span><span class="oth">(</span>&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">produced</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="key">Or</span>&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">consumed</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Error&nbsp;creating&nbsp;mutexes!&nbsp;Exiting..."</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexLock</span>&nbsp;<span class="wrd">produced</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexLock</span>&nbsp;<span class="wrd">consumed</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">consumer_id</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">ThreadCreate</span><span class="oth">(@</span><span class="wrd">consumer</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">producer_id</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">ThreadCreate</span><span class="oth">(@</span><span class="wrd">producer</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span><span class="oth">(</span>&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">producer_id</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="key">Or</span>&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">consumer_id</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Error&nbsp;creating&nbsp;threads!&nbsp;Exiting..."</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ThreadWait</span>&nbsp;<span class="wrd">consumer_id</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ThreadWait</span>&nbsp;<span class="wrd">producer_id</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexDestroy</span>&nbsp;<span class="wrd">consumed</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexDestroy</span>&nbsp;<span class="wrd">produced</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span><br />
+</div></tt><br />
+<br \>
+</div><div class="fb_sect_title">Dialect Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> Threading is not allowed in the <i><a href="CompilerOptlang.html">-lang qb</a></i> dialect.<br \>
+<br \>
+</ul></div><div class="fb_sect_title">Platform Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> <b>Threadcreate</b> is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.<br \>
+<li> In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. <br \>
+<br \>
+</ul></div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> New to FreeBASIC<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <tt><a href="KeyPgThreadWait.html">ThreadWait</a></tt><br \>
+<li> <tt><a href="KeyPgThreadDetach.html">Threaddetach</a></tt><br \>
+<li> <tt><a href="KeyPgMutexCreate.html">MutexCreate</a></tt><br \>
+<li> <tt><a href="KeyPgMutexLock.html">MutexLock</a></tt><br \>
+<li> <tt><a href="KeyPgMutexUnlock.html">MutexUnlock</a></tt><br \>
+<li> <tt><a href="KeyPgMutexDestroy.html">MutexDestroy</a></tt><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

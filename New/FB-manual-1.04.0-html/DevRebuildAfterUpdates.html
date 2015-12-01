@@ -1,0 +1,42 @@
+<html>
+<head>
+<title>Getting source code updates and recompiling FB</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Getting source code updates and recompiling FB</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	<br \>
+To download updates made available in the fbc Git repository, you can do a pull, either using your preferred graphical Git tool, or in a terminal:<br \>
+<br \>
+<pre class="fb_pre">git pull</pre><br \>
+To take a look at incoming changes <i>before</i> applying them, do this:<br \>
+<br \>
+<pre class="fb_pre"># Update remote branches
+git fetch
+
+# Take a look
+gitk --all
+
+# Everything looks ok? Then merge the remote branch into the current branch to apply the update.
+git merge origin/master
+</pre><br \>
+Rebuilding is, most of the time, as easy as as running "make" again. Of course, if you used compilation options (like ENABLE_STANDALONE) for the build, you have to specify them again this time, unless they are (still) set in <tt>config.mk</tt>.<br \>
+<br \>
+<pre class="fb_pre">make
+# or if needed:
+make ENABLE_STANDALONE=1</pre><br \>
+As a special exception, for the DOS build it is necessary to run <tt>make clean</tt> before <tt>make</tt> to properly rebuild FB after source modules have been renamed or deleted. The reason for this is that under DOS/DJGPP the makefile uses *.o wildcards to link fbc and archive libfb.a etc., instead of passing the explicit .o file names, because it has to obey the command line length limitation. If <tt>make clean</tt> is not run, it may use old left-over object files from a previous build. Luckily, we do not rename or delete source files often.<br \>
+<br \>
+<br \>
+
+</div>
+</div> 
+</div> 
+</body>
+</html>

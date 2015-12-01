@@ -1,0 +1,171 @@
+<html>
+<head>
+<title>MutexCreate</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">MutexCreate</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Creates a mutex used for synchronizing the execution of threads<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<a href="KeyPgDeclare.html">Declare</a> <a href="KeyPgFunction.html">Function</a> <b>MutexCreate</b> ( ) <a href="KeyPgAs.html">As</a> <a href="KeyPgAny.html">Any</a> <a href="KeyPgPtr.html">Ptr</a><br \>
+</tt><br \>
+</div><div class="fb_sect_title">Usage</div><div class="fb_sect_cont"><tt><br \>
+<i>result</i> = <b>MutexCreate</b><br \>
+</tt><br \>
+</div><div class="fb_sect_title">Return Value</div><div class="fb_sect_cont"><br \>
+The <tt><a href="KeyPgAny.html">Any</a> <a href="KeyPgPtr.html">Ptr</a></tt> handle of the mutex created, or the null pointer (0) on failure.<br \>
+<br \>
+</div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+Mutexes, short for "Mutually Exclusive", are a way of synchronizing shared data within threads.  If there is a global variable used by multiple threads (or a local static variable used by a single thread called multiple times), it should be "locked" during its use with a mutex.  This halts all threads using <tt><a href="KeyPgMutexLock.html">MutexLock</a></tt> with that mutex (including the main thread executing main program), until it is unlocked with <tt><a href="KeyPgMutexUnlock.html">MutexUnlock</a></tt>.<br \>
+<br \>
+<tt>Mutexcreate</tt> creates a mutex, returning a handle which is to be referred to when locking, unlocking, or destroying the mutex.  Mutexes created with <tt>Mutexcreate</tt> should be destroyed when no longer needed or before the end of the program with <tt><a href="KeyPgMutexDestroy.html">MutexDestroy</a></tt>.<br \>
+<br \>
+A  mutex is a lock that guarantees three things:<br \>
+1. Atomicity - Locking a mutex is an atomic operation, meaning that the operating system (or threads library) assures you that if you locked a mutex, no other thread succeeded in locking this mutex at the same time.<br \>
+2. Singularity - If a thread managed to lock a mutex, it is assured that no other thread will be able to lock the thread until the original thread releases the lock.<br \>
+3. Non-Busy Wait - If a thread attempts to lock a thread that was locked by a second thread, the first thread will be suspended (and will not consume any CPU resources) until the lock is freed by the second thread. At this time, the first thread will wake up and continue execution, having the mutex locked by it. <br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+See also the <tt><a href="KeyPgThreadCreate.html">ThreadCreate</a></tt> examples.<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="com">'Visual&nbsp;example&nbsp;of&nbsp;mutual&nbsp;exclusion&nbsp;between&nbsp;2&nbsp;threads&nbsp;by&nbsp;using&nbsp;Mutex:</span><br />
+<span class="com">'the&nbsp;"user-defined&nbsp;thread"&nbsp;computes&nbsp;the&nbsp;points&nbsp;coordinates&nbsp;on&nbsp;a&nbsp;circle,</span><br />
+<span class="com">'and&nbsp;the&nbsp;"main&nbsp;thread"&nbsp;plots&nbsp;the&nbsp;points.</span><br />
+<span class="com">'</span><br />
+<span class="com">'Principle&nbsp;of&nbsp;mutual&nbsp;exclusion</span><br />
+<span class="com">'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread#A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XOR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread#B</span><br />
+<span class="com">'.....&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.....</span><br />
+<span class="com">'MutexLock(mut)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MutexLock(mut)</span><br />
+<span class="com">'&nbsp;&nbsp;Do_something#A_with_exclusion&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Do_something#B_with_exclusion</span><br />
+<span class="com">'MutexUnlock(mut)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MutexUnlock(mut)</span><br />
+<span class="com">'.....&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.....</span><br />
+<span class="com">'</span><br />
+<span class="com">'Behavior:</span><br />
+<span class="com">'-&nbsp;The&nbsp;first&nbsp;point&nbsp;must&nbsp;be&nbsp;pre-calculated.</span><br />
+<span class="com">'-&nbsp;Nothing&nbsp;prevents&nbsp;that&nbsp;a&nbsp;same&nbsp;calculated&nbsp;point&nbsp;could&nbsp;be&nbsp;plotted&nbsp;several&nbsp;times</span><br />
+<span class="com">'(depends&nbsp;on&nbsp;execution&nbsp;times&nbsp;of&nbsp;the&nbsp;loops&nbsp;between&nbsp;main&nbsp;thread&nbsp;and&nbsp;user&nbsp;thread).</span><br />
+<span class="com">'-&nbsp;Nothing&nbsp;prevents&nbsp;that&nbsp;a&nbsp;calculated&nbsp;point&nbsp;could&nbsp;be&nbsp;not&nbsp;plotted</span><br />
+<span class="com">'(same&nbsp;remark&nbsp;on&nbsp;the&nbsp;loop&nbsp;times).</span><br />
+<span class="com">'</span><br />
+<span class="com">'If&nbsp;you&nbsp;comment&nbsp;out&nbsp;the&nbsp;lines&nbsp;containing&nbsp;"MutexLock"&nbsp;and&nbsp;"MutexUnlock"</span><br />
+<span class="com">'(inside&nbsp;"user-defined&nbsp;thread"&nbsp;or/and&nbsp;"main&nbsp;thread"),</span><br />
+<span class="com">'there&nbsp;will&nbsp;be&nbsp;no&nbsp;longer&nbsp;mutual&nbsp;exclusion&nbsp;between&nbsp;computation&nbsp;of&nbsp;coordinates&nbsp;and&nbsp;plotting&nbsp;of&nbsp;points,</span><br />
+<span class="com">'and&nbsp;many&nbsp;points&nbsp;will&nbsp;not&nbsp;be&nbsp;plotted&nbsp;on&nbsp;circle&nbsp;(due&nbsp;to&nbsp;non&nbsp;coherent&nbsp;coordinates).</span><br />
+<br />
+<span class="com">'-----------------------------------------------------------------------------------------------------</span><br />
+<br />
+<span class="key">Type</span>&nbsp;<span class="wrd">ThreadUDT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Generic&nbsp;user&nbsp;thread&nbsp;UDT</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">handle</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Any&nbsp;Ptr&nbsp;handle&nbsp;to&nbsp;user&nbsp;thread</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">sync</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Any&nbsp;Ptr&nbsp;handle&nbsp;to&nbsp;mutex</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">quit</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Byte</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Boolean&nbsp;to&nbsp;end&nbsp;user&nbsp;thread</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Static</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">Thread</span>&nbsp;<span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">)</span>&nbsp;<span class="com">'Generic&nbsp;user&nbsp;thread&nbsp;procedure</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">procedure</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">)</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Procedure(Any&nbsp;Ptr)&nbsp;to&nbsp;be&nbsp;executed&nbsp;by&nbsp;user&nbsp;thread</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Any&nbsp;Ptr&nbsp;to&nbsp;pass&nbsp;to&nbsp;procedure&nbsp;executed&nbsp;by&nbsp;user&nbsp;thread</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Const</span>&nbsp;<span class="wrd">false</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Byte</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Constante&nbsp;"false"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Const</span>&nbsp;<span class="wrd">true</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Byte</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Not</span>&nbsp;<span class="wrd">false</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Constante&nbsp;"true"</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+<span class="key">Static</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">ThreadUDT.Thread</span>&nbsp;<span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="wrd">param</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">)</span>&nbsp;<span class="com">'Generic&nbsp;user&nbsp;thread&nbsp;procedure</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">tp</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">ThreadUDT</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">param</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Casting&nbsp;to&nbsp;generic&nbsp;user&nbsp;thread&nbsp;UDT</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Do</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Static</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">I</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexLock</span><span class="oth">(</span><span class="wrd">tp</span><span class="oth">-&gt;</span><span class="wrd">sync</span><span class="oth">)</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Mutex&nbsp;(Lock)&nbsp;for&nbsp;user&nbsp;thread</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">tp</span><span class="oth">-&gt;</span><span class="wrd">procedure</span><span class="oth">(</span><span class="wrd">tp</span><span class="oth">-&gt;</span><span class="wrd">p</span><span class="oth">)</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Procedure(Any&nbsp;Ptr)&nbsp;to&nbsp;be&nbsp;executed&nbsp;by&nbsp;user&nbsp;thread</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">I</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Locate</span>&nbsp;<span class="num">30</span><span class="oth">,</span>&nbsp;<span class="num">38</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="wrd">I</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexUnlock</span><span class="oth">(</span><span class="wrd">tp</span><span class="oth">-&gt;</span><span class="wrd">sync</span><span class="oth">)</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Mutex&nbsp;(Unlock)&nbsp;for&nbsp;user&nbsp;thread</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span>&nbsp;<span class="num">5</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Loop</span>&nbsp;<span class="key">Until</span>&nbsp;<span class="wrd">tp</span><span class="oth">-&gt;</span><span class="wrd">quit</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">tp</span><span class="oth">-&gt;</span><span class="wrd">true</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'Test&nbsp;for&nbsp;ending&nbsp;user&nbsp;thread</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="com">'-----------------------------------------------------------------------------------------------------</span><br />
+<br />
+<span class="key">Type</span>&nbsp;<span class="wrd">Point2D</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">x</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">y</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+<span class="key">Const</span>&nbsp;<span class="wrd">x0</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">640</span>&nbsp;<span class="oth">/</span>&nbsp;<span class="num">2</span><br />
+<span class="key">Const</span>&nbsp;<span class="wrd">y0</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">480</span>&nbsp;<span class="oth">/</span>&nbsp;<span class="num">2</span><br />
+<span class="key">Const</span>&nbsp;<span class="wrd">r0</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">200</span><br />
+<span class="key">Const</span>&nbsp;<span class="wrd">pi</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Single</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">4</span>&nbsp;<span class="oth">*</span>&nbsp;<span class="key">Atn</span><span class="oth">(</span><span class="num">1</span><span class="oth">)</span><br />
+<br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">PointOnCircle</span>&nbsp;<span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">pp</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">Point2D</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">p</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">teta</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Single</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">2</span>&nbsp;<span class="oth">*</span>&nbsp;<span class="wrd">pi</span>&nbsp;<span class="oth">*</span>&nbsp;<span class="key">Rnd</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">pp</span><span class="oth">-&gt;</span><span class="wrd">x</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">x0</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="wrd">r0</span>&nbsp;<span class="oth">*</span>&nbsp;<span class="key">Cos</span><span class="oth">(</span><span class="wrd">teta</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span>&nbsp;<span class="num">5</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'To&nbsp;increase&nbsp;possibility&nbsp;of&nbsp;uncorrelated&nbsp;data&nbsp;occurrence</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">pp</span><span class="oth">-&gt;</span><span class="wrd">y</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">y0</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="wrd">r0</span>&nbsp;<span class="oth">*</span>&nbsp;<span class="key">Sin</span><span class="oth">(</span><span class="wrd">teta</span><span class="oth">)</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<br />
+<span class="key">Screen</span>&nbsp;<span class="num">12</span><br />
+<span class="key">Locate</span>&nbsp;<span class="num">30</span><span class="oth">,</span>&nbsp;<span class="num">2</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"&lt;any_key&gt;&nbsp;:&nbsp;exit"</span><span class="oth">;</span><br />
+<span class="key">Locate</span>&nbsp;<span class="num">30</span><span class="oth">,</span>&nbsp;<span class="num">27</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"calculated:"</span><span class="oth">;</span><br />
+<span class="key">Locate</span>&nbsp;<span class="num">30</span><span class="oth">,</span>&nbsp;<span class="num">54</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"plotted:"</span><span class="oth">;</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="wrd">Pptr</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">Point2D</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">New</span>&nbsp;<span class="wrd">Point2D</span><br />
+<span class="wrd">PointOnCircle</span><span class="oth">(</span><span class="wrd">Pptr</span><span class="oth">)</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'&nbsp;Computation&nbsp;for&nbsp;a&nbsp;first&nbsp;point&nbsp;valid&nbsp;on&nbsp;the&nbsp;circle</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="wrd">Tptr</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">ThreadUDT</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">New</span>&nbsp;<span class="wrd">ThreadUDT</span><br />
+<span class="wrd">Tptr</span><span class="oth">-&gt;</span><span class="wrd">sync</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">MutexCreate</span><br />
+<span class="wrd">Tptr</span><span class="oth">-&gt;</span><span class="wrd">procedure</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="oth">@</span><span class="wrd">PointOnCircle</span><br />
+<span class="wrd">Tptr</span><span class="oth">-&gt;</span><span class="wrd">p</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">Pptr</span><br />
+<span class="wrd">Tptr</span><span class="oth">-&gt;</span><span class="wrd">handle</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">ThreadCreate</span><span class="oth">(@</span><span class="wrd">ThreadUDT.Thread</span><span class="oth">,</span>&nbsp;<span class="wrd">Tptr</span><span class="oth">)</span><br />
+<br />
+<span class="key">Do</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Static</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">I</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span>&nbsp;<span class="num">5</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexLock</span><span class="oth">(</span><span class="wrd">Tptr</span><span class="oth">-&gt;</span><span class="wrd">sync</span><span class="oth">)</span>&nbsp;&nbsp;&nbsp;<span class="com">'Mutex&nbsp;(Lock)&nbsp;for&nbsp;main&nbsp;thread</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">PSet</span>&nbsp;<span class="oth">(</span><span class="wrd">Pptr</span><span class="oth">-&gt;</span><span class="wrd">x</span><span class="oth">,</span>&nbsp;<span class="wrd">Pptr</span><span class="oth">-&gt;</span><span class="wrd">y</span><span class="oth">)</span>&nbsp;<span class="com">'Plotting&nbsp;one&nbsp;point</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">I</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Locate</span>&nbsp;<span class="num">30</span><span class="oth">,</span>&nbsp;<span class="num">62</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="wrd">I</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexUnlock</span><span class="oth">(</span><span class="wrd">Tptr</span><span class="oth">-&gt;</span><span class="wrd">sync</span><span class="oth">)</span>&nbsp;<span class="com">'Mutex&nbsp;(Unlock)&nbsp;for&nbsp;main&nbsp;thread</span><br />
+<span class="key">Loop</span>&nbsp;<span class="key">Until</span>&nbsp;<span class="key">Inkey</span>&nbsp;<span class="oth">&lt;&gt;</span>&nbsp;<span class="quo">""</span><br />
+&nbsp;<br />
+<span class="wrd">Tptr</span><span class="oth">-&gt;</span><span class="wrd">quit</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">Tptr</span><span class="oth">-&gt;</span><span class="wrd">true</span><br />
+<span class="key">ThreadWait</span><span class="oth">(</span><span class="wrd">Tptr</span><span class="oth">-&gt;</span><span class="wrd">handle</span><span class="oth">)</span><br />
+<span class="key">MutexDestroy</span><span class="oth">(</span><span class="wrd">Tptr</span><span class="oth">-&gt;</span><span class="wrd">sync</span><span class="oth">)</span><br />
+<span class="key">Delete</span>&nbsp;<span class="wrd">Tptr</span><br />
+<span class="key">Delete</span>&nbsp;<span class="wrd">Pptr</span><br />
+<br />
+<span class="key">Sleep</span><br />
+</div></tt><br />
+See also the similar <tt><a href="KeyPgCondCreate.html">CondCreate</a></tt> example<br \>
+<br \>
+</div><div class="fb_sect_title">Dialect Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> Threading is not allowed in the <i><a href="CompilerOptlang.html">-lang qb</a></i> dialect.<br \>
+<br \>
+</ul></div><div class="fb_sect_title">Platform Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> The DOS version of FreeBASIC does not allow for threads, as the OS does not support them.<br \>
+<li> In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. <br \>
+<br \>
+</ul></div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> New to FreeBASIC<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <tt><a href="KeyPgMutexDestroy.html">MutexDestroy</a></tt><br \>
+<li> <tt><a href="KeyPgMutexLock.html">MutexLock</a></tt><br \>
+<li> <tt><a href="KeyPgMutexUnlock.html">MutexUnlock</a></tt><br \>
+<li> <tt><a href="KeyPgThreadCreate.html">ThreadCreate</a></tt><br \>
+<li> <tt><a href="KeyPgThreadWait.html">ThreadWait</a></tt><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

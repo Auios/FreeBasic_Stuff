@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>Keyboard Input</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Keyboard Input</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	<br \>
+<b><u>Basics</u></b><br \>
+<br \>
+<div class="fb_indent">Using FB's built-in functionality, there are four ways of getting keyboard input:<br \>
+<br \>
+</div><ul><ul><li> <tt><a href="KeyPgInkey.html">Inkey()</a></tt> returns a string containing an ASCII char corresponding to the key pressed by the user, or a 2-byte FB extended keycode for some special keys, such as the Arrow keys or Page Up/Down. It works pretty much like it did in QB.<br \>
+<li> <tt><a href="KeyPgGetkey.html">Getkey()</a></tt> returns the same information as <tt>inkey()</tt>, but in form of an integer instead of a string. <tt>inkey()</tt> and <tt>getkey()</tt> belong together: They use the same code and they are located in the same modules.<br \>
+<li> <tt><a href="KeyPgMultikey.html">Multikey()</a></tt> takes an <a href="GfxScancodes.html">FB scancode (SC_*)</a> and checks whether that key is pressed at this moment.<br \>
+<li> <tt><a href="KeyPgScreenevent.html">Screenevent()</a></tt> returns key presses in form of EVENT_KEY_PRESS events (and others for key release or repeat). It returns the <a href="GfxScancodes.html">FB scancode</a> in the <a href="KeyPgEvent.html">Event.Scancode Field</a>, and the ASCII char value or 0 in the EVENT.ascii field. EVENT.ascii does not use FB extended keycodes; the EVENT.scancode field can be checked instead in order to handle extended keys.<br \>
+</ul></ul><div class="fb_indent"><a href="GfxScancodes.html">"scancode"</a> refers to the SC_* #defines which are more or less matching the DOS keyboard scancodes. The values are not made up, they themselves correspond to certain ASCII chars, for example: SC_HOME = asc( "G" ) = &h47. They're also the same values that you get under DOS/DJGPP or from the Linux kernel as part of extended key code sequences. Besides their use in <tt>multikey()</tt> or <tt>screenevent()</tt>, scancodes are used in various places internally, for example when translating between different kinds of key codes, as an easy-to-use and portable representation of keycodes.<br \>
+<br \>
+"key" refers to an ASCII char, or a 2-byte extended keycode string for other keys as returned by <tt>inkey()</tt>. The rtlib has several KEY_* #defines for the available 2-byte extended keycodes, in form of integers. These are used internally and also match the values returned by <tt>getkey()</tt>.<br \>
+<br \>
+FB's 2-byte extended keycodes consist of a &hFF byte followed by a byte containing the SC_* scancode value corresponding to the keypress. Checking for SC_HOME returned by <tt>inkey()</tt> could look like:<br \>
+<div class="fb_indent"><tt>if( inkey( ) = chr( 255 ) + "G" ) then ...</tt><br \>
+</div>Checking for SC_HOME returned by getkey():<br \>
+<div class="fb_indent"><tt>if( getkey() = &h47FF ) then ...</tt><br \>
+<tt>if( getkey() = ((SC_HOME shl 8) or &hFF) ) then ...</tt><br \>
+</div><tt>inkey()</tt>, <tt>getkey()</tt> and <tt>multikey()</tt> use wrapper functions that call ...<br \>
+</div><ul><ul><li> the console-mode versions fb_ConsoleInkey(), fb_ConsoleGetkey(), fb_ConsoleMultikey() by default,<br \>
+<li> or the gfxlib versions fb_GfxInkey(), fb_GfxGetkey(), fb_GfxMultikey() if a graphics SCREEN is active,<br \>
+</ul></ul><div class="fb_indent">by using function pointer hooks.<br \>
+<br \>
+</div><b><u>rtlib</u></b><br \>
+<br \>
+<div class="fb_indent">The rtlib has separate console-mode implementations of the above functions, for each platform:<br \>
+<br \>
+</div><ul><li> DOS<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><tt>fb_ConsoleInkey()</tt> and <tt>fb_ConsoleGetkey()</tt> use DJGPP's <tt>getch()</tt> function to retrieve input characters anytime they're called. <tt>getch()</tt> returns ASCII chars, but also 2-byte sequences for special keys, which are easy to handle because they match the SC_* scancodes.<br \>
+<tt>fb_ConsoleMultikey()</tt> installs an interrupt handler that uses port I/O to read keyboard information and updates a key state table which is checked by multikey().<br \>
+</div></div><ul><li> Win32<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><tt>fb_ConsoleInkey()</tt> and <tt>fb_ConsoleGetkey()</tt> (indirectly) use the Win32 API functions <tt>PeekConsoleInput()</tt> and <tt>ReadConsoleInput()</tt> to get queued key press/release events whenever needed. All currently pending events are handled during a call, and after very complex internal translation involving <tt>MapVirtualKey()</tt>, the keys are put into a buffer, from where <tt>fb_ConsoleInkey()</tt> and <tt>fb_ConsoleGetkey()</tt> read the keys they return.<br \>
+<br \>
+<tt>SetConsoleCtrlHandler()</tt> is used to listen for console close/system shutdown events to provide <tt>SC_CLOSE</tt> events for console-mode (the win32 port of the rtlib might be the only one going this far).<br \>
+<br \>
+<tt>fb_ConsoleMultikey()</tt> uses a <tt>FindWindow()</tt>/<tt>GetForegroundWindow()</tt> hack to determine whether the console window is focused, and if yes, simply uses <tt>GetAsyncKeyState()</tt>.<br \>
+</div></div><ul><li> Linux, *BSD<br \>
+</ul><div class="fb_indent"><div class="fb_indent">The Unix port of the rtlib runs a console keyboard handler (and a console mouse handler) in a background thread, in order to provide input for <tt>multikey()</tt> (and <tt>getmouse()</tt>).<br \>
+<br \>
+<tt>fb_ConsoleInkey()</tt> and <tt>fb_ConsoleGetkey()</tt> read input bytes through the <tt>__fb_con.keyboard_getch()</tt> hook. By default, <tt>__fb_con.keyboard_getch()</tt> points to a simple function that just uses <tt>fgetc()</tt> on <tt>/dev/tty</tt> (indirectly; the Unix rtlib initialization code opens the handle, and changes I/O settings etc., not only for the purpose of keyboard input, but mostly).<br \>
+<br \>
+The terminal returns ASCII chars for simple key presses, and special escape sequences for extended keys. On the first call, various termcap lookups (via <tt>tgetstr()</tt>) are done to determine these terminal-specific escape sequences for certain key press events, and they are put into a lookup tree to allow easy & fast translation to the corresponding FB extended keycodes. By doing the termcap query the Unix rtlib can support all the different terminals (e.g. <tt>xterm</tt> vs. <tt>linux</tt>) quite well, although there still are some keys not working here and there.<br \>
+<br \>
+Only one "event" (ASCII char or escape sequence) is read at a time, the resulting key is added to a key buffer, from where <tt>fb_ConsoleInkey()</tt> and <tt>fb_ConsoleGetkey()</tt> can read it.<br \>
+<br \>
+<tt>fb_ConsoleMultikey()</tt> is currently implemented for the Linux port only, not under *BSD though. In console-input mode (used under 'console'/'linux' terminals), it <tt>dup()</tt>licates the rtlib's <tt>/dev/tty</tt> handle, and switches it over into medium raw mode. Then it overrides the background thread's <tt>__fb_con.keyboard_handler()</tt> hook to a function that <tt>read()</tt>s kernel key codes from the duplicated <tt>/dev/tty</tt> handle.<br \>
+Called from the background thread, it reads a fixed amount of input at once, whenever it arrives. After somewhat complex translation, a key state table is updated to reflect the state of pressed/released keys, to be checked by fb_ConsoleMultikey() at any time, and the keys are added to a key buffer from where an overridden <tt>__fb_con.keyboard_getch()</tt> reads them, whenever called by fb_ConsoleInkey() or fb_ConsoleGetkey() [why is this done?]. Furthermore, the keys are sent to the Linux fbdev gfxlib2 driver, if it's active.<br \>
+In X11 mode (used under 'xterm' terminal), <tt>fb_ConsoleMultikey()</tt> sets the background thread's <tt>__fb_con.keyboard_handler()</tt> to a function that checks whether the xterm has input focus (<tt>XGetInputFocus()</tt>) and if yes, simply uses <tt>XQueryKeymap()</tt> to update the key state table for <tt>fb_ConsoleMultikey()</tt>.<br \>
+<br \>
+</div></div><b><u>gfxlib2</u></b><br \>
+<br \>
+<div class="fb_indent">In the gfxlib, <tt>fb_GfxInkey()</tt> and <tt>fb_GfxGetkey()</tt> use one key buffer (same code on all platforms), to which the different/platform-specific gfx drivers post keys to. Similar to that, there is a single key state table for <tt>fb_GfxMultikey()</tt>, and it is also updated by the gfx drivers. Whether or not the gfx drivers actually do post keys or update key states is up to them though.<br \>
+<br \>
+</div><ul><li> DOS<br \>
+</ul><div class="fb_indent"><div class="fb_indent">The DOS gfxlib2 port (for all DOS gfx drivers) sets a hook/callback that's called by the same keyboard interrupt handler used by the DOS <tt>fb_ConsoleMultikey()</tt>.<br \>
+</div></div><ul><li> Win32 driver<br \>
+</ul><div class="fb_indent"><div class="fb_indent">The gfx window thread listens to <tt>WM_KEYDOWN</tt>, <tt>WM_CHAR</tt> and <tt>WM_CLOSE</tt>, translates the keys, and then updates the key state table, posts them to the <tt>fb_GfxInkey()</tt>/<tt>fb_GfxGetkey()</tt> buffer, and fills in & posts the corresponding <tt>EVENT</tt> for <tt>screenevent()</tt>.<br \>
+</div></div><ul><li> X11 driver<br \>
+</ul><div class="fb_indent"><div class="fb_indent">The gfx window thread listens to <tt>KeyPress</tt> and other <tt>XEvent</tt>'s, translates the keys, then posts them etc., just like the Win32 driver.<br \>
+</div></div><ul><li> Linux fbdev driver<br \>
+</ul><div class="fb_indent"><div class="fb_indent">As mentioned above, the fbdev driver gets its input from the same keyboard handler code that's used by the Linux <tt>fb_ConsoleMultikey()</tt>.<br \>
+<br \>
+</div></div><br \>
+
+</div>
+</div> 
+</div> 
+</body>
+</html>

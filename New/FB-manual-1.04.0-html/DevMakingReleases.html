@@ -1,0 +1,203 @@
+<html>
+<head>
+<title>Notes on making FB releases</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Notes on making FB releases</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	<br \>
+<b><a href="#GENERAL">In general</a></b><br \>
+<b><a href="#PACKAGING">Packaging and Manifests</a></b><br \>
+<b><a href="#TOOLCHAIN">Toolchain/build environment</a></b><br \>
+<b><a href="#RELEASESCRIPT">Release making script</a></b><br \>
+<b><a href="#DOCS">FB manual/documentation</a></b><br \>
+<b><a href="#SUMMARY">Summary: currently the easiest way to build a release</a></b><br \>
+<br \>
+<a name="GENERAL"></a><b><u>In general</u></b><br \>
+<br \>
+Making an FB release means:<br \>
+<ul><li> Ensuring that the development version is in reasonable/usable state.<br \>
+<li> Updating the documentation (Wiki and man page) for language/compiler changes and new features, if not yet done.<br \>
+<li> Choosing and preparing gcc toolchains/build environments for DOS, Linux x86, Linux x86_64, Win32, Win64.<br \>
+<li> Compiling the development version of FB for all of them.<br \>
+<li> Building the Win32 installer (<tt>contrib/nsis-installer/</tt>).<br \>
+<li> Testing the builds to ensure they are basically working.<br \>
+<li> Synchronizing the online Wiki with the Wiki files in the fbc Git repository.<br \>
+<li> Regenerating the PrintToc and CompilerErrMsg pages.<br \>
+<li> Regenerating the examples/manual/ directory (code examples from the Wiki).<br \>
+<li> Compiling the offline documentation (CHM, HTML, text).<br \>
+<li> Creating the release packages (source code, binary builds, documentation).<br \>
+<li> Uploading them and source code of dependencies (binutils, gcc, MinGW, DJGPP, ...) to fbc's download site on SourceForge.<br \>
+<li> Announcing the new release on freebasic.net, in freebasic.net/forum News, and in SourceForge fbc project News.<br \>
+<br \>
+</ul>The new release should be compilable with the previous version, so others can bootstrap it if wanted. Ideally it is compilable with even older versions.<br \>
+<br \>
+FB releases in form of prebuilt binaries should be made at least for DOS, Linux, and Win32. The DOS and Win32 packages traditionally are standalone builds coming with prebuilt binutils and MinGW/DJGPP libraries. The Linux package traditionally is a normal build intended to be installed into <tt>/usr</tt> or <tt>/usr/local</tt> and uses the system's binutils/libraries.<br \>
+<br \>
+All the binary packages must effectively be built from the same source revision. All the to-be-released fbc binaries should be built with the same date, preferably on the same day the release is published. It's confusing to have multiple fbcs each with the same version number but different dates; are they the same version or not?<br \>
+<br \>
+The sources must be packaged and uploaded in parallel to the binary packages. That includes sources for third-party binaries included in the FB binary packages, e.g. binutils, gdb, gcc, DJGPP/MinGW libs, etc.<br \>
+<br \>
+To test the releases, it can be useful to<br \>
+<ul><li> run the test suite (for every target system)<br \>
+<li> test all compilation modes (exe, dll, profiling, ...)<br \>
+<li> run every .exe (binutils etc.) included in the packages to ensure that no DLLs are missing<br \>
+<li> check that globbing works ok for Windows builds (all included .exe's and new generated ones too), because it might depend on the configuration of the MinGW-w64 runtime.<br \>
+<br \>
+</ul>Linux packages must be <tt>.tar.gz</tt>, Windows/DOS packages must be <tt>.zip</tt>. Other formats such as <tt>.tar.xz</tt> or <tt>.7z</tt> should be offered additionally, but note that there are people with e.g. older GNU/Linux systems that don't know <tt>.tar.lzma</tt> or <tt>.tar.xz</tt>, or with Windows systems that don't have 7-zip installed.<br \>
+<br \>
+<a name="PACKAGING"></a><b><u>Packaging and Manifests</u></b><br \>
+<br \>
+The FB makefile offers the <tt>gitdist</tt> command for packaging the source code via <tt>git archive</tt>, and the <tt>bindist</tt> command for packaging previously built binaries. Example workflow:<br \>
+<br \>
+<div class="fb_indent"><pre class="fb_pre"># Go to fbc Git clone
+cd fbc
+
+# Compile FB
+make
+
+# Package the source code
+make gitdist
+
+# Package the binaries, regenerate the manifest
+make bindist
+
+# Check the manifest
+git diff
+</pre><br \>
+</div><tt>gitdist</tt> creates source tarballs in multiple formats. It assumes that all changes to the fbc source code used for building the release have been committed to Git.<br \>
+<br \>
+<tt>bindist</tt> creates the needed binary archive(s), potentially in multiple formats, with the proper package name and directory layout depending on the target platform and whether it's a normal or standalone build, and it (re)generates the corresponding manifest (list of all files included in the archive) in the <tt>contrib/manifest/</tt> directory in the fbc source tree.<br \>
+<br \>
+By checking the manifest differences via Git (git diff, git gui, etc.) you can check whether any files are missing in comparison to the previous release, or whether files were added that should not be included. Should there be any such issues, they may need to be fixed manually (possible the makefile's <tt>bindist</tt> implementation needs updating, or you simply need to copy in missing files), after which <tt>make bindist</tt> can be run again to recreate the package and update the manifest again.<br \>
+<br \>
+<tt>bindist</tt> configuration options:<br \>
+<br \>
+<ul><li> <tt>TARGET_OS</tt>/<tt>TARGET_ARCH</tt> makefile variables: You can set <tt>TARGET_OS</tt> and/or <tt>TARGET_ARCH</tt> on the make command line to override the makefile's default uname check. This is useful if you want to package for a different system than what the uname command returns. For example, packaging the FB-dos release from a MinGW/MSYS shell (with MSYS tools instead of DJGPP tools):<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><pre class="fb_pre">make bindist TARGET_OS=dos
+</pre></div></div><ul><li> <tt>FBPACKAGE</tt> makefile variable: Package/archive file name without path or extension. Defaults:<br \>
+<ul><li> Linux/BSD normal, Windows/DOS standalone: <tt>FreeBASIC-x.xx.x-target</tt><br \>
+<li> Linux/BSD standalone: <tt>FreeBASIC-x.xx.x-target-standalone</tt><br \>
+<li> Windows/DOS normal (MinGW/DJGPP-style packages): <tt>fbc-x.xx.x-target</tt><br \>
+</ul><li> <tt>FBPACKSUFFIX</tt> makefile variable: Suffix string that will be appended to the package name (and the toplevel directory in the archive).<br \>
+<li> <tt>FBMANIFEST</tt> makefile variable: Manifest file name without path or extension. The defaults are the same as for <tt>FBPACKAGE</tt>, except without the <tt>-x.xx.x</tt> version number part.<br \>
+<li> <tt>FBVERSION</tt> makefile variable: Is already set in the makefile, but you can override it if you want to (e.g. when making testing releases instead of "official" releases). For example: <tt>FBVERSION=0.90.1</tt> or <tt>FBVERSION=0.90.1rc1</tt><br \>
+<li> <tt>DISABLE_DOCS=1</tt> makefile variable: If this variable is set, <tt>bindist</tt> will exclude documentation (readme, changelog, man page) and examples from the package. This is useful when creating small binary-only fbc packages such as those for installation into DJGPP/MinGW trees.<br \>
+<br \>
+</ul><a name="TOOLCHAIN"></a><b><u>Toolchain/build environment</u></b><br \>
+<br \>
+When making an FB release, the GCC toolchain used to build FB has a huge impact, because FB itself will basically become a modified/extended version of that toolchain. The FB-dos and FB-win32 releases include libraries from the used DJGPP/MinGW toolchains, and they will be used for any FB programs made with those FB builds. Even the FB-linux release will depend on the gcc/glibc version it was built with, because of the precompiled rtlib/gfxlib2 libraries, and because of fbc which will have been linked against shared libraries that may not exist on other systems.<br \>
+<br \>
+Additionally, different GCC toolchains and runtime libraries (e.g. MinGW.org vs. MinGW-w64, or DJGPP 2.03 vs. 2.04 vs. CVS) can be more or less different in terms of ABI compatibility or runtime behaviour. As such any FB program can behave differently depending on the GCC toolchain, including fbc itself.<br \>
+<br \>
+More information:<br \>
+<div class="fb_indent"><a href="DevBuildKnownProblems.html">Known problems when compiling FB</a><br \>
+<a href="DevGccToolchainChoice.html">GCC toolchain choice</a><br \>
+<br \>
+</div><a name="RELEASESCRIPT"></a><b><u>Release making script</u></b><br \>
+<br \>
+The FB sources contain a release-making script at <tt>contrib/release/build.sh</tt>.<br \>
+<br \>
+This script downloads & extracts DJGPP/MinGW.org/MinGW-w64 toolchains, FB packages for bootstrapping, fbc sources, etc., then builds normal and standalone versions of fbc, and finally creates the complete packages ready to be released.<br \>
+<ul><li> Downloaded archives are cached in the <tt>contrib/release/input/</tt> dir<br \>
+<li> Output packages & manifests are put in the <tt>contrib/release/output/</tt> dir<br \>
+<li> Toolchain source packages are downloaded too<br \>
+<li> fbc sources are retrieved from Git; you can specify the exact commit to build, the default is "master".<br \>
+<br \>
+</ul>Usage:<br \>
+<div class="fb_indent"><pre class="fb_pre">cd contrib/release
+./build.sh <target> <fbc-commit></pre><br \>
+</div><tt>&lt;target&gt;</tt> can be one of:<br \>
+<ul><li> <tt>dos</tt>: DOS build: must run on Win32. Uses Win32 MSYS, but switches to DJGPP for building FB.<br \>
+<li> <tt>linux-x86</tt>, <tt>linux-x86_64</tt>: native builds on GNU/Linux x86/x64_64 - relying on the host toolchains; no gcc toolchain is downloaded; no standalone version of FB is built.<br \>
+<li> <tt>win32</tt>: 32bit MinGW-w64 build: must run on Win32. Uses MSYS.<br \>
+<li> <tt>win32-mingworg</tt>: 32bit MinGW.org build: must run on Win32. Uses MSYS.<br \>
+<li> <tt>win64</tt>: 64bit MinGW-w64 build: must run on Win64. Uses Win32 MSYS, but overrides the FB makefile's uname check in order to build for 64bit instead of 32bit.<br \>
+<br \>
+</ul>Requirements:<br \>
+<ul><li> MSYS environment on Windows with: bash, wget/curl, zip, unzip, patch, make, findutils (win32/win64 builds need to be able to run ./configure scripts, to build libffi)<br \>
+<li> 7z (7-zip) in the PATH (win32/win64)<br \>
+<li> makensis (NSIS) in the PATH (FB-win32 installer)<br \>
+<li> git in the PATH<br \>
+<li> internet access for downloading input packages and fbc via git<br \>
+<br \>
+</ul>Some of the ideas behind this script:<br \>
+<ul><li> Automating the build process for FB releases =&gt; less room for mistakes<br \>
+<li> Starting from scratch everytime =&gt; clean builds<br \>
+<li> Specifying the exact DJGPP/MinGW packages to use =&gt; reproducible builds<br \>
+<li> Only work locally, e.g. don't touch existing DJGPP/MinGW setups on the host<br \>
+<br \>
+</ul><a name="DOCS"></a><b><u>FB manual/documentation</u></b><br \>
+<br \>
+<ul><li> See also doc/fbchkdoc/readme.txt and doc/manual/readme.txt<br \>
+<li> Get MySQL, libcurl, libaspell, libpcre<br \>
+<li> Build the wiki tools:<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><tt>cd doc/libfbdoc</tt><br \>
+<tt>make</tt><br \>
+<tt>cd ../fbdoc</tt><br \>
+<tt>make</tt><br \>
+<tt>cd ../fbchkdoc</tt><br \>
+<tt>make</tt><br \>
+<tt>cd ../makefbhelp</tt><br \>
+<tt>make</tt><br \>
+</div></div><ul><li> Update the wiki cache (the offline copy of the *.wakka files)<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><tt>cd doc/manual</tt><br \>
+<tt>rm -f cache/*</tt><br \>
+<tt>make refresh</tt><br \>
+</div></div><ul><li> Regenerate the PrintToc page:<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><tt>cd doc/fbchkdoc</tt><br \>
+<tt>./mkprntoc -web</tt><br \>
+</div></div><ul><li> Regenerate the CompilerErrMsg page:<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><tt>cd doc/fbchkdoc</tt><br \>
+<tt>./mkerrlst</tt><br \>
+<tt>fbc mkerrtxt.bas -exx</tt><br \>
+<tt>./mkerrtxt &gt; errors.wakka</tt><br \>
+Then copy the error list from errors.wakka into doc/manual/cache/CompilerErrMsg.wakka, and update the online wiki too.<br \>
+</div></div><ul><li> Update the wiki samples in examples/manual/ (may want to clear out the old ones first, to delete those removed from the wiki)<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><tt>cd doc/fbchkdoc</tt><br \>
+<tt>./getindex -web</tt><br \>
+<tt>./samps extract @PageIndex.txt</tt><br \>
+<br \>
+</div></div><a name="SUMMARY"></a><b><u>Summary: currently the easiest way to build a release</u></b><br \>
+<br \>
+<ul><li> Update the wiki snapshot in the fbc sources<br \>
+<li> Regenerate PrintToc and CompilerErrMsg<br \>
+<li> If needed, update wiki samples in examples/manual/<br \>
+<li> Build documentation packages (CHM on Windows, rest can be done on Linux)<br \>
+<br \>
+<li> Check whether toolchains used in the <tt>contrib/release/build.sh</tt> script need updating<br \>
+<br \>
+<li> Have target systems ready (installations of Linux and Windows, 32bit and 64bit -- virtual machines are useful for this)<br \>
+<li> For each system, update fbc sources (to have the latest version of the release script)<br \>
+<li> On win32:<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><pre class="fb_pre">cd contrib/release
+./build.sh win32 <commitid>
+./build.sh win32-mingworg <commitid>
+./build.sh dos <commitid></pre></div></div><ul><li> On win64:<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><pre class="fb_pre">cd contrib/release
+./build.sh win64 <commitid></pre></div></div><ul><li> On linux-x86:<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><pre class="fb_pre">cd contrib/release
+./build.sh linux-x86 <commitid></pre></div></div><ul><li> On linux-x86_64:<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><pre class="fb_pre">cd contrib/release
+./build.sh linux-x86_64 <commitid></pre></div></div><ul><li> Collect all the archives and manifests from the <tt>contrib/release/input</tt> and <tt>contrib/release/output</tt> directories<br \>
+<br \>
+<li> Review the manifests to check for missing files etc.<br \>
+<li> If ok, commit the new manifests<br \>
+<br \>
+<li> Create the release tag<br \>
+<li> Upload the packages<br \>
+<li> Post announcements<br \>
+<br \>
+</ul><br \>
+
+</div>
+</div> 
+</div> 
+</body>
+</html>

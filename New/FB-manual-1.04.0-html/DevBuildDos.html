@@ -1,0 +1,120 @@
+<html>
+<head>
+<title>Compiling FB for DOS</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Compiling FB for DOS</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	<br \>
+The DOS version of FB is typically compiled on a 32bit Windows system with DJGPP and a DOS version of FB installed.<br \>
+<br \>
+<b><u>Preparations</u></b><br \>
+<br \>
+<b>Getting the FB source code</b><br \>
+<br \>
+To compile a new version of FB, you first need to <a href="DevGettingTheSourceCode.html">get the FB source code</a>. The following assumes that you have a directory called <tt>fbcdos</tt>, containing the latest FB source code. Naming it <tt>fbcdos</tt> is convenient as it avoids conflicts in case you also have an <tt>fbc</tt> directory for building the Windows version of FB.<br \>
+<br \>
+<b>Installing DJGPP</b><br \>
+<br \>
+To install DJGPP, we need to download several packages which can be found on the <a href="http://www.delorie.com/djgpp/getting.html">DJGPP homepage</a>. FB needs djdev204.zip from the <tt><a href="http://www.delorie.com/pub/djgpp/beta/v2/">beta/v2/</a></tt> directory, and several others from the <tt><a href="http://www.delorie.com/pub/djgpp/beta/v2gnu/">beta/v2gnu/</a></tt> directory. If anything is missing from there, you can also look into the <tt><a href="http://www.delorie.com/pub/djgpp/current/v2gnu/">current/v2gnu/</a></tt> directory. The following packages are needed:<br \>
+<br \>
+<ul><li> <tt>binutils</tt> (<tt>bnu*b.zip</tt>)<br \>
+<li> <tt>bash</tt> (<tt>bsh*.zip</tt>)<br \>
+<li> <tt>djdev</tt> (<tt>djdev*.zip</tt>) - <i>pick up djdev204.zip or later from the <tt>beta/</tt> directory</i><br \>
+<li> <tt>fileutils</tt> (<tt>fil*.zip</tt>)<br \>
+<li> <tt>gcc</tt> (<tt>gcc*b.zip</tt>)<br \>
+<li> <tt>g++</tt> (<tt>gpp*b.zip</tt>)<br \>
+<li> <tt>make</tt> (<tt>mak*b.zip</tt>)<br \>
+<li> <tt>shellutils</tt> (<tt>shl*b.zip</tt>)<br \>
+<li> <tt>textutils</tt> (<tt>txt*b.zip</tt>)<br \>
+<br \>
+</ul>Setup DJGPP by extracting everything into <tt>C:\DJGPP</tt> and adding an environment variable named "DJGPP", set to <tt>C:\DJGPP\djgpp.env</tt>.<br \>
+<br \>
+It can be useful (especially when working in parallel with MinGW) to use a batch script to launch a terminal with the DJGPP tools in its PATH environment variable, instead of modifying the system's global PATH environment variable:<br \>
+<br \>
+<pre class="fb_pre">set DJGPP=C:\DJGPP\djgpp.env
+set PATH=C:\DJGPP\bin;%PATH%
+cd C:\
+cmd</pre><br \>
+In the end, you should be able to open a command prompt with <tt>C:\DJGPP\bin</tt> in its PATH, such that running the <tt>gcc</tt> command runs the DJGPP's gcc (and not MinGW's gcc).<br \>
+<br \>
+<b><u>Standalone build (self-contained FB)</u></b><br \>
+<br \>
+<b>Getting an existing FB setup for bootstrapping</b><br \>
+<br \>
+We will need a working FB-dos installation to bootstrap the new FB compiler. If you do not have FB-dos installed yet, download the latest FreeBASIC-X.XX.X-dos release from <a href="http://sourceforge.net/projects/fbc/files/Binaries%20-%20DOS/">FB's download site</a>. It should be extracted somewhere like <tt>C:\FreeBASIC-X.XX.X-dos</tt>.<br \>
+<br \>
+<b>Building the new FB setup</b><br \>
+<br \>
+If you want to create a <a href="DevNormalVsStandalone.html">traditional standalone</a> FB-dos setup like the one from the <tt>FreeBASIC-X.XX.X-dos</tt> release package, you need to tell FB's makefile by setting the ENABLE_STANDALONE variable. Assuming the FB sources are located at <tt>C:\fbcdos</tt>, create a <tt>C:\fbcdos\config.mk</tt> file containing the following:<br \>
+<br \>
+<pre class="fb_pre">ENABLE_STANDALONE = 1
+</pre><br \>
+Then, open a command prompt with <tt>C:\DJGPP\bin</tt> in its PATH, go to the directory with the FB source code, run "make" with the <tt>FBC=...</tt> variable set to point to the existing fbc.exe to use for bootstrapping, and let it compile:<br \>
+<br \>
+<pre class="fb_pre">> cd C:\fbcdos
+> make FBC=C:/FreeBASIC-X.XX.X-dos/fbc.exe
+</pre><br \>
+This should have produced the <tt>fbc.exe</tt> compiler and the libraries in <tt>lib\dos\</tt>. To complete this new FB setup, you need to add the binutils (as.exe, ar.exe, ld.exe) into <tt>bin\dos\</tt> and copy in some DJGPP libraries into <tt>lib\dos\</tt>.<br \>
+<br \>
+<ul><li> Copy these files to <tt>C:\fbcdos\bin\dos</tt>:<br \>
+<ul><li><tt>C:\DJGPP\bin\{ar,as,ld}.exe</tt><br \>
+</ul><li> Copy these files to <tt>C:\fbcdos\lib\dos</tt>:<br \>
+<ul><li><tt>C:\DJGPP\lib\{crt0,gcrt0}.o</tt><br \>
+<li><tt>C:\DJGPP\lib\lib{emu,m}.a</tt><br \>
+<li><tt>C:\DJGPP\lib\gcc\djgpp\[version]\libgcc.a</tt><br \>
+<br \>
+</ul></ul>You can copy more libraries if you need them, for example the <tt>C:\DJGPP\lib\gcc\djgpp\[version]\libsupcxx.a</tt> C++ support library, or others from the <tt>C:\DJGPP\lib\</tt> directory.<br \>
+<br \>
+A note on <tt>libc.a</tt>: FB needs a modified version of DJGPP's libc.a because DJGPP's libc.a contains a bug (see <tt>contrib/djgpp/readme.txt</tt> from the fbc source code for more information). The FB makefile should have taken care of this and produced the modified version of libc.a at <tt>lib\dos\libc.a</tt>. This should not be overwritten with DJGPP's original libc.a.<br \>
+<br \>
+Now, the new FB setup should be ready for use. You can use it right from the source tree or copy it somewhere else. The following are the relevant files and directories:<br \>
+<br \>
+<ul><li> <tt>fbc.exe</tt><br \>
+<li> <tt>bin/dos/</tt><br \>
+<li> <tt>inc/</tt><br \>
+<li> <tt>lib/dos/</tt><br \>
+<br \>
+</ul>If you rebuild it in the future (e.g. after updates to the FB source code from Git), you can let it rebuild itself by just running "make" without specifying an external <tt>FBC</tt>. It will then use the default, <tt>FBC=fbc</tt>, which in this case corresponds to the fbc.exe in the same directory.<br \>
+<br \>
+<pre class="fb_pre">> cd C:\fbcdos
+> make
+</pre><br \>
+<b><u>Normal build (like Linux)</u></b><br \>
+<br \>
+<b>Getting an existing FB setup for bootstrapping</b><br \>
+<br \>
+We will need a working fbc installation to bootstrap the new FB compiler. If you do not have fbc installed yet, download the latest fbcXXXXb package from <a href="http://sourceforge.net/projects/fbc/files/Binaries%20-%20DOS/">FB's download site</a>, and extract it into the DJGPP directory (<tt>C:\DJGPP</tt>) like a DJGPP package. This will add a working fbc to your DJGPP installation.<br \>
+<br \>
+<b>Building the new FB setup</b><br \>
+<br \>
+In order to create a normal (non-standalone) build like the one from the <tt>fbcXXXXb</tt> release package, just compile FB without specifying <tt>ENABLE_STANDALONE</tt>. Open a command prompt with <tt>C:\DJGPP\bin</tt> in its PATH, go to the directory with the FB source code, run "make" and let it compile.<br \>
+<br \>
+<pre class="fb_pre">> cd C:\fbcdos
+> make
+</pre><br \>
+This should have produced the <tt>bin/fbc.exe</tt> compiler and the libraries in <tt>lib\freebas\dos\</tt>.<br \>
+<br \>
+Optionally, you can copy this setup into the <tt>C:\DJGPP</tt> tree by running "make install":<br \>
+<br \>
+<pre class="fb_pre">> make install prefix=C:/DJGPP
+</pre><br \>
+It can be useful to store the prefix variable in <tt>config.mk</tt>, so you can run <tt>make install</tt> in the future without having to set it manually again:<br \>
+<br \>
+<pre class="fb_pre"># config.mk:
+prefix = C:/DJGPP</pre><br \>
+Installing fbc into the DJGPP tree this way means that it acts as if it was a part of DJGPP. However, it is also possible to use fbc from the source tree, without installing it elsewhere. It will invoke <tt>gcc -print-file-name=...</tt> in order to locate the DJGPP binutils and libraries.<br \>
+<br \>
+<br \>
+
+</div>
+</div> 
+</div> 
+</body>
+</html>

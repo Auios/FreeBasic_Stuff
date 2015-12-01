@@ -1,0 +1,581 @@
+<html>
+<head>
+<title>FreeBASIC grammar</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">FreeBASIC grammar</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	                                      <b><u>Grammar Notation</u></b><br \>
+<br \>
+<b>Format of a production</b><br \>
+<i>left hand side</i>: right hand side;<br \>
+<br \>
+: should be read as 'is defined as'. <br \>
+<br \>
+The right hand side of a production is terminated by a ;.<br \>
+<br \>
+A word in <i>italics</i> represent the name of a production (the left<br \>
+hand side of the production).<br \>
+<br \>
+Few operators are used to describe the FreeBASIC grammar.<br \>
+<br \>
+<div class="fb_table"><table><tr><td>operator</td><td>meaning</td></tr><tr><td>.</td><td>any character</td></tr><tr><td>*</td><td>0 or more (repetition)</td></tr><tr><td>+</td><td>1 or more (repetition)</td></tr><tr><td>?</td><td>optional (choice)</td></tr><tr><td>()</td><td>grouping</td></tr><tr><td>|</td><td>separator (separates alternatives)</td></tr><tr><td>semicolon</td><td>end of production</td></tr></table></div><br \>
+<br \>
+Any symbol that appears on the right hand side of a production<br \>
+that is not an operator and does not appear in <i>italics</i><br \>
+represents itself and appears <b>bold</b>.<br \>
+A symbol at the right hand side of a rule can refer to a production. <br \>
+Such references are in <i>italics</i>. <br \>
+<br \>
+For navigational purposes a reference is a link to the production <br \>
+being referenced.<br \>
+<br \>
+When reading the grammar be aware that FreeBASIC is a case insensitive<br \>
+language.<br \>
+<br \>
+The grammar presented is not an exact statement of the FreeBASIC language.<br \>
+<br \>
+Go straight to: <br \>
+<i><a href="#program">program</a></i><br \>
+<i><a href="#expression">expression</a></i><br \>
+<br \>
+<b><u>Tokens</u></b><br \>
+<br \>
+<i><a name="white"></a>white</i>: <b>\t</b> | <br \>
+<i><a name="any_char"></a>any_char</i>:&nbsp&nbsp&nbsp<b>any valid character</b>;<br /><i><a name="eol"></a>eol</i>:&nbsp&nbsp&nbsp&nbsp<b>\n</b>|<b>\r</b>|<b>\n\r</b>;<br /><i><a name="statement_separator"></a>statement_separator</i>: ( <b>:</b> | <i><a href="#eol">eol</a></i> )+;<br /><i><a name="dot"></a>dot</i>:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<b>.</b>;<br /><i><a name="sign"></a>sign</i>:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<b>+</b>|<b>-</b>;<br /><i><a name="alpha"></a>alpha</i>:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<b>a</b>|<b>b</b>|<b>c</b>|<b>d</b>|<b>e</b>|<b>f</b>|<b>g</b>|<b>h</b>|<b>i</b>|<b>j</b>|<b>k</b>|<b>l</b>|<b>m</b>|<b>n</b>|<b>p</b>|<b>q</b>|<b>r</b>|<b>s</b>|<b>t</b>|<b>v</b>|<b>w</b>|<b>x</b>|<b>y</b>|<b>z</b>;<br /><i><a name="digit"></a>digit</i>:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<b>0</b>|<b>1</b>|<b>2</b>|<b>3</b>|<b>4</b>|<b>5</b>|<b>6</b>|<b>7</b>|<b>8</b>|<b>9</b>;<br /><i><a name="hexdigit"></a>hexdigit</i>:&nbsp&nbsp&nbsp<b>a</b>|<b>b</b>|<b>c</b>|<b>d</b>|<b>e</b>|<b>f</b>|<i><a href="#digit">digit</a></i>;<br /><i><a name="octdigit"></a>octdigit</i>:&nbsp&nbsp&nbsp<b>0</b>|<b>1</b>|<b>2</b>|<b>3</b>|<b>4</b>|<b>5</b>|<b>6</b>|<b>7</b>;<br /><i><a name="bindigit"></a>bindigit</i>:&nbsp&nbsp&nbsp<b>0</b>|<b>1</b>;<br /><i><a name="alphadigit"></a>alphadigit</i>:&nbsp&nbsp<i><a href="#alpha">alpha</a></i>| <i><a href="#digit">digit</a></i>;<br /><i><a name="integer_suffix"></a>integer_suffix</i>:&nbsp&nbsp&nbsp&nbsp&nbsp<b>%</b>|<b>&amp;</b>|<b>l</b>|<b>u</b>|<b>ul</b>|<b>ll</b>|<b>ull</b>;<br /><i><a name="floating_point_suffix"></a>floating_point_suffix</i>:&nbsp&nbsp&nbsp&nbsp&nbsp<b>!</b>|<b>#</b>|<b>f</b>;<br /><i><a name="suffix"></a>suffix</i>:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<i><a href="#integer_suffix">integer_suffix</a></i>|<i><a href="#floating_point_suffix">floating_point_suffix</a></i>|<b>$</b>;<br /><i><a name="expchar"></a>expchar</i>:&nbsp&nbsp<b>d</b>|<b>e</b>;<br /><i><a name="operator"></a>operator</i><br \>
+<div class="fb_indent">: <b>=</b> | <b>&lt;</b> | <b>&gt;</b> |<b>&lt;&gt;</b> |<b>+</b> | <b>-</b> | <b>*</b> |  <b>@</b><br \>
+<div class="fb_indent"> <b>&</b> | <b>-&gt;</b> | <b>/</b> | <b>\</b> | <b>^</b> | <b>andalso</b><br \>
+ <b>orelse</b> | <b>and</b> | <b>or</b> | <b>xor</b> | <b>eqv</b> | <b>imp</b> <br \>
+ <b>+=</b> | <b>-=</b> | <b>*=</b> | <b>/=</b> | <b>\=</b>  | <b>^=</b> | <b>&=</b> |<br \>
+ <b>and=</b> | <b>or=</b> | <b>xor=</b> | <b>eqv=</b> | <b>imp=</b><br \>
+ <b>new</b> | <b>delete</b> | <b>delete[]</b> | <b>cast</b> | <b>procptr</b><br \>
+ <b>varptr</b> | <b>strptr</b> | <b>sizeof</b> | <b>[]</b> | <b>()</b><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="binary_operator"></a>binary_operator</i><br \>
+<div class="fb_indent">: <b>=</b> | <b>&lt;</b> | <b>&gt;</b> |<b>&lt;&gt;</b> |<b>+</b> | <b>-</b> |<br \>
+<div class="fb_indent"> <b>&</b> | <b>-&gt;</b> | <b>/</b> | <b>\</b> | <b>^</b> <br \>
+ <b>+=</b> | <b>-=</b> | <b>*=</b> | <b>/=</b> | <b>\=</b>  | <b>^=</b> | <b>&=</b> |<br \>
+ <b>and=</b> | <b>or=</b> | <b>xor=</b> | <b>eqv=</b> | <b>imp=</b><br \>
+ <b>andalso</b> | <b>orelse</b><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="identifier"></a>identifier</i><br \>
+<div class="fb_indent">:&nbsp&nbsp(<i><a href="#alpha">alpha</a></i>)(<i><a href="#alphadigit">alphadigit</a></i>|<b>_</b>)*<br \>
+<div class="fb_indent">nbsp&nbsp<b>_</b>(<i><a href="#alphadigit">alphadigit</a></i>|<b>_</b>)+<br \>
+</div>;<br \>
+<br \>
+</div><i><a name="literal"></a>literal</i><br \>
+<div class="fb_indent">: <i><a href="#sign">sign</a></i>&nbsp<i><a href="#integer_literal">integer_literal</a></i>&nbsp<i><a href="#integer_suffix">integer_suffix</a></i><br \>
+<div class="fb_indent">nbsp<i><a href="#sign">sign</a></i>&nbsp<i><a href="#floating_literal">floating_literal</a></i>&nbsp<i><a href="#floating_point_suffix">floating_point_suffix</a></i><br \>
+nbsp<i><a href="#string_literal">string_literal</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="integer_literal"></a>integer_literal</i><br \>
+<div class="fb_indent">: <i><a href="#decimal_integer">decimal_integer</a></i><br \>
+<div class="fb_indent"> <i><a href="#hexadecimal_integer">hexadecimal_integer</a></i><br \>
+ <i><a href="#octal_integer">octal_integer</a></i><br \>
+ <i><a href="#binary_integer">binary_integer</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="decimal_integer"></a>decimal_integer</i>: <i><a href="#digit">digit</a></i>+;<br \>
+<i><a name="hexadecimal_integer"></a>hexadecimal integer</i>: <b>&amp;h</b><i><a href="#hexdigit">hexdigit</a></i>+;<br \>
+<i><a name="octal_integer"></a>octal_integer</i>: <b>&amp;o</b><i><a href="#octdigit">octdigit</a></i>+;<br \>
+<i><a name="binary_integer"></a>binary_integer</i>: <b>&amp;b</b><i><a href="#bindigit">bindigit</a></i>+;<br /><br \>
+<i><a name="floating_literal"></a>floating_literal</i><br \>
+<div class="fb_indent">: <i><a href="#digit">digit</a></i>+(<i><a href="#dot">dot</a></i>(<i><a href="#digit">digit</a></i>+)?)?(<i><a href="#exp_char">exp_char</a></i>?(<i><a href="#sign">sign</a></i>?<i><a href="#digit">digit</a></i>+)?)?<i><a href="#suffix">suffix</a></i>?<br \>
+<div class="fb_indent">nbsp(<i><a href="#dot">dot</a></i>(<i><a href="#digit">digit</a></i>+)?)?(<i><a href="#exp_char">exp_char</a></i>?(<i><a href="#sign">sign</a></i>?<i><a href="#digit">digit</a></i>+)?)?<i><a href="#suffix">suffix</a></i>?<br \>
+</div>;<br \>
+<br \>
+</div><i><a name="string_literal"></a>string_literal</i><br \>
+<div class="fb_indent">: (<b>!</b>|<b>$</b>)?<b>"</b>(<i><a href="#escape_sequence">escape_sequence</a></i>|<b>&quot&quot</b>|<i><a href="#any_char">any_char</a></i>)<b>*"</b> (<i><a href="#white">white</a></i>*<i><a href="#string_literal">string_literal</a></i>)*<br \>
+;<br \>
+<br \>
+</div><i><a name="escape_sequence"></a>escape_sequence</i><br \>
+<div class="fb_indent">: <i><a href="#simple_escape_sequence">simple_escape_sequence</a></i><br \>
+<div class="fb_indent"> <i><a href="#unicode_escape_sequence">unicode_escape_sequence</a></i><br \>
+ <i><a href="#decimal_escape_sequence">decimal_escape_sequence</a></i><br \>
+ <i><a href="#hexadecimal_escape_sequence">hexadecimal_escape_sequence</a></i><br \>
+ <i><a href="#octal_escape_sequence">octal_escape_sequence</a></i><br \>
+ <i><a href="#binary_escape_sequence">binary_escape_sequence</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="simple_escape_sequence"></a>simple_escape_sequence</i><br \>
+<div class="fb_indent">: <b>\a</b>|<b>\b</b>|<b>\f</b>|<b>\l</b>|<b>\n</b>|<b>\r</b>|<b>\t</b>|<b>\v</b>|<b>\\</b>|<b>\'</b>|<b>\&quot</b><br \>
+;<br \>
+<br \>
+</div><i><a name="unicode_escape_sequence"></a>unicode_escape_sequence</i><br \>
+<div class="fb_indent">: <b>\u</b><i><a href="#hexdigit">hexdigit</a> <a href="#hexdigit">hexdigit</a> <a href="#hexdigit">hexdigit</a> <a href="#hexdigit">hexdigit</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="decimal_escape_sequence"></a>decimal_escape_sequence</i><br \>
+<div class="fb_indent">: <b>\</b><i><a href="#digit">digit</a> <a href="#digit">digit</a> <a href="#digit">digit</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="hexadecimal_escape_sequence"></a>hexadecimal_escape_sequence</i><br \>
+<div class="fb_indent">: <b>\&h</b><i><a href="#hexdigit">hexdigit</a> <a href="#hexdigit">hexdigit</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="octal_escape_sequence"></a>octal_escape_sequence</i><br \>
+<div class="fb_indent">: <b>\&o</b><i><a href="#octdigit">octdigit</a> <a href="#octdigit">octdigit</a> <a href="#octdigit">octdigit</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="binary_escape_sequence"></a>binary_escape_sequence</i><br \>
+<div class="fb_indent">: <b>\&b</b><i><a href="#bindigit">bindigit</a> <a href="#bindigit">bindigit</a> <a href="#bindigit">bindigit</a> <a href="#bindigit">bindigit</a> <a href="#bindigit">bindigit</a> <a href="#bindigit">bindigit</a> <a href="#bindigit">bindigit</a> <a href="#bindigit">bindigit</a></i><br \>
+;<br \>
+<br \>
+<br \>
+</div><b><u>Comment</u></b><br \>
+<br \>
+<i><a name="comment"></a>comment</i><br \>
+<div class="fb_indent">: ( <b>'</b> | <b>rem</b>) ((<b>$</b><i>directive</i>) | (<b>any_char_but_eol</b>*))<br \>
+;<br \>
+</div><i><a name="multiline_nested_comment"></a>multiline_nested_comment</i><br \>
+<div class="fb_indent">: <b>/'</b> ( . | <i><a href="#multiline_nested_comment">multiline_nested_comment</a></i>)* <b>'/</b>;<br /><br \>
+</div><b><u>Toplevel</u></b><br \>
+<br \>
+<i><a name="program"></a>program</i><br \>
+<div class="fb_indent">: <i><a href="#line">line</a></i>* EOF?<br \>
+;<br \>
+</div><i><a name="line"></a>line</i><br \>
+<div class="fb_indent">: <i><a href="#label">label</a></i> (<i><a href="#statement">statement</a></i>|<i><a href="#namespace_statement">namespace_statement</a></i>)? <i><a href="#comment">comment</a></i>? <i><a href="#eol">eol</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="label"></a>label</i><br \>
+<div class="fb_indent">: <i><a href="#identifier">identifier</a></i> <b>:</b><br \>
+;<br \>
+<br \>
+</div><i><a name="statement"></a></i>statement<br \>
+<div class="fb_indent">: <i><a href="#statement_separator">statement_separator</a></i>?<br \>
+</div>(<i><a href="#declaration">declaration</a></i> | <i><a href="#procedure_call_or_assign">procedure_call_or_assign</a></i> | <i><a href="#compound_statement">compound_statement</a></i> | <i><a href="#quirk_statement">quirk_statement</a></i> | <i><a href="#assembler_block">assembler_block</a></i> | <i><a href="#assignment">assignment</a></i> )?<br \>
+(<i><a href="#statement_separator">statement_separator</a></i> <i><a href="#statement">statement</a></i>)*<br \>
+<div class="fb_indent">;<br \>
+<br \>
+</div><i><a name="declaration"></a>declaration</i><br \>
+<div class="fb_indent">:(<b>public</b>|<b>private</b>)? <br \>
+<div class="fb_indent">( <br \>
+<div class="fb_indent">(<b>static</b> <br \>
+<div class="fb_indent">( <i><a href="#function_definition">function_definition</a></i><br \>
+<div class="fb_indent"> <i><a href="#sub_definition">sub_definition</a></i> <br \>
+ <i><a href="#operator_definition">operator_definition</a></i> <br \>
+ <i><a href="#constructor_definition">constructor_definition</a></i> <br \>
+ <i><a href="#destructor_definition">destructor_definition</a></i> <br \>
+ <i><a href="#property_definition">property_definition</a></i><br \>
+ <i><a href="#variable_declaration">variable_declaration</a></i><br \>
+</div>)<br \>
+</div>)<br \>
+ <i><a href="#function_definition">function_definition</a></i><br \>
+ <i><a href="#sub_definition">sub_definition</a></i><br \>
+ <i><a href="#destructor_definition">destructor_definition</a></i> <br \>
+ <i><a href="#property_definition">property_definition</a></i><br \>
+ <i><a href="#constructor_definition">constructor_definition</a></i><br \>
+ <i><a href="#operator_definition">operator_definition</a></i><br \>
+ <i><a href="#const_declaration">const_declaration</a></i><br \>
+ <i><a href="#type_or_union_declaration">type_or_union_declaration</a></i><br \>
+ <i><a href="#variable_declaration">variable_declaration</a></i><br \>
+ <i><a href="#enumeration_declaration">enumeration_declaration</a></i><br \>
+ <i><a href="#auto_variable_declaration">auto_variable_declaration</a></i><br \>
+</div>)<br \>
+ <b>declare</b> <i><a href="#procedure_declaration">procedure_declaration</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="procedure_call_or_assign"></a>procedure_call_or_assign</i><br \>
+<div class="fb_indent">: <b>call</b> <i><a href="#identifier">identifier</a></i> (<b>(</b><i>procedure_parameter_list</i><b>)</b>)?<br \>
+<div class="fb_indent"> <i><a href="#identifier">identifier</a></i> <i>procedure_parameter_list</i>?<br \>
+ (<i><a href="#identifier">identifier</a></i> | <b>function</b> | <b>operator</b> | <b>property</b>) <b>=</b> <i><a href="#expression">expression</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="compound_statement"></a>compound_statement</i><br \>
+<div class="fb_indent">:  <i><a href="#namespace_statement">namespace_statement</a></i><br \>
+<div class="fb_indent"> <i><a href="#scope_statement">scope_statement</a></i><br \>
+ <i><a href="#if_statement">if_statement</a></i><br \>
+ <i><a href="#for_statement">for_statement</a></i><br \>
+ <i><a href="#do_statement">do_statement</a></i><br \>
+ <i><a href="#while_statement">while_statement</a></i><br \>
+ <i><a href="#select_statement">select_statement</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="namespace_statement"></a>namespace_statement</i><br \>
+<div class="fb_indent">: <b>namespace</b> <i><a href="#identifier">identifier</a></i> (<b>alias</b> <i><a href="#string_literal">string_literal</a></i>)? (<i><a href="#declaration">declaration</a></i> | <i><a href="#namespace_statement">namespace_statement</a></i>)*  <b>end</b> <b>namespace</b><br \>
+;<br \>
+<br \>
+</div><i><a name="scope_statement"></a>scope_statement</i>: <b>scope</b> <i><a href="#statement_separator">statement_separator</a></i> <i><a href="#statement">statement</a></i>* <b>end</b> <b>scope</b><br \>
+<div class="fb_indent">;<br \>
+<br \>
+</div><i><a name="if_statement"></a>if_statement</i><br \>
+<div class="fb_indent">: <i><a href="#short_if_statement">short_if_statement</a></i> | <i><a href="#long_if_statement">long_if_statement</a></i><br \>
+;<br \>
+<br \>
+<br \>
+</div><i><a name="short_if_statement"></a>short_if_statement</i><br \>
+<div class="fb_indent">: <b>if</b> <i><a href="#expression">expression</a></i> <b>then</b> <i><a href="#statement_separator">statement_separator</a></i> <i><a href="#statement">statement</a></i><br \>
+</div><b>else</b> <i><a href="#statement_separator">statement_separator</a></i> <i><a href="#statement">statement</a></i>*<br \>
+(<i><a href="#eol">eol</a></i>| <b>end if</b> | <b>endif</b>)<br \>
+<div class="fb_indent">;<br \>
+<br \>
+</div><i><a name="long_if_statement"></a>long_if_statement</i><br \>
+<div class="fb_indent">: <b>if</b> <i><a href="#expression">expression</a></i> <b>then</b> <i><a href="#statement_separator">statement_separator</a></i> <br \>
+</div><i><a href="#statement">statement</a></i>*  <br \>
+<i><a href="#elseif_block">elseif_block</a></i>* <br \>
+(<b>else</b> <i><a href="#statement_separator">statement_separator</a></i> <i><a href="#statement">statement</a></i>*)?<br \>
+(<b>end</b> <b>if</b>|<b>endif</b>)<br \>
+<div class="fb_indent">;<br \>
+<br \>
+</div><i><a name="elseif_block"></a>elseif_block</i><br \>
+<div class="fb_indent">: <b>elseif</b> <i><a href="#expression">expression</a></i>  <b>then</b> <i><a href="#statement_separator">statement_separator</a></i> <i><a href="#statement">statement</a></i>*<br \>
+;<br \>
+<br \>
+</div><i><a name="for_statement"></a>for_statement</i><br \>
+<div class="fb_indent">: <b>for</b> <i><a href="#identifier">identifier</a></i> (<b>as</b> <i><a href="#scalar">scalar</a></i>)? <b>=</b> <i><a href="#expression">expression</a></i> <b>to</b> <i><a href="#expression">expression</a></i> (<b>step</b> <i><a href="#expression">expression</a></i>)? <br \>
+</div>(<i><a href="#statement">statement</a></i>|<b>exit for</b>(<b>,</b> <b>for</b>)* | <b>continue for</b> (<b>,</b> <b>for</b>)*)* <b>next</b> <i><a href="#identifier">identifier</a></i> (<b>,</b> <i><a href="#identifier">identifier</a></i>)* <i><a href="#statement_separator">statement_separator</a></i><br \>
+<div class="fb_indent">;<br \>
+<br \>
+</div><i><a name="do_statement"></a>do_statement</i><br \>
+<div class="fb_indent">: <b>do</b> (<b>until</b>|<b>while</b>) <i><a href="#expression">expression</a></i> (<i><a href="#statement">statement</a></i>|<b>exit do</b> (<b>,</b> <b>do</b>)* | <b>continue do</b> (<b>,</b> <b>do</b>)*)* <b>loop</b><br \>
+<div class="fb_indent"> <b>do</b> (<i><a href="#statement">statement</a></i>|<b>exit do</b> (<b>,</b> <b>do</b>)* | <b>continue do</b> (<b>,</b> <b>do</b>)*)* <b>loop</b> (<b>until</b>|<b>while</b>) <i><a href="#expression">expression</a></i> <i><a href="#statement_separator">statement_separator</a></i><br \>
+</div>;  <br \>
+<br \>
+</div><i><a name="while_statement"></a>while_statement</i><br \>
+<div class="fb_indent">: <b>while</b> <i><a href="#expression">expression</a></i> <i><a href="#statement_separator">statement_separator</a></i><br \>
+</div>(<i><a href="#statement">statement</a></i> | <b>exit while</b> (<b>,</b> <b>while</b>)* | <b>continue while</b> (<b>,</b> <b>while</b>)*)*<br \>
+<b>wend</b><br \>
+<div class="fb_indent">;<br \>
+<br \>
+</div><i><a name="select_statement"></a>select_statement</i><br \>
+<div class="fb_indent">: <b>select case</b> (<b>as</b> <b>const</b>) <i><a href="#expression">expression</a></i> <i><a href="#case_statement">case_statement</a></i>* <b>case else</b> <i><a href="#statement_separator">statement_separator</a></i> <i><a href="#statement">statement</a></i>* <b>end select</b><br \>
+;<br \>
+</div><i><a name="case_statement"></a>case_statement</i><br \>
+<div class="fb_indent">: <b>case</b> <i><a href="#case_expression">case_expression</a></i> (<b>,</b> <i><a href="#case_expression">case_expression</a></i>)*<br \>
+;<br \>
+</div><i><a name="case_expression"></a>case_expression</i><br \>
+<div class="fb_indent">:  <i><a href="#expression">expression</a></i> | <i><a href="#expression">expression</a></i> <b>to</b> <i><a href="#expression">expression</a></i> | <b>is</b> (<b>&gt;</b> | <b>&lt;</b> | <b>&gt;=</b> | <b>&lt;=</b> | <b>=</b> | <b>&lt;&gt;</b>) <i><a href="#expression">expression</a></i>;   <br \>
+<br \>
+</div><i><a name="assembler_block"></a>assembler_block</i><br \>
+<div class="fb_indent">:  <b>asm</b> <i><a href="#comment">comment</a></i>? <i><a name="statement_separator"></a></i> (<i>asm_code</i> <i><a href="#comment">comment</a></i>? <i><a href="#eol">eol</a></i>)+ <b>end asm</b><br \>
+;<br \>
+<br \>
+</div><i><a name="assignment"></a>assignment</i><br \>
+<div class="fb_indent">: <b>let</b>? <i><a href="#variable">variable</a></i> <i><a href="#binary_operator">binary_operator</a></i> <b>=</b> <i><a href="#expression">expression</a></i><br \>
+<div class="fb_indent"> <i><a href="#variable">variable</a></i> <b>(</b><i><a href="#procedure_parameter_list">procedure_parameter_list</a></i><b>)</b><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="variable"></a>variable</i><br \>
+<div class="fb_indent">: <i><a href="#highest_precedence_expression">highest_precedence_expression</a></i>; <br \>
+<br \>
+</div><i><a name="const_declaration"></a>const_declaration</i><br \>
+<div class="fb_indent">: <b>const</b> (<b>as</b> <i><a href="#symbol_type">symbol_type</a></i>)? <i>const_assign</i> (<b>,</b> <i>const_assign</i>)*<br \>
+;<br \>
+<br \>
+</div><i><a name="type_or_union_declaration"></a>type_or_union_declaration</i><br \>
+<div class="fb_indent">:  <i><a href="#type_declaration">type_declaration</a></i> | <i><a href="#union_declaration">union_declaration</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="type_declaration"></a>type_declaration</i><br \>
+<div class="fb_indent">: <b>type</b> <i><a href="#identifier">identifier</a></i> (<b>alias</b> <i><a href="#string_literal">string_literal</a></i>)? (<b>field</b> <b>=</b> <i><a href="#expression">expression</a></i>)? (<i><a href="#comment">comment</a></i>)? <i><a href="#statement_separator">statement_separator</a></i><br \>
+<div class="fb_indent"><i><a href="#type_member_declaration">type_member_declaration</a></i>+<br \>
+</div><b>end</b> <b>type</b><br \>
+;<br \>
+<br \>
+</div><i><a name="union_declaration"></a>union_declaration</i><br \>
+<div class="fb_indent">: <b>union</b> <i><a href="#identifier">identifier</a></i> (<b>alias</b> <i><a href="#string_literal">string_literal</a></i>)? (<b>field</b> <b>=</b> <i><a href="#expression">expression</a></i>)? (<i><a href="#comment">comment</a></i>)? <i><a href="#statement_separator">statement_separator</a></i><br \>
+<div class="fb_indent"><i>union_member_declaration</i>+<br \>
+</div><b>end</b> <b>union</b><br \>
+;<br \>
+<br \>
+</div><i><a name="type_member_declaration"></a>type_member_declaration</i><br \>
+<div class="fb_indent">: ( (<b>union</b>|<b>type</b>) <i><a href="#comment">comment</a></i>? <i><a href="#statement_separator">statement_separator</a></i> <i><a href="#element_declaration">element_declaration</a></i>+<br \>
+<b>end</b> (<b>union</b>|<b>type</b>)<br \>
+)<br \>
+<div class="fb_indent"> <i><a href="#element_declaration">element_declaration</a></i><br \>
+ <b>as</b> as_element_declaration <br \>
+</div>;<br \>
+                                          <br \>
+<br \>
+</div><i><a name="variable_declaration"></a>variable_declaration</i><br \>
+<div class="fb_indent">: (<b>redim</b> <b>preserve</b>?|<b>dim</b>|<b>common</b>) <b>shared</b>? <i><a href="#symbol_type">symbol_type</a></i><br \>
+<div class="fb_indent"> <b>extern</b> <b>import</b>? <i><a href="#symbol_type">symbol_type</a></i> <b>alias</b> <i><a href="#string_literal">string_literal</a></i><br \>
+ <b>static</b> <i><a href="#symbol_type">symbol_type</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="symbol_type"></a>symbol_type</i><br \>
+<div class="fb_indent">: <b>const</b>? <b>unsigned</b>? <br \>
+(<br \>
+  <i><a href="#scalar">scalar</a></i><br \>
+<div class="fb_indent"> <b>string</b> (<b>*</b> <i><a href="#integer_literal">integer_literal</a></i>)?<br \>
+ <b>wstring</b> (<b>*</b> <i><a href="#integer_literal">integer_literal</a></i>)?<br \>
+ <i><a href="#user_defined_type">user_defined_type</a></i><br \>
+ <b>function</b> (<b>(</b> <i><a href="#parameters">parameters</a></i> <b>)</b>) (<b>as</b> <i><a href="#symbol_type">symbol_type</a></i>)<br \>
+ <b>sub</b> (<b>(</b> <i><a href="#parameters">parameters</a></i> <b>)</b>)<br \>
+</div>)(<b>const</b>? (<b>ptr</b>|<b>pointer</b>))*<br \>
+;<br \>
+<br \>
+</div><i><a name="scalar"></a>scalar</i><br \>
+<div class="fb_indent">: <b>byte</b><br \>
+<div class="fb_indent"> <b>ubyte</b><br \>
+ <b>short</b><br \>
+ <b>ushort</b><br \>
+ <b>integer</b><br \>
+ <b>uinteger</b><br \>
+ <b>longint</b><br \>
+ <b>ulongint</b><br \>
+ <b>long</b><br \>
+ <b>ulong</b><br \>
+ <b>single</b><br \>
+ <b>double</b><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="parameters"></a>parameters</i><br \>
+<div class="fb_indent">: <i><a href="#parameter">parameter</a></i> (<b>,</b> <i><a href="#parameter">parameter</a></i>)*<br \>
+;<br \>
+<br \>
+</div><i><a name="parameter"></a>parameter</i><br \>
+<div class="fb_indent">: (<b>byval</b>|<b>byref</b>)? (<i><a href="#identifier">identifier</a></i> (<b>(</b> <b>)</b>)?)? <b>as</b> <i><a href="#symbol_type">symbol_type</a></i> (<b>=</b> <i><a href="#literal">literal</a></i>)?<br \>
+;<br \>
+<br \>
+                   <br \>
+</div><i><a name="user_defined_type"></a>user_defined_type</i><br \>
+<div class="fb_indent">: <i><a href="#identifier">identifier</a></i><br \>
+;<br \>
+<br \>
+<br \>
+</div><i><a name="procedure_declaration"></a>procedure_declaration</i><br \>
+<div class="fb_indent">: <b>static</b>? (<i><a href="#sub_declaration">sub_declaration</a></i>|<i><a href="#function_declaration">function_declaration</a></i>|<i><a href="#constructor_declaration">constructor_declaration</a></i>|<i><a href="#destructor_declaration">destructor_declaration</a></i>|<i><a href="#operator_declaration">operator_declaration</a></i>)<br \>
+;<br \>
+<br \>
+<br \>
+</div><i><a name="procedure_parameter_list"></a>procedure_parameter_list</i><br \>
+<div class="fb_indent">: <i><a href="#procedure_parameter">procedure_parameter</a></i> (<b>,</b> <i><a href="#procedure_parameter">procedure_parameter</a></i>)*<br \>
+;<br \>
+<br \>
+<br \>
+</div><i><a name="procedure_parameter"></a>procedure_parameter</i><br \>
+<div class="fb_indent">: <b>byval</b>? (<i><a href="#identifier">identifier</a></i>(<b>(</b> <b>)</b>)? | <i><a href="#expression">expression</a></i> )<br \>
+;<br \>
+<br \>
+<br \>
+</div><b><u>expressions</u></b><br \>
+<br \>
+<i><a name="expression"></a>expression</i><br \>
+<div class="fb_indent">: <i><a href="#boolean_expression">boolean_expression</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="boolean_expression"></a>boolean_expression</i><br \>
+<div class="fb_indent">: <i><a href="#logical_expression">logical_expression</a></i>( ( <b>andalso</b> | <b>orelse</b> ) <i><a href="#logical_expression">logical_expression</a></i>)*<br \>
+;<br \>
+<br \>
+</div><i><a name="logical_expression"></a>logical_expression</i><br \>
+<div class="fb_indent">: <i><a href="#logical_or_expression">logical_or_expression</a></i> ( (<b>xor</b> | <b>eqv</b> | <b>imp</b>) <i><a href="#logical_or_expression">logical_or_expression</a></i> )*<br \>
+;<br \>
+<br \>
+</div><i><a name="logical_or_expression"></a>logical_or_expression</i><br \>
+<div class="fb_indent">:    <i><a href="#logical_and_expression">logical_and_expression</a></i>( <b>or</b> <i><a href="#logical_and_expression">logical_and_expression</a></i> )*<br \>
+;<br \>
+<br \>
+</div><i><a name="logical_and_expression"></a>logical_and_expression</i><br \>
+<div class="fb_indent">:  <i><a href="#relational_expression">relational_expression</a></i> ( <b>and</b> <i><a href="#relational_expression">relational_expression</a></i> )*<br \>
+;<br \>
+<br \>
+</div><i><a name="relational_expression"></a>relational_expression</i><br \>
+<div class="fb_indent">: <i><a href="#concatenation_expression">concatenation_expression</a></i> ( (<b>=</b>|<b>&gt;</b>|<b>&lt;</b>|<b>&lt;&gt;</b>|<b>&lt;=</b>|<b>&gt;=</b>) <i><a href="#concatenation_expression">concatenation_expression</a></i> )*<br \>
+;<br \>
+<br \>
+</div><i><a name="concatenation_expression"></a>concatenation_expression</i><br \>
+<div class="fb_indent">: <i><a href="#add_expression">add_expression</a></i>( <b>&</b> <a href="#add_expression">add_expression</a><i>)*<br \>
+;<br \>
+<br \>
+</div></i><a name="add_expression"></a>add_expression<i><br \>
+<div class="fb_indent">: </i><a href="#shift_expression">shift_expression</a><i>( ( <b>+</b> | <b>-</b> ) </i><a href="#shift_expression">shift_expression</a><i> )*<br \>
+;<br \>
+<br \>
+</div></i><a name="shift_expression"></a>shift_expression<i><br \>
+<div class="fb_indent">: </i><a href="#mod_expression">mod_expression</a><i> ( (<b>shl</b> | <b>shr</b>) </i><a href="#mod_expression">mod_expression</a><i> )*<br \>
+;<br \>
+<br \>
+</div></i><a name="mod_expression"></a>mod_expression<i><br \>
+<div class="fb_indent">:   =   </i><a href="#integer_division_expression">integer_division_expression</a><i>( <b>mod</b> </i><a href="#integer_division_expression">integer_division_expression</a><i> )*<br \>
+;<br \>
+<br \>
+</div></i><a name="integer_division_expression"></a><i>integer_division_expression</i><br \>
+<div class="fb_indent">: <i><a href="#multiplication_expression">multiplication_expression</a></i> ( <b>\</b> <i><a href="#multiplication_expression">multiplication_expression</a></i> )*<br \>
+;<br \>
+<br \>
+</div><i><a name="multiplication_expression"></a>multiplication_expression</i><br \>
+<div class="fb_indent">: <i><a href="#exponentiation_expression">exponentiation_expression</a></i> ( (<b>*</b> | <b>/</b>) <i><a href="#exponentiation_expression">exponentiaton_expression</a></i> )*<br \>
+;<br \>
+<br \>
+</div><i><a name="exponentiation_expression"></a>exponentiation_expression</i><br \>
+<div class="fb_indent">:  <i><a href="#prefix_expression">prefix_expression</a></i> ( <b>^</b> <i><a href="#prefix_expression">prefix_expression</a></i> )*<br \>
+;<br \>
+<br \>
+</div><i><a name="prefix_expression"></a>prefix_expression</i><br \>
+<div class="fb_indent">: (<b>-</b>|<b>+</b>) <i><a href="#exponentiation_expression">exponentiation_expression</a></i><br \>
+<div class="fb_indent"> <b>not</b> <i><a href="#relational_expression">relational_expression</a></i><br \>
+ <i><a href="#highest_precedence_expression">highest_precedence_expression</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="highest_precedence_expression"></a>highest_precedence_expression</i><br \>
+<div class="fb_indent">: <i><a href="#address_of_expression">address_of_expression</a></i><br \>
+<div class="fb_indent"> ( <i><a href="#dereference_expression">dereference_expression</a></i> | <i><a href="#casting_expression">casting_expression</a></i> | <i><a href="#pointer_type_casting_expression">pointer_type_casting_expression</a></i> | <i><a href="#parenthesised_expression">parenthesised_expression</a></i> ) <i><a name="function_pointer_or_member_dereference"></a></i><br \>
+ <i><a href="#anonymous_udt">anonymous_udt</a></i><br \>
+ <i><a href="#atom">atom</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="address_of_expression"></a>address_of_expression</i><br \>
+<div class="fb_indent">: <b>varptr</b> <b>(</b> highest_precedence_expression <b>)</b><br \>
+<div class="fb_indent"> <b>procptr</b> <b>(</b> <i><a href="#identifier">identifier</a></i> (<b>(</b><b>)</b>)? <b>)</b><br \>
+ <b>@</b> (<i><a href="#identifier">identifier</a></i> (<b>(</b><b>)</b>)? | <i><a href="#highest_precedence_expression">highest_precedence_expression</a></i>)<br \>
+ <b>sadd</b>|<b>strptr</b> <b>(</b> <i><a href="#expression">expression</a></i> <b>)</b><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="dereference_expression"></a>dereference_expression</i><br \>
+<div class="fb_indent">: <b>*</b>+ <i><a href="#highest_precedence_expression">highest_precedence_expression</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="casting_expression"></a>casting_expression</i><br \>
+<div class="fb_indent">: <b>cast</b> <b>(</b> <i><a href="#symbol_type">symbol_type</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b><br \>
+;<br \>
+<br \>
+<br \>
+</div><i><a name="quirk_function"></a>quirk_function</i><br \>
+<div class="fb_indent">: <i><a href="#quirk_function_name">quirk_function_name</a></i> <i><a href="#procedure_parameter_list">procedure_parameter_list</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="quirk_function_name"></a>quirk_function_name</i><br \>
+<div class="fb_indent">: <b>mkd</b> | <b>mki</b> | <b>mkl</b> | <b>mklongint</b> | <b>mkshort</b><br \>
+<div class="fb_indent"> <b>cvd</b> | <b>cvi</b> | <b>cvl</b> | <b>cvlongint</b> | <b>cvs</b> | <b>cvshort</b><br \>
+ <b>asc</b> | <b>chr</b> | <b>instr</b> | <b>instrev</b> | <b>lcase</b> | <b>left</b> | <b>len</b> | <b>lset</b> | <b>ltrim</b> | <b>mid</b> | <b>right</b> | <b>rset</b> | <b>rtrim</b> | <b>space</b> | <b>string</b> | <b>ucase</b> | <b>wchr</b> | <b>wstr</b> | <b>wstring</b> <br \>
+ <b>abs</b> | <b>sgn</b> | <b>fix</b> | <b>frac</b> | <b>len</b> | <b>sizeof</b>,<b>sin</b> | <b>asin</b> | <b>cos</b> | <b>acos</b> | <b>tan</b> | <b>atn</b> | <b>sqr</b> | <b>log</b> | <b>exp</b> | <b>atan2</b> | <b>int</b><br \>
+ <b>peek</b><br \>
+ <b>lbound</b> | <b>ubound</b><br \>
+ <b>seek</b> | <b>input</b> | <b>open</b> | <b>close</b> | <b>get</b> | <b>put</b> | <b>name</b><br \>
+ <b>err</b><br \>
+ <b>iif</b><br \>
+ <b>va_first</b><br \>
+ <b>cbyte</b> | <b>cshort</b> | <b>cint</b> | <b>clng</b> | <b>clngint</b> | <b>cubyte</b> | <b>cushort</b> | <b>cuint</b> | <b>culng</b> | <b>culngint</b> | <b>csng</b> | <b>cdbl</b> | <b>csign</b> | <b>cunsg</b><br \>
+ <b>type</b><br \>
+ <b>view</b> | <b>width</b> | <b>color</b> | <b>screen</b><br \>
+</div>;<br \>
+<br \>
+ <br \>
+<br \>
+</div><i><a name="quirk_statement"></a>quirk_statement</i><br \>
+<div class="fb_indent">: <i><a href="#jump_statement">jump_statement</a></i><br \>
+<div class="fb_indent"> <i><a href="#print_statement">print_statement</a></i><br \>
+ <i><a href="#data_statement">data_statement</a></i><br \>
+ <i><a href="#array_statement">array_statement</a></i><br \>
+ <i><a href="#line_input_statement">line_input_statement</a></i><br \>
+ <i><a href="#input_statement">input_statement</a></i><br \>
+ <i><a href="#poke_statement">poke_statement</a></i><br \>
+ <i><a href="#file_statement">file_statement</a></i><br \>
+ <i><a href="#write_statement">write_statement</a></i><br \>
+ <i><a href="#error_statement">error_statement</a></i><br \>
+ <i><a href="#on_statement">on_statement</a></i><br \>
+ <i><a href="#view_statement">view_statement</a></i><br \>
+ <i><a href="#mid_statement">mid_statement</a></i><br \>
+ <i><a href="#lrset_statement">lrset_statement</a></i><br \>
+ <i><a href="#width_statement">width_statement</a></i><br \>
+ <i><a href="#color_statement">color_statement</a></i><br \>
+ <i><a href="#gfx_statement">gfx_statement</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="jump_statement"></a>jump_statement</i><br \>
+<div class="fb_indent">: <b>goto</b> <i><a href="#identifier">identifier</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="print_statement"></a>print_statement</i><br \>
+<div class="fb_indent">: (<b>print</b> | <b>?</b>) (<b>#</b> <i><a href="#expression">expression</a></i> <b>,</b>)? (<b>using</b> <i><a href="#expression">expression</a></i> <b>;</b>)? (<i><a href="#expression">expression</a></i>? <b>;</b> | <b>,</b> )*; <br \>
+</div>   <br \>
+<i><a name="data_statement"></a>data_statement</i><br \>
+<div class="fb_indent">: <b>restore</b> <i><a href="#identifier">identifier</a></i><br \>
+<div class="fb_indent"> <b>read</b> <i><a href="#variable">variable</a></i> (<b>,</b> <i><a href="#variable">variable</a></i>)*<br \>
+ <b>data</b> <i><a href="#literal">literal</a></i> (<b>,</b> <i><a href="#literal">literal</a></i>)*<br \>
+</div>;<br \>
+<br \>
+</div><i><a name="array_statement"></a>array_statement</i><br \>
+<div class="fb_indent">: <b>erase</b> <i><a href="#variable">variable</a></i> (<b>,</b> <i><a href="#variable">variable</a></i>)*<br \>
+<div class="fb_indent"> <b>swap</b> <i><a href="#variable">variable</a></i> <b>,</b> <i><a href="#variable">variable</a></i> <br \>
+</div>;<br \>
+<br \>
+</div><i><a name="line_input_statement"></a>line_input_statement</i><br \>
+<div class="fb_indent">: <b>line</b> <b>input</b> <b>;</b>? (<b>#</b> <i><a href="#expression">expression</a></i>| <i><a href="#expression">expression</a></i>?) (<b>,</b> | <b>;</b> )? <i><a href="#variable">variable</a></i>?<br \>
+;<br \>
+<br \>
+</div><i><a name="input_statement"></a>input_statement</i><br \>
+<div class="fb_indent">: <b>input</b> <b>;</b>? ((<b>#</b> <i><a href="#expression">expression</a></i>| <i><a href="#string_literal">string_literal</a></i>) (<b>,</b> | <b>;</b>))? <i><a href="#variable">variable</a></i> (<b>,</b> <i><a href="#variable">variable</a></i>)*<br \>
+;<br \>
+<br \>
+</div><i><a name="poke_statement"></a>poke_statement</i><br \>
+<div class="fb_indent">: <b>poke</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="file_statement"></a>file_statement</i><br \>
+<div class="fb_indent">: <b>close</b> (<b>#</b>? <i><a href="#expression">expression</a></i>) (<b>,</b> <b>#</b>? <i><a href="#expression">expression</a></i>)*<br \>
+<div class="fb_indent"> <b>seek</b> <b>#</b>? <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i><br \>
+ <b>put</b> <b>#</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i>? <b>,</b> <i><a href="#expression">expression</a></i><br \>
+ <b>get</b> <b>#</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i>? <b>,</b> <i><a href="#variable">variable</a></i><br \>
+ (<b>lock</b>|<b>unlock</b>) <b>#</b>? <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> (<b>to</b> <i><a href="#expression">expression</a></i>)?<br \>
+ <b>name</b> <i><a href="#expression">expression</a></i> <b>as</b> <i><a href="#expression">expression</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="write_statement"></a>write_statement</i><br \>
+<div class="fb_indent">: <b>write</b> (<b>#</b> <i><a href="#expression">expression</a></i>)? (<i><a href="#expression">expression</a></i>? <b>,</b> )*<br \>
+;<br \>
+<br \>
+</div><i><a name="error_statement"></a>error_statement</i><br \>
+<div class="fb_indent">: <b>error</b> <i><a href="#expression">expression</a></i><br \>
+<div class="fb_indent"> <b>err</b> <b>=</b> <i><a href="#expression">expression</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="on_statement"></a>on_statement</i><br \>
+<div class="fb_indent">: <b>on</b> <b>local</b>? (<b>error</b> | <i><a href="#expression">expression</a></i>) <b>goto</b> identifier<br \>
+;<br \>
+<br \>
+</div><i><a name="view_statement"></a>view_statement</i><br \>
+<div class="fb_indent">: <b>view</b> (<b>print</b> (<i><a href="#expression">expression</a></i> <b>to</b> <i><a href="#expression">expression</a></i>)?)<br \>
+;<br \>
+<br \>
+</div><i><a name="mid_statement"></a>mid_statement</i><br \>
+<div class="fb_indent">: <b>mid</b> <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> (<b>,</b> <i><a href="#expression">expression</a></i><b>)</b> <b>=</b> <i><a href="#expression">expression</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="lrset_statement"></a>lrset_statement</i><br \>
+<div class="fb_indent">: <b>lset</b>|<b>rset</b> <i><a href="#highest_precedence_expression">highest_precedence_expression</a></i> <b>,</b> <i><a href="#highest_precedence_expression">highest_precedence_expression</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="width_statement"></a>width_statement</i><br \>
+<div class="fb_indent">: <b>width</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <br \>
+<div class="fb_indent"> <b>width</b> <b>lprint</b> <i><a href="#expression">expression</a></i><br \>
+ <b>width</b> (<b>#</b> <i><a href="#expression">expression</a></i>| <i><a href="#expression">expression</a></i>)<b>,</b> <i><a href="#expression">expression</a></i><br \>
+</div>;<br \>
+<br \>
+</div><i><a name="color_statement"></a>color_statement</i><br \>
+<div class="fb_indent">: <b>color</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i><br \>
+;<br \>
+<br \>
+</div><i><a name="gfx_statement"></a>gfx_statement</i><br \>
+<div class="fb_indent">: <b>pset</b> ( <i><a href="#expression">expression</a></i> <b>,</b> )? <b>step</b>? <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> (<b>,</b> <i><a href="#expression">expression</a></i> )?<br \>
+<div class="fb_indent"> <b>line</b> ( <i><a href="#expression">expression</a></i> <b>,</b> )? <b>step</b>? (<b>(</b> expression <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> )? <b>-</b> <b>step</b>? <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> (<b>,</b> <i><a href="#expression">expression</a></i>? (<b>,</b> <i><a href="#string_literal">string_literal</a></i>? (<b>,</b> <i><a href="#expression">expression</a></i> )?)?)? <br \>
+ <b>circle</b> ( <i><a href="#expression">expression</a></i> <b>,</b> )? <b>step</b>? <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> <b>,</b> <i><a href="#expression">expression</a></i> ((<b>,</b> <i><a href="#expression">expression</a></i>? (<b>,</b> <i><a href="#expression">expression</a></i>? (<b>,</b> <i><a href="#expression">expression</a></i>? (<b>,</b> <i><a href="#expression">expression</a></i> (<b>,</b> <i><a href="#expression">expression</a></i>)? )? )?)?)?)?<br \>
+ <b>paint</b> ( <i><a href="#expression">expression</a></i> <b>,</b> )? <b>step</b>? <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> (<b>,</b> <i><a href="#expression">expression</a></i>? (<b>,</b> <i><a href="#expression">expression</a></i>? ) )<br \>
+ <b>draw</b> ( expression <b>,</b> )? <i><a href="#expression">expression</a></i><br \>
+ <b>view</b> (<b>screen</b>? <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> <b>-</b> <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> (<b>,</b> <i><a href="#expression">expression</a></i>? (<b>,</b> <i><a href="#expression">expression</a></i>)?)? )?<br \>
+ <b>palette</b> <b>get</b>? ((<b>using</b> <i><a href="#variable">variable</a></i>) | (<i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> (<b>,</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i>)?)?)<br \>
+ <b>put</b> ( <i><a href="#expression">expression</a></i> <b>,</b> )? <b>step</b>? <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> <b>,</b> ( <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> <b>-</b> <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> <b>,</b>)? <i><a href="#variable">variable</a></i> (<b>,</b> <i><a href="#expression">expression</a></i> (<b>,</b> <i><a href="#expression">expression</a></i>)?)?<br \>
+ <b>get</b> ( <i><a href="#expression">expression</a></i> <b>,</b> )? <b>step</b>? <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> <b>-</b> <b>step</b>? <b>(</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> <b>)</b> <b>,</b> <i><a href="#variable">variable</a></i><br \>
+ <b>screen</b> (<i><a href="#integer_literal">integer_literal</a></i> | ((<i><a href="#expression">expression</a></i> (((<b>,</b> <i><a href="#expression">expression</a></i>)? <b>,</b> <i><a href="#expression">expression</a></i>)? <i><a href="#expression">expression</a></i>)? <b>,</b> <i><a href="#expression">expression</a></i>))<br \>
+ <b>screenres</b> <i><a href="#expression">expression</a></i> <b>,</b> <i><a href="#expression">expression</a></i> (((<b>,</b> <i><a href="#expression">expression</a></i>)? <b>,</b> <i><a href="#expression">expression</a></i>)? <b>,</b> <i><a href="#expression">expression</a></i>)?<br \>
+</div>;<br \>
+<br \>
+</div><br \>
+
+</div>
+</div> 
+</div> 
+</body>
+</html>

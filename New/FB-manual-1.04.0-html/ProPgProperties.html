@@ -1,0 +1,368 @@
+<html>
+<head>
+<title>Properties</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Properties</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	<br \>
+Properties are a special mix of member variable and member procedure. They provide a way to set or retrieve values of an object, through normal looking assignments or member accesses, but also let the object perform actions if it needs to update itself.<br \>
+<br \>
+<b><a href="#BASIC">Basic properties</a></b><br \>
+Declaring and using setter and getter properties.<br \>
+<b><a href="#INDEXED">Indexed properties</a></b><br \>
+Properties with an additional parameter.<br \>
+<br \>
+<a name="BASIC"></a><div class="fb_sect_title">Basic properties</div><div class="fb_sect_cont"><br \>
+<br \>
+A property is declared similar to a <a href="ProPgMemberProcedures.html">member procedure</a>, except that the <a href="KeyPgProperty.html">Property</a> keyword is used instead of <tt><a href="KeyPgSub.html">Sub</a></tt> or <tt><a href="KeyPgFunction.html">Function</a></tt>. For example, let's consider a window class for a windowing system or GUI library.<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="key">Type</span>&nbsp;<span class="key">Window</span><br />
+<span class="key">Private</span><span class="oth">:</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span>&nbsp;<span class="wrd">title_</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Window</span>&nbsp;<span class="wrd">w</span><br />
+</div></tt><br />
+<br \>
+In order to set the window's title, a <i>setter</i> property can be added:<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="key">Type</span>&nbsp;<span class="key">Window</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">title</span><span class="oth">(</span><span class="key">ByRef</span>&nbsp;<span class="wrd">s</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+<span class="key">Private</span><span class="oth">:</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span>&nbsp;<span class="wrd">title_</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+<span class="key">Property</span>&nbsp;<span class="wrd">Window.title</span><span class="oth">(</span><span class="key">ByRef</span>&nbsp;<span class="wrd">s</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">this.title_</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">s</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Window</span>&nbsp;<span class="wrd">w</span><br />
+<span class="wrd">w.title</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"My&nbsp;Window"</span><br />
+</div></tt><br />
+<br \>
+It is very similar to a member <a href="KeyPgSub.html">Sub</a>, as it takes a parameter and updates the object to the new state based on the parameter. However, the syntax for sending this parameter is a basic assignment, not a function call. By assigning the new value to the <tt>title</tt> property, the property procedure will automatically be called with the given new value, and can update the window to reflect the change. It is up to the object how to represent the property state internally.<br \>
+<br \>
+By design, properties can only be assigned one value at a time, and as a result the property procedure can not have more than one parameter.<br \>
+<br \>
+After setting the window title, it should also be possible to retrieve it. Here is how to add a <i>getter</i> property:<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="key">Type</span>&nbsp;<span class="key">Window</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;setter</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">title</span><span class="oth">(</span><span class="key">ByRef</span>&nbsp;<span class="wrd">s</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;getter</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">title</span><span class="oth">()</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><br />
+<span class="key">Private</span><span class="oth">:</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span>&nbsp;<span class="wrd">title_</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+<span class="com">''&nbsp;setter</span><br />
+<span class="key">Property</span>&nbsp;<span class="wrd">Window.title</span><span class="oth">(</span><span class="key">ByRef</span>&nbsp;<span class="wrd">s</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">this.title_</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">s</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="com">''&nbsp;getter</span><br />
+<span class="key">Property</span>&nbsp;<span class="wrd">Window.title</span><span class="oth">()</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Return</span>&nbsp;<span class="wrd">this.title_</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Window</span>&nbsp;<span class="wrd">w</span><br />
+<span class="wrd">w.title</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"My&nbsp;Window"</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">w.title</span><br />
+</div></tt><br />
+<br \>
+The getter is very similar to a <a href="KeyPgFunction.html">Function</a>. It is supposed to return the current value of the property, and it allows the current value to be calculated from other internal values, if needed. Note that both <i>setter</i> and <i>getter</i> use the same identifier, indicating they handle the same property.<br \>
+<br \>
+Just like <a href="ProPgMemberProcedures.html">method overloading</a>, it is possible to specify multiple setters, provided they have different parameter types:<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="key">Type</span>&nbsp;<span class="key">Window</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">title</span><span class="oth">(</span><span class="key">ByRef</span>&nbsp;<span class="wrd">s</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">title</span><span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">title</span><span class="oth">()</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><br />
+<span class="key">Private</span><span class="oth">:</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span>&nbsp;<span class="wrd">title_</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+<span class="key">Property</span>&nbsp;<span class="wrd">Window.title</span><span class="oth">(</span><span class="key">ByRef</span>&nbsp;<span class="wrd">s</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">this.title_</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">s</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="key">Property</span>&nbsp;<span class="wrd">Window.title</span><span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">this.title_</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"Number:&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">i</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="key">Property</span>&nbsp;<span class="wrd">Window.title</span><span class="oth">()</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Return</span>&nbsp;<span class="wrd">this.title_</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Window</span>&nbsp;<span class="wrd">w</span><br />
+<span class="wrd">w.title</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"My&nbsp;Window"</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">w.title</span><br />
+<span class="wrd">w.title</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">5</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">w.title</span><br />
+</div></tt><br />
+<br \>
+In comparison to this example of properties, here is similar code that does not use properties:<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="key">Type</span>&nbsp;<span class="key">Window</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">set_title</span><span class="oth">(</span><span class="key">ByRef</span>&nbsp;<span class="wrd">s</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">set_title</span><span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Function</span>&nbsp;<span class="wrd">get_title</span><span class="oth">()</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><br />
+<span class="key">Private</span><span class="oth">:</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span>&nbsp;<span class="wrd">title</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">Window.set_title</span><span class="oth">(</span><span class="key">ByRef</span>&nbsp;<span class="wrd">s</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">this.title</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">s</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">Window.set_title</span><span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">this.title</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"Number:&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">i</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="key">Function</span>&nbsp;<span class="wrd">Window.get_title</span><span class="oth">()</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Return</span>&nbsp;<span class="wrd">this.title</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Function</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Window</span>&nbsp;<span class="wrd">w</span><br />
+<span class="wrd">w.set_title</span><span class="oth">(</span><span class="quo">"My&nbsp;Window"</span><span class="oth">)</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">w.get_title</span><span class="oth">()</span><br />
+<span class="wrd">w.set_title</span><span class="oth">(</span><span class="num">5</span><span class="oth">)</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">w.get_title</span><span class="oth">()</span><br />
+</div></tt><br />
+<br \>
+The code is basically the same, only the syntax is different. Properties are specifically designed to combine the setter/getter concept and the language's normal way of literally <a href="CatPgOpAssignment.html">assigning</a> and <a href="CatPgOpTypeclass.html">accessing</a> values to a class' member variables. It is up to the programmers to decide which way they prefer.<br \>
+<br \>
+Here is an example demonstrating a text user interface window class allowing to set position and title using properties:<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="key">Namespace</span>&nbsp;<span class="wrd">tui</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Type</span>&nbsp;<span class="key">Point</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">x</span><span class="oth">,</span>&nbsp;<span class="wrd">y</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Type</span>&nbsp;<span class="wrd">char</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">UByte</span>&nbsp;<span class="wrd">value</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">UByte</span>&nbsp;<span class="key">Color</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Type</span>&nbsp;<span class="key">Window</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;public</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Constructor</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">x</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">1</span><span class="oth">,</span>&nbsp;<span class="wrd">y</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">1</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">w</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">20</span><span class="oth">,</span>&nbsp;<span class="wrd">h</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">5</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">title</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">ZString</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Destructor</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">show</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;title&nbsp;property</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">title</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">title</span><span class="oth">(</span>&nbsp;<span class="wrd">new_title</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span>&nbsp;<span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;position&nbsp;properties</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">x</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">x</span><span class="oth">(</span>&nbsp;<span class="wrd">new_x</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">y</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">y</span><span class="oth">(</span>&nbsp;<span class="wrd">new_y</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Private</span><span class="oth">:</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">redraw</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">remove</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">drawtitle</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span>&nbsp;<span class="wrd">p_title</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Point</span>&nbsp;<span class="key">Pos</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Point</span>&nbsp;<span class="wrd">siz</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Constructor</span>&nbsp;<span class="key">Window</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">x_</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">y_</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">w_</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">h_</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">title_</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">ZString</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">pos.x</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">x_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">pos.y</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">y_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">siz.x</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">w_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">siz.y</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">h_</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span><span class="oth">(</span>&nbsp;<span class="wrd">title_</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">title_</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="oth">@</span><span class="quo">"untitled"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">p_title</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="oth">*</span><span class="wrd">title_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Constructor</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Destructor</span>&nbsp;<span class="key">Window</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Color</span>&nbsp;<span class="num">7</span><span class="oth">,</span>&nbsp;<span class="num">0</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Cls</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Destructor</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">window.title</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">title</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">p_title</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">window.title</span><span class="oth">(</span>&nbsp;<span class="wrd">new_title</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span>&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">p_title</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">new_title</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">drawtitle</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">window.x</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Return</span>&nbsp;<span class="wrd">pos.x</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">window.x</span><span class="oth">(</span>&nbsp;<span class="wrd">new_x</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">remove</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">pos.x</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">new_x</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">redraw</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">window.y</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Property</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">pos.y</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">window.y</span><span class="oth">(</span>&nbsp;<span class="wrd">new_y</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">remove</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">pos.y</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">new_y</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">redraw</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">window.show</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">redraw</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">window.drawtitle</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Locate</span>&nbsp;<span class="wrd">pos.y</span><span class="oth">,</span>&nbsp;<span class="wrd">pos.x</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Color</span>&nbsp;<span class="num">15</span><span class="oth">,</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="key">Space</span><span class="oth">(</span>&nbsp;<span class="wrd">siz.x</span>&nbsp;<span class="oth">);</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Locate</span>&nbsp;<span class="wrd">pos.y</span><span class="oth">,</span>&nbsp;<span class="wrd">pos.x</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="oth">(</span><span class="wrd">siz.x</span>&nbsp;<span class="oth">\</span>&nbsp;<span class="num">2</span><span class="oth">)</span>&nbsp;<span class="oth">-</span>&nbsp;<span class="oth">(</span><span class="key">Len</span><span class="oth">(</span>&nbsp;<span class="wrd">p_title</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="oth">\</span>&nbsp;<span class="num">2</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="wrd">p_title</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">window.remove</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Color</span>&nbsp;<span class="num">0</span><span class="oth">,</span>&nbsp;<span class="num">0</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Var</span>&nbsp;<span class="wrd">sp</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Space</span><span class="oth">(</span>&nbsp;<span class="wrd">siz.x</span>&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">pos.y</span>&nbsp;<span class="key">To</span>&nbsp;<span class="wrd">pos.y</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="wrd">siz.y</span>&nbsp;<span class="oth">-</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Locate</span>&nbsp;<span class="wrd">i</span><span class="oth">,</span>&nbsp;<span class="wrd">pos.x</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="wrd">sp</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">window.redraw</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">drawtitle</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Color</span>&nbsp;<span class="num">8</span><span class="oth">,</span>&nbsp;<span class="num">7</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Var</span>&nbsp;<span class="wrd">sp</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Space</span><span class="oth">(</span>&nbsp;<span class="wrd">siz.x</span>&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">pos.y</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="num">1</span>&nbsp;<span class="key">To</span>&nbsp;<span class="wrd">pos.y</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="wrd">siz.y</span>&nbsp;<span class="oth">-</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Locate</span>&nbsp;<span class="wrd">i</span><span class="oth">,</span>&nbsp;<span class="wrd">pos.x</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="wrd">sp</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Namespace</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="wrd">win</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">tui.window</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">tui.window</span><span class="oth">(</span>&nbsp;<span class="num">3</span><span class="oth">,</span>&nbsp;<span class="num">5</span><span class="oth">,</span>&nbsp;<span class="num">50</span><span class="oth">,</span>&nbsp;<span class="num">15</span>&nbsp;<span class="oth">)</span><br />
+<br />
+<span class="wrd">win.show</span><br />
+<span class="key">Sleep</span>&nbsp;<span class="num">500</span><br />
+<br />
+<span class="wrd">win.title</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"Window&nbsp;1"</span><br />
+<span class="key">Sleep</span>&nbsp;<span class="num">250</span><br />
+<span class="wrd">win.x</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">win.x</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="num">10</span><br />
+<span class="key">Sleep</span>&nbsp;<span class="num">250</span><br />
+<br />
+<span class="wrd">win.title</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"Window&nbsp;2"</span><br />
+<span class="key">Sleep</span>&nbsp;<span class="num">250</span><br />
+<span class="wrd">win.y</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">win.y</span>&nbsp;<span class="oth">-</span>&nbsp;<span class="num">2</span><br />
+<span class="key">Sleep</span>&nbsp;<span class="num">250</span><br />
+<br />
+<span class="key">Locate</span>&nbsp;<span class="num">25</span><span class="oth">,</span>&nbsp;<span class="num">1</span><br />
+<span class="key">Color</span>&nbsp;<span class="num">7</span><span class="oth">,</span>&nbsp;<span class="num">0</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"Press&nbsp;any&nbsp;key..."</span><span class="oth">;</span><br />
+<br />
+<span class="key">Sleep</span><br />
+</div></tt><br />
+<br \>
+Note how updating the window's position or title automatically causes the window to be redrawn.<br \>
+<br \>
+<a name="INDEXED"></a></div><div class="fb_sect_title">Indexed properties</div><div class="fb_sect_cont"><br \>
+<br \>
+Properties can have an additional parameter that is called an <tt>index</tt> (currently only one additional parameter is allowed). The index is specified in parentheses behind the property's name, as if the property was an array (with only one dimension). For example:<br \>
+<br \>
+<div class="fb_indent"><tt><div class="freebasic">
+<span class="key">Type</span>&nbsp;<span class="wrd">IntArray</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;setters</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">v</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">,</span>&nbsp;<span class="wrd">v</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">v</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">,</span>&nbsp;<span class="wrd">v</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;getters</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">)</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Declare</span>&nbsp;<span class="key">Property</span>&nbsp;<span class="wrd">value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+<br />
+<span class="key">Private</span><span class="oth">:</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">data_</span><span class="oth">(</span><span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="num">9</span><span class="oth">)</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+<span class="key">Property</span>&nbsp;<span class="wrd">IntArray.value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">)</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Return</span>&nbsp;<span class="wrd">This.data_</span><span class="oth">(</span><span class="wrd">index</span><span class="oth">)</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="key">Property</span>&nbsp;<span class="wrd">IntArray.value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Return</span>&nbsp;<span class="wrd">This.data_</span><span class="oth">(</span><span class="key">CInt</span><span class="oth">(</span><span class="wrd">index</span><span class="oth">))</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="key">Property</span>&nbsp;<span class="wrd">IntArray.value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">v</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">This.data_</span><span class="oth">(</span><span class="wrd">index</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">v</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="key">Property</span>&nbsp;<span class="wrd">IntArray.value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">,</span>&nbsp;<span class="wrd">v</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">This.data_</span><span class="oth">(</span><span class="key">CInt</span><span class="oth">(</span><span class="wrd">index</span><span class="oth">))</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">v</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="key">Property</span>&nbsp;<span class="wrd">IntArray.value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">v</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">This.data_</span><span class="oth">(</span><span class="wrd">index</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">CInt</span><span class="oth">(</span><span class="wrd">v</span><span class="oth">)</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="key">Property</span>&nbsp;<span class="wrd">IntArray.value</span><span class="oth">(</span><span class="wrd">index</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">,</span>&nbsp;<span class="wrd">v</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">This.data_</span><span class="oth">(</span><span class="key">CInt</span><span class="oth">(</span><span class="wrd">index</span><span class="oth">))</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">CInt</span><span class="oth">(</span><span class="wrd">v</span><span class="oth">)</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Property</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="wrd">a</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">IntArray</span><br />
+<br />
+<span class="wrd">a.value</span><span class="oth">(</span><span class="num">0</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">1234</span><br />
+<span class="wrd">a.value</span><span class="oth">(</span><span class="quo">"1"</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">5678</span><br />
+<span class="wrd">a.value</span><span class="oth">(</span><span class="num">2</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"-1234"</span><br />
+<span class="wrd">a.value</span><span class="oth">(</span><span class="quo">"3"</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"-5678"</span><br />
+<br />
+<span class="key">Print</span>&nbsp;<span class="wrd">a.value</span><span class="oth">(</span><span class="num">0</span><span class="oth">)</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">a.value</span><span class="oth">(</span><span class="quo">"1"</span><span class="oth">)</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">a.value</span><span class="oth">(</span><span class="num">2</span><span class="oth">)</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">a.value</span><span class="oth">(</span><span class="quo">"3"</span><span class="oth">)</span><br />
+<br />
+<span class="key">Sleep</span><br />
+</div></tt><br />
+</div>This simulates an integer array that can be assigned strings, and even be indexed with strings. See KeyPgProperty for another example.<br \>
+<br \>
+</div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

@@ -1,0 +1,30 @@
+************Format**************
+***FROM DATA SIZE DESCRIPTION***
+********************************
+
+
+//===Waiting Authentication===
+	//Client connects to server:
+		Sv	1	1	Request authentication
+		Cl	1	1	Send authentication
+		Sv	1	1	Confirmation of authentication
+
+	//Client connects and fails authentication:
+		Sv	1	1	Request authentication
+		Cl	!1	1	Incorrect authentication
+		Sv	2	1	Authentication failed
+
+//===Client is playing===
+	//5 - Client requests map
+		Cl	5	1	Request map
+		Sv	7	1	Map header
+		Sv	Sz	1	Number of tiles to expect
+		//for i = 1 to Sz
+			Sv	x	1	X coordinate
+			Sv	y	1	Y coordinate
+			Sv	tl	1	Tile ID
+		//next i
+	//6 - Up
+	//7 - Down
+	//8 - Left
+	//9 - Right

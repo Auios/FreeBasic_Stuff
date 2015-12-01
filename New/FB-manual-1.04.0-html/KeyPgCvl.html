@@ -1,0 +1,65 @@
+<html>
+<head>
+<title>CVL</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">CVL</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Converts a single-precision floating-point number or four-byte string to an integer (<tt><a href="KeyPgLong.html">Long</a></tt>) variable<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<a href="KeyPgDeclare.html">Declare</a> <a href="KeyPgFunction.html">Function</a> <b>CVL</b> ( <a href="KeyPgByval.html">ByVal</a> <i>sng</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgSingle.html">Single</a> ) <a href="KeyPgAs.html">As</a> <a href="KeyPgLong.html">Long</a><br \>
+<a href="KeyPgDeclare.html">Declare</a> <a href="KeyPgFunction.html">Function</a> <b>CVL</b> ( <a href="KeyPgByref.html">ByRef</a> <i>str</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgConstQualifier.html">Const</a> <a href="KeyPgString.html">String</a> ) <a href="KeyPgAs.html">As</a> <a href="KeyPgLong.html">Long</a><br \>
+</tt><br \>
+</div><div class="fb_sect_title">Usage</div><div class="fb_sect_cont"><tt><br \>
+<i>result</i> = <b>CVL</b>( <i>sng</i> )<br \>
+<i>result</i> = <b>CVL</b>( <i>str</i> )<br \>
+</tt><br \>
+</div><div class="fb_sect_title">Parameters</div><div class="fb_sect_cont"><br \>
+<tt><i>sng</i></tt><br \>
+<div class="fb_indent">A <tt><a href="KeyPgSingle.html">Single</a></tt> floating-point number with a binary copy of an integer variable stored in it.<br \>
+</div><tt><i>str</i></tt><br \>
+<div class="fb_indent">A <tt><a href="KeyPgString.html">String</a></tt> at least four bytes in length with a binary copy of an integer variable stored in it.<br \>
+<br \>
+</div></div><div class="fb_sect_title">Return Value</div><div class="fb_sect_cont"><br \>
+<div class="fb_indent">A <tt><a href="KeyPgLong.html">Long</a></tt> variable to copy the binary copy of a integer to.<br \>
+<br \>
+</div></div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+Returns a 32-bit <tt><a href="KeyPgLong.html">Long</a></tt> integer value using the binary data contained in a <tt><a href="KeyPgSingle.html">Single</a></tt>, or a <tt><a href="KeyPgString.html">String</a></tt> of at least four bytes in length.  A value of zero (<tt>0</tt>) is returned if the string is less than four bytes in length.<br \>
+<br \>
+<tt><b>CVL</b></tt> is used to convert 4-byte strings created with <tt><a href="KeyPgMkl.html">MKL</a></tt>.<br \>
+<br \>
+This function can also be used to convert 32-bit integer values from a memory or file buffer without the need for a <tt><a href="KeyPgType.html">Type</a></tt> structure.  However, just as with the type structure, special care should be taken when using <tt><b>CVL</b></tt> to convert strings that have been read from a buffer.<br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="key">Dim</span>&nbsp;<span class="wrd">l</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Long</span><span class="oth">,</span>&nbsp;<span class="wrd">s</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><br />
+<span class="wrd">s</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"ABCD"</span><br />
+<span class="wrd">l</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">CVL</span><span class="oth">(</span><span class="wrd">s</span><span class="oth">)</span><br />
+<span class="key">Print</span>&nbsp;<span class="key">Using</span>&nbsp;<span class="quo">"s&nbsp;=&nbsp;""&amp;"""</span><span class="oth">;</span>&nbsp;<span class="wrd">s</span><br />
+<span class="key">Print</span>&nbsp;<span class="key">Using</span>&nbsp;<span class="quo">"l&nbsp;=&nbsp;&amp;"</span><span class="oth">;</span>&nbsp;<span class="wrd">l</span><br />
+</div></tt><br />
+<br \>
+</div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> In QB an error occurs if the string passed is less than four bytes in length.<br \>
+<li> QB did not support floating-point arguments.<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <tt><a href="KeyPgMkl.html">MKL</a></tt><br \>
+<li> <tt><a href="KeyPgCvshort.html">CVShort</a></tt><br \>
+<li> <tt><a href="KeyPgCvi.html">CVI</a></tt><br \>
+<li> <tt><a href="KeyPgCvlongint.html">CVLongInt</a></tt><br \>
+<br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

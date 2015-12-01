@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>gmp, The GNU Multiple Precision Arithmetic Library</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">gmp, The GNU Multiple Precision Arithmetic Library</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Free library for arbitrary precision arithmetic, operating on signed integers, rational numbers, and floating point numbers.<br \>
+<br \>
+Website: http://www.gmplib.org<br \>
+Platforms supported: Win32, Linux<br \>
+Headers to include: gmp.bi<br \>
+Header version: 4.1.4<br \>
+<br \>
+<div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="def">#include&nbsp;once&nbsp;"gmp.bi"<br />
+</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">mpz_ptr</span>&nbsp;<span class="wrd">bignum</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Allocate</span><span class="oth">(</span><span class="key">SizeOf</span><span class="oth">(</span><span class="wrd">__mpz_struct</span><span class="oth">))</span><br />
+<span class="wrd">mpz_init_set_si</span><span class="oth">(</span><span class="wrd">bignum</span><span class="oth">,</span>&nbsp;<span class="num">2</span><span class="oth">)</span><br />
+<span class="wrd">mpz_pow_ui</span><span class="oth">(</span><span class="wrd">bignum</span><span class="oth">,</span>&nbsp;<span class="wrd">bignum</span><span class="oth">,</span>&nbsp;<span class="num">65536</span><span class="oth">)</span><br />
+<br />
+<span class="key">Print</span>&nbsp;<span class="quo">"2^65536&nbsp;=&nbsp;"</span><span class="oth">;</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">ZString</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">s</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">mpz_get_str</span><span class="oth">(</span><span class="num">0</span><span class="oth">,</span>&nbsp;<span class="num">10</span><span class="oth">,</span>&nbsp;<span class="wrd">bignum</span><span class="oth">)</span><br />
+<span class="key">Print</span>&nbsp;<span class="oth">*</span><span class="wrd">s</span><span class="oth">;</span><br />
+<span class="key">Deallocate</span><span class="oth">(</span><span class="wrd">s</span><span class="oth">)</span><br />
+<span class="key">Print</span><br />
+<br />
+<span class="wrd">mpz_clear</span><span class="oth">(</span><span class="wrd">bignum</span><span class="oth">)</span><br />
+<span class="key">Deallocate</span><span class="oth">(</span><span class="wrd">bignum</span><span class="oth">)</span><br />
+</div></tt><br />
+<br \>
+<br \>
+   <br \>
+</div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

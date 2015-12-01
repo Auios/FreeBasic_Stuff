@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>__Date_Iso__</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">__Date_Iso__</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Intrinsic define (macro value) set by the compiler<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+__DATE_ISO__<br \>
+</tt><br \>
+</div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+Substitutes the compiler date in a literal string (<tt>"yyyy-mm-dd"</tt> format) where used.  This format is in line with ISO 8601 and can be used for lexicographical date comparisons.<br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="key">Print</span>&nbsp;<span class="quo">"Compile&nbsp;Date:&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">__DATE_ISO__</span><br />
+<br />
+<span class="key">If</span>&nbsp;<span class="wrd">__DATE_ISO__</span>&nbsp;<span class="oth">&lt;</span>&nbsp;<span class="quo">"2011-12-25"</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Compiled&nbsp;before&nbsp;Christmas&nbsp;day&nbsp;2011"</span><br />
+<span class="key">Else</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Compiled&nbsp;after&nbsp;Christmas&nbsp;day&nbsp;2011"</span><br />
+<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+</div></tt><br />
+<br \>
+<pre class="fb_pre">
+Compile Date: 2011-09-29
+Compiled before Christmas day 2011
+</pre><br \>
+</div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> New to FreeBASIC<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <tt><a href="KeyPgDddate.html">__DATE__</a></tt><br \>
+<li> <tt><a href="KeyPgDdtime.html">__TIME__</a></tt><br \>
+<li> <tt><a href="KeyPgDate.html">Date</a></tt><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

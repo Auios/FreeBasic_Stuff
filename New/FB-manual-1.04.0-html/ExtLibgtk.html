@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>GTK+, The GIMP ToolKit</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">GTK+, The GIMP ToolKit</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Cross-platform Graphical User Interface library<br \>
+<br \>
+Website: http://www.gtk.org<br \>
+Platforms supported: Win32, Linux<br \>
+Headers to include: gtk/gtk.bi<br \>
+Example Usage: yes, in examples/GUI/GTK+/<br \>
+Header version: 2.24.27, 3.14.10<br \>
+<br \>
+By default, gtk/gtk.bi will use the GTK+ 2 API.<br \>
+Define __USE_GTK3__ before including gtk/gtk.bi to use GTK+ 3.<br \>
+<br \>
+<div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="def">#include&nbsp;once&nbsp;"gtk/gtk.bi"<br />
+</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">Shared</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">GtkWidget</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">win</span><br />
+<br />
+<span class="key">Private</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">on_clicked</span>&nbsp;<span class="key">cdecl</span><span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="wrd">button</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">GtkButton</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">userdata</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">gpointer</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Static</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">clickcount</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">clickcount</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">gtk_window_set_title</span><span class="oth">(</span><span class="wrd">GTK_WINDOW</span><span class="oth">(</span><span class="wrd">win</span><span class="oth">),</span>&nbsp;<span class="quo">"clicked&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">clickcount</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"&nbsp;times"</span><span class="oth">)</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="wrd">gtk_init</span><span class="oth">(</span><span class="wrd">NULL</span><span class="oth">,</span>&nbsp;<span class="wrd">NULL</span><span class="oth">)</span><br />
+<br />
+<span class="wrd">win</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">gtk_window_new</span><span class="oth">(</span><span class="wrd">GTK_WINDOW_TOPLEVEL</span><span class="oth">)</span><br />
+<span class="wrd">gtk_window_set_title</span><span class="oth">(</span><span class="wrd">GTK_WINDOW</span><span class="oth">(</span><span class="wrd">win</span><span class="oth">),</span>&nbsp;<span class="quo">"A&nbsp;small&nbsp;GTK+&nbsp;example"</span><span class="oth">)</span><br />
+<span class="wrd">gtk_window_set_default_size</span><span class="oth">(</span><span class="wrd">GTK_WINDOW</span><span class="oth">(</span><span class="wrd">win</span><span class="oth">),</span>&nbsp;<span class="num">300</span><span class="oth">,</span>&nbsp;<span class="num">200</span><span class="oth">)</span><br />
+<span class="wrd">gtk_container_set_border_width</span><span class="oth">(</span><span class="wrd">GTK_CONTAINER</span><span class="oth">(</span><span class="wrd">win</span><span class="oth">),</span>&nbsp;<span class="num">20</span><span class="oth">)</span><br />
+<br />
+<span class="wrd">g_signal_connect</span><span class="oth">(</span><span class="wrd">G_OBJECT</span><span class="oth">(</span><span class="wrd">win</span><span class="oth">),</span>&nbsp;<span class="quo">"destroy"</span><span class="oth">,</span>&nbsp;<span class="wrd">G_CALLBACK</span><span class="oth">(@</span><span class="wrd">gtk_main_quit</span><span class="oth">),</span>&nbsp;<span class="wrd">NULL</span><span class="oth">)</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">GtkWidget</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">button</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">gtk_button_new_with_label</span><span class="oth">(</span><span class="quo">"Click&nbsp;me!"</span><span class="oth">)</span><br />
+<span class="wrd">gtk_container_add</span><span class="oth">(</span><span class="wrd">GTK_CONTAINER</span><span class="oth">(</span><span class="wrd">win</span><span class="oth">),</span>&nbsp;<span class="wrd">button</span><span class="oth">)</span><br />
+<br />
+<span class="wrd">g_signal_connect</span><span class="oth">(</span><span class="wrd">G_OBJECT</span><span class="oth">(</span><span class="wrd">button</span><span class="oth">),</span>&nbsp;<span class="quo">"clicked"</span><span class="oth">,</span>&nbsp;<span class="wrd">G_CALLBACK</span><span class="oth">(@</span><span class="wrd">on_clicked</span><span class="oth">),</span>&nbsp;<span class="wrd">NULL</span><span class="oth">)</span><br />
+<br />
+<span class="wrd">gtk_widget_show_all</span><span class="oth">(</span><span class="wrd">win</span><span class="oth">)</span><br />
+<br />
+<span class="wrd">gtk_main</span><span class="oth">()</span><br />
+</div></tt><br />
+<br \>
+</div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

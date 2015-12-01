@@ -1,0 +1,74 @@
+~~~Client commands~~~
+mu - move up
+md - move down
+ml - move left
+mr - move right
+
+cn - auth to the server upon connection
+dc - disconnection request for proper disconnection
+
+ms;MESSAGE - Client's message to send to other clients
+
+ri - Request your ID
+rc - Request your coordinates
+rm - Request map around your X Y coords (9x9)
+rp - Request player count
+
+
+~~~Server responses~~~
+ys - acknowledgement of previous command
+no - no
+en - End. Server tells client that whatever data it sent from a loop has ended
+
+ba - bad authentication
+sf - Server Full
+sh - Server shut down
+dc;ID - tells Client that another client has disconnected
+ID - Tell the client its ID
+X;Y - your coordinates
+
+mv;ID;X;Y - Server tells you that another client with ID has moved to X,Y
+tl;ID;X;Y - give the client an ID of a new tile
+
+ms;ID;MESSAGE
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+
+~~~Upon connection~~~
+CL: cn
+SV: ys
+CL: ri
+SV: ID
+CL: rc
+SV: X;Y
+CL: rm
+SV: mv;ID;X;Y
+for X = 1 to 9
+	for Y = 1 to 9
+		tl;ID;X;Y
+  next Y
+next X
+SV: en
+CL:rp
+SV:PLAYERCOUNT
+
+
+~~~MAP~~~
+9x9 = 81
+player is at the center of the screen (5,5)
+
+
+~~~INVENTORY STUFF~~~
+kept track of by the server
+all palyer inventorys are size 10
+
+
+inventory commands: iv;FLAG
+where FLAG represents what is to be done
+FLAGS:
+	st - status. server returns what the player's inventory is comprised of 
+  dr;ITEMID;AMT - drop. drops item(s) specified by id and amount, directly below the player. if this is done illegally (either attempting to drop an item one doesn't have or more than one has) then server returns "no"
+  gr;AMT - grab. grabs items under the player. server returns "ys;ITEMID;AMT"
+	

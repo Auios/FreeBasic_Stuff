@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>... (Ellipsis)</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">... (Ellipsis)</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	<div class="fb_indent"></div>Used in place of procedure parameter to pass a variable number of arguments, or as the upper bound in an array declaration to denote that the number of elements will be determined by the initializer.<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<a href="KeyPgDeclare.html">Declare</a> { <a href="KeyPgSub.html">Sub</a> | <a href="KeyPgFunction.html">Function</a> } <i>proc_name</i> <a href="KeyPgCdecl.html">cdecl</a> ( <i>param_list</i>, <b>...</b> )  { | <a href="KeyPgAs.html">As</a> <i>return_type</i> }<br \>
+<br \>
+<a href="KeyPgDim.html">Dim</a> <i>array_symbol</i> ([<i>lbound</i> <a href="KeyPgTo.html">To</a>] <b>...</b>) [<a href="KeyPgAs.html">As</a> <a href="DataType.html">datatype</a>] =&gt; { <i>expression_list</i> }<br \>
+<br \>
+<a href="KeyPgPpdefine.html">#define</a> <i>identifier</i>( [ <i>parameters</i>, ] <i>variadic_parameter</i><b>...</b> ) <i>body</i><br \>
+</tt><br \>
+</div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+The ellipsis (three dots, <tt><b>...</b></tt>) is used in procedure declarations and definitions to indicate a variable argument list. A first argument (at least) must always be specified and the procedure must be called with the C calling convention <tt><a href="KeyPgCdecl.html">cdecl</a></tt>. In the procedure body, <tt><a href="KeyPgVaFirst.html">va_first</a></tt>, <tt><a href="KeyPgVaArg.html">va_arg</a></tt> and <tt><a href="KeyPgVaNext.html">va_next</a></tt> are used to handle the variable arguments.<br \>
+Only numeric types and pointers are supported as variable arguments (all bytes and shorts passed on variable arguments are implicitly converted to integers, all singles passed on variable arguments are implicitly converted to doubles).  <tt><a href="KeyPgString.html">String</a></tt>s can be passed, in which case a <tt><a href="KeyPgZstring.html">ZString</a> <a href="KeyPgPtr.html">Ptr</a></tt> to the string data is taken.<br \>
+A variadic procedure name can never be overloaded.<br \>
+<br \>
+Using an ellipsis in place of the upper bound in an array declaration causes the upper bound to be set according to the data that appears in the <tt><i>expression_list</i></tt>.  When the ellipsis is used in this manner, an initializer must appear, and cannot be <tt><a href="KeyPgAny.html">Any</a></tt>.<br \>
+<br \>
+Using an ellipsis behind the last parameter in a <tt><a href="KeyPgPpdefine.html">#define</a></tt> or <tt><a href="KeyPgPpmacro.html">#macro</a></tt> declaration allows to create a variadic macro. This means it is possible to pass any number of arguments to the <i>variadic_parameter</i>, which can be used in the <i>body</i> as if it was a normal macro parameter. The <i>variadic_parameter</i> will expand to the full list of arguments passed to it, including commas, and can also be completely empty.<br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="key">Declare</span>&nbsp;<span class="key">Function</span>&nbsp;<span class="wrd">foo</span>&nbsp;<span class="key">cdecl</span>&nbsp;<span class="oth">(</span><span class="wrd">x</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="oth">...)</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+</div></tt><br />
+<br \>
+<tt><div class="freebasic">
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">myarray</span><span class="oth">(</span><span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="oth">...)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="oth">{</span><span class="num">0</span><span class="oth">,</span>&nbsp;<span class="num">1</span><span class="oth">,</span>&nbsp;<span class="num">2</span><span class="oth">,</span>&nbsp;<span class="num">3</span><span class="oth">}</span><br />
+<span class="key">Print</span>&nbsp;<span class="key">LBound</span><span class="oth">(</span><span class="wrd">myarray</span><span class="oth">),</span>&nbsp;<span class="key">UBound</span><span class="oth">(</span><span class="wrd">myarray</span><span class="oth">)</span>&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;0,&nbsp;3</span><br />
+</div></tt><br />
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Using&nbsp;a&nbsp;variadic&nbsp;macro&nbsp;to&nbsp;wrap&nbsp;a&nbsp;variadic&nbsp;function</span><br />
+<span class="def">#include&nbsp;"crt.bi"<br />
+#define&nbsp;eprintf(Format,&nbsp;args...)&nbsp;fprintf(stderr,&nbsp;Format,&nbsp;args)<br />
+</span><span class="wrd">eprintf</span><span class="oth">(!</span><span class="quo">"Hello&nbsp;from&nbsp;printf:&nbsp;%i&nbsp;%s&nbsp;%i\n"</span><span class="oth">,</span>&nbsp;<span class="num">5</span><span class="oth">,</span>&nbsp;<span class="quo">"test"</span><span class="oth">,</span>&nbsp;<span class="num">123</span><span class="oth">)</span><br />
+<br />
+<span class="com">''&nbsp;LISP-like&nbsp;accessors&nbsp;allowing&nbsp;to&nbsp;modify&nbsp;comma-separated&nbsp;lists</span><br />
+<span class="def">#define&nbsp;car(a,&nbsp;b...)&nbsp;a<br />
+#define&nbsp;cdr(a,&nbsp;b...)&nbsp;b<br />
+</span></div></tt><br />
+<br \>
+</div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> New to FreeBASIC<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <tt><a href="KeyPgCdecl.html">cdecl</a></tt><br \>
+<li> <tt><a href="KeyPgVaArg.html">va_arg</a></tt><br \>
+<li> <tt><a href="KeyPgVaFirst.html">va_first</a></tt><br \>
+<li> <tt><a href="KeyPgVaNext.html">va_next</a></tt><br \>
+<li> <tt><a href="KeyPgDim.html">Dim</a></tt><br \>
+<li> <tt><a href="KeyPgStatic.html">Static</a></tt><br \>
+<li> <tt><a href="KeyPgPpdefine.html">#define</a></tt><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

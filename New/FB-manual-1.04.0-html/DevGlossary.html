@@ -1,0 +1,147 @@
+<html>
+<head>
+<title>Glossary - common terms used in fbc development</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Glossary - common terms used in fbc development</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	<br \>
+<span >arg</span>, <span >argument</span><br \>
+<div class="fb_indent">An expression passed to a parameter in a procedure call.<br \>
+<br \>
+</div><span >cast</span><br \>
+<div class="fb_indent">A type cast changes the compile-time data type of an expression and either causes a <span >conversion</span> (e.g. float &lt;-&gt; int) or a reinterpretation of the expression value's bit representation (e.g. integer &lt;-&gt; uinteger).<br \>
+<br \>
+</div><span >comp</span>, <span >compound</span><br \>
+<ul><li> Compound blocks in the language: Any code block that allows nested code such as IF blocks, SCOPE blocks, NAMESPACE blocks, etc. is called a compound.<br \>
+<li> Compound symbols: UDTs, sometimes also namespaces, because both may contain nested (namespaced) symbols and they share some common code.<br \>
+<br \>
+</ul><span >conv</span>, <span >conversion</span><br \>
+<div class="fb_indent">A conversion is an operation that translates between two different representations of the same value (e.g. float &lt;-&gt; int, or 32bit &lt;-&gt; 64bit).<br \>
+<br \>
+<span >cast</span> and <span >conv</span> are often used interchangeably in the compiler sources. For example, the AST's CONV nodes represent type casts, no matter whether they perform conversions or not.<br \>
+<br \>
+Some (but not all) <span >cast</span>s require run-time <span >conversion</span>s, for example:<br \>
+<div class="fb_indent">short &lt;-&gt; integer<br \>
+single &lt;-&gt; integer<br \>
+single &lt;-&gt; double<br \>
+<br \>
+</div>Simple <span >cast</span>s between types of equal class and size do not require a run-time <span >conversion</span>, because the bit representation wouldn't change anyways. For example:<br \>
+<div class="fb_indent">short &lt;-&gt; ushort<br \>
+integer &lt;-&gt; uinteger<br \>
+</div>These are also called <span >noconv cast</span>s.<br \>
+<br \>
+</div><span >ctor</span>, <span >constructor</span><br \>
+<ul><li> UDT constructor<br \>
+<li> module constructor<br \>
+<br \>
+</ul><span >ctx</span>, <span >context</span><br \>
+<div class="fb_indent">UDTs/"classes" in the fbc sources for holding global information shared amongst multiple procedures or modules.<br \>
+<br \>
+</div><span >desc</span>, <span >descriptor</span><br \>
+<ul><li> Dynamic string descriptor<br \>
+<li> Dynamic array descriptor<br \>
+<br \>
+</ul><span >dtor</span>, <span >destructor</span><br \>
+<ul><li> UDT destructor<br \>
+<li> module destructor<br \>
+<br \>
+</ul><span >fbc</span><br \>
+<ul><li> The FreeBASIC compiler project as a whole, the Git repository, the project registered on Sourceforge<br \>
+<li> The compiler program binary/executable (fbc or fbc.exe), as built from the compiler sources<br \>
+<li> The compiler's main module/frontend/driver<br \>
+<br \>
+</ul><span >fbctinf</span><br \>
+<div class="fb_indent">FB compile-time information, also see <span >objinfo</span>.<br \>
+<br \>
+</div><span >fbgfx</span><br \>
+<div class="fb_indent">FB graphics, usually referring to the use of FB's built-in graphics keywords, implemented in <span >gfxlib2</span><br \>
+<br \>
+</div><span >frontend stage 1</span><br \>
+<div class="fb_indent">Compilation of the .bas input files into the next intermediate format: .asm (-gen gas), .c (-gen gcc) or .ll (-gen llvm)<br \>
+<br \>
+</div><span >frontend stage 2</span><br \>
+<div class="fb_indent">Compilation of the .c (-gen gcc) or .ll (-gen llvm) intermediate files into .asm files. (doesn't apply to -gen gas because there the FB compiler generates .asm itself directly)<br \>
+<br \>
+</div><span >function</span><br \>
+<div class="fb_indent">A <span >procedure</span> with result value; sometimes also used in place of <span >procedure</span>, as in C.<br \>
+<br \>
+</div><span >gfxlib2</span><br \>
+<div class="fb_indent">The FB graphics runtime library implementation from the fbc project.<br \>
+<br \>
+</div><span >hashtb</span><br \>
+<div class="fb_indent">A hash table, often used together with a symbol table to allow fast lookup of the symbols in that symbol table.<br \>
+<br \>
+</div><span >libfb</span>, <span >libfbmt</span>, <span >libfbgfx</span>, <span >libfbgfxmt</span><br \>
+<div class="fb_indent">Names of the libraries built from the <span >rtlib</span>/<span >gfxlib2</span> sources. Libraries named <tt>lib*mt</tt> are the thread-safe versions of their <tt>lib*</tt> counterparts. They are built with the <tt>ENABLE_MT</tt> #define.<br \>
+<br \>
+</div><span >local</span><br \>
+<ul><li> Sometimes: A variable allocated on stack<br \>
+<li> Any symbol in a nested scope, not the global/toplevel namespace. Scoped static variables also have the <tt>FB_SYMBATTRIB_LOCAL</tt> attribute, even though they are not allocated on stack.<br \>
+<br \>
+</ul><span >method</span><br \>
+<ul><li> A member-procedure with <tt>THIS</tt> parameter. Static member-procedures (those without the <tt>THIS</tt> parameter) do not have <tt>FB_SYMBATTRIB_METHOD</tt>.<br \>
+<li> Sometimes: Any member-procedure, with or without <tt>THIS</tt> parameter<br \>
+<br \>
+</ul><span >noconv cast</span><br \>
+<div class="fb_indent">A <span >cast</span> that does not require a <span >conversion</span>.<br \>
+<br \>
+</div><span >normal build</span><br \>
+<div class="fb_indent">Described here: <a href="DevNormalVsStandalone.html">Normal vs. Standalone</a><br \>
+<br \>
+</div><span >objinfo</span><br \>
+<div class="fb_indent">See DevObjinfo<br \>
+<br \>
+</div><span >param</span>, <span >parameter</span><br \>
+<div class="fb_indent">Procedure parameters as declared in procedure DECLARE statements or bodies.<br \>
+<br \>
+</div><span >paramvar</span><br \>
+<div class="fb_indent">For each parameter, the compiler will create a corresponding local variable in the procedure's scope, allowing the parameters to be accessed by user code.<br \>
+<br \>
+</div><span >proc</span>, <span >procedure</span><br \>
+<div class="fb_indent">Any <span >sub</span> or <span >function</span>, including constructors/destructors, operator overloads, property setters/getters.<br \>
+<br \>
+</div><span >standalone build</span><br \>
+<div class="fb_indent">Described here: <a href="DevNormalVsStandalone.html">Normal vs. Standalone</a><br \>
+<br \>
+</div><span >static</span><br \>
+<ul><li> static variable allocation: on the heap instead of the stack, but still scoped -- also see <span >local</span>.<br \>
+<li> static member variables: are actually <span >extern</span>s.<br \>
+<li> static member procedures: member-procedures without a <tt>THIS</tt> parameter, also see <span >method</span>.<br \>
+<li> "static array" is often used in place of "fixed-size array" (QB language)<br \>
+<br \>
+</ul><span >struct, structure</span><br \>
+<div class="fb_indent"><tt>TYPE</tt> or <tt>UNION</tt>, also known as <tt>struct</tt>/<tt>union</tt> in C.<br \>
+<br \>
+</div><span >sub</span><br \>
+<div class="fb_indent">A <span >procedure</span> without result (with VOID result).<br \>
+<br \>
+</div><span >symtb</span><br \>
+<div class="fb_indent">A symbol table: owns a linked list of <tt>FBSYMBOL</tt> in a specific scope. This is where <tt>FBSYMBOL</tt>s live.<br \>
+<br \>
+</div><span >rtlib</span><br \>
+<div class="fb_indent">The FB runtime library implementation from the fbc project<br \>
+<br \>
+</div><span >UDT</span>, <span >user-defined type</span><br \>
+<div class="fb_indent">TYPEs/UNIONs/ENUMs, sometimes just TYPEs/UNIONs.<br \>
+<br \>
+</div><span >vreg</span><br \>
+<div class="fb_indent">Virtual registers are used when emitting the AST. The AST creates a vreg for the operands and results of all operations that make up the input program. Each backend emits them differently:<br \>
+</div><ul><ul><li> The ASM backend actually maps the vregs to real registers and also re-uses them as they become free again. The vregs then also let the x86 code emitter know which exact registers are used.<br \>
+<li> The C backend sometimes emits vregs as temporary variables, sometimes simply inserts the expression whose result is represented by a vreg in place of that vreg's first use.<br \>
+<li> The LLVM backend simply emits each vreg as a numbered intermediate value.<br \>
+</ul></ul><div class="fb_indent">Since the C/LLVM backends don't re-use vregs, the vregs are almost in static-single-assignment form; although not quite because there still are self-operations etc. produced by the AST which don't take SSA form into account.<br \>
+<br \>
+</div><br \>
+
+</div>
+</div> 
+</div> 
+</body>
+</html>

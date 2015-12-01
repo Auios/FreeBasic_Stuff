@@ -1,0 +1,108 @@
+<html>
+<head>
+<title>zlib</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">zlib</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Loss-less data compression library using the Deflate algorithm unencumbered by patents.<br \>
+<br \>
+Website: http://www.zlib.net<br \>
+Platforms supported: Win32, Linux, DOS<br \>
+Headers to include: zlib.bi<br \>
+Header version: 1.2.8<br \>
+Examples: in examples/compression/<br \>
+<br \>
+<div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<div class="fb_indent">zlib-based PNG save & load code: http://www.freebasic.net/forum/viewtopic.php?t=3936<br \>
+<br \>
+In-memory compression example:<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Zlib&nbsp;compress/decompress&nbsp;example,&nbsp;by&nbsp;yetifoot</span><br />
+<br />
+<span class="def">#include&nbsp;once&nbsp;"zlib.bi"<br />
+</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">errlev</span><br />
+<br />
+<span class="com">''&nbsp;This&nbsp;is&nbsp;the&nbsp;size&nbsp;of&nbsp;our&nbsp;test&nbsp;data&nbsp;in&nbsp;bytes.</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">src_len</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">100000</span><br />
+<br />
+<span class="key">Print</span>&nbsp;<span class="quo">"ZLib&nbsp;test&nbsp;-&nbsp;Version&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="oth">*</span><span class="wrd">zlibVersion</span><span class="oth">()</span><br />
+<span class="key">Print</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"Test&nbsp;data&nbsp;size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">src_len</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"&nbsp;bytes."</span>&nbsp;<br />
+<br />
+<span class="com">''&nbsp;The&nbsp;size&nbsp;of&nbsp;the&nbsp;destination&nbsp;buffer&nbsp;for&nbsp;the&nbsp;compressed&nbsp;data&nbsp;is&nbsp;calculated&nbsp;by</span><br />
+<span class="com">''&nbsp;the&nbsp;compressBound&nbsp;function.</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">dest_len</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">compressBound</span><span class="oth">(</span><span class="wrd">src_len</span><span class="oth">)</span><br />
+<br />
+<span class="com">''&nbsp;Allocate&nbsp;our&nbsp;needed&nbsp;memory.</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">UByte</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">src</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Allocate</span><span class="oth">(</span><span class="wrd">src_len</span><span class="oth">)</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">UByte</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">dest</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Allocate</span><span class="oth">(</span><span class="wrd">dest_len</span><span class="oth">)</span><br />
+<br />
+<span class="com">''&nbsp;Fill&nbsp;the&nbsp;src&nbsp;buffer&nbsp;with&nbsp;random,&nbsp;yet&nbsp;still&nbsp;compressable&nbsp;data.</span><br />
+<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="wrd">src_len</span>&nbsp;<span class="oth">-</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">src</span><span class="oth">[</span><span class="wrd">i</span><span class="oth">]</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Rnd</span>&nbsp;<span class="oth">*</span>&nbsp;<span class="num">4</span><br />
+<span class="key">Next</span><br />
+<br />
+<span class="com">''&nbsp;Store&nbsp;the&nbsp;crc32&nbsp;checksum&nbsp;of&nbsp;the&nbsp;input&nbsp;data,&nbsp;so&nbsp;we&nbsp;can&nbsp;check&nbsp;if&nbsp;the&nbsp;</span><br />
+<span class="com">''&nbsp;uncompression&nbsp;has&nbsp;worked.</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">UInteger</span>&nbsp;<span class="wrd">crc</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">crc32</span><span class="oth">(</span><span class="num">0</span><span class="oth">,</span>&nbsp;<span class="wrd">src</span><span class="oth">,</span>&nbsp;<span class="wrd">src_len</span><span class="oth">)</span><br />
+<br />
+<span class="com">''&nbsp;Perform&nbsp;the&nbsp;compression.&nbsp;&nbsp;dest_len&nbsp;is&nbsp;passed&nbsp;as&nbsp;its&nbsp;address,&nbsp;because&nbsp;when</span><br />
+<span class="com">''&nbsp;the&nbsp;function&nbsp;returns&nbsp;it&nbsp;will&nbsp;contain&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;compressed&nbsp;data.</span><br />
+<span class="wrd">errlev</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">compress</span><span class="oth">(</span><span class="wrd">dest</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">dest_len</span><span class="oth">,</span>&nbsp;<span class="wrd">src</span><span class="oth">,</span>&nbsp;<span class="wrd">src_len</span><span class="oth">)</span><br />
+<span class="key">If</span>&nbsp;<span class="wrd">errlev</span>&nbsp;<span class="oth">&lt;&gt;</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;If&nbsp;the&nbsp;function&nbsp;returns&nbsp;a&nbsp;value&nbsp;other&nbsp;than&nbsp;0&nbsp;then&nbsp;an&nbsp;error&nbsp;occured.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"****&nbsp;Error&nbsp;during&nbsp;compress&nbsp;-&nbsp;code&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">errlev</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"&nbsp;****"</span><br />
+<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"Compressed&nbsp;to&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">dest_len</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"&nbsp;bytes."</span><br />
+<br />
+<span class="com">''&nbsp;NOTE:&nbsp;in&nbsp;normal&nbsp;use&nbsp;in&nbsp;a&nbsp;program,&nbsp;you&nbsp;would&nbsp;store&nbsp;the&nbsp;src_len,&nbsp;in&nbsp;order&nbsp;to</span><br />
+<span class="com">''&nbsp;be&nbsp;able&nbsp;to&nbsp;tell&nbsp;uncompress&nbsp;the&nbsp;output&nbsp;size.&nbsp;&nbsp;However&nbsp;in&nbsp;this&nbsp;example&nbsp;we&nbsp;can</span><br />
+<span class="com">''&nbsp;just&nbsp;leave&nbsp;it&nbsp;in&nbsp;src_len.&nbsp;&nbsp;The&nbsp;same&nbsp;goes&nbsp;for&nbsp;dest_len,&nbsp;which&nbsp;is&nbsp;the&nbsp;compressed</span><br />
+<span class="com">''&nbsp;datas&nbsp;size.</span><br />
+<br />
+<span class="com">''&nbsp;Wipe&nbsp;the&nbsp;src&nbsp;buffer&nbsp;before&nbsp;we&nbsp;uncompress&nbsp;to&nbsp;it,&nbsp;so&nbsp;that&nbsp;we&nbsp;can&nbsp;check&nbsp;if&nbsp;the&nbsp;</span><br />
+<span class="com">''&nbsp;decompression&nbsp;has&nbsp;worked.</span><br />
+<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="wrd">src_len</span>&nbsp;<span class="oth">-</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">src</span><span class="oth">[</span><span class="wrd">i</span><span class="oth">]</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+<span class="key">Next</span><br />
+<br />
+<span class="com">''&nbsp;Perform&nbsp;a&nbsp;decompression.&nbsp;&nbsp;This&nbsp;time&nbsp;we&nbsp;uncompress&nbsp;the&nbsp;data&nbsp;back&nbsp;to&nbsp;src.&nbsp;&nbsp;</span><br />
+<span class="com">''&nbsp;src_len&nbsp;is&nbsp;passed&nbsp;as&nbsp;its&nbsp;address,&nbsp;because&nbsp;when</span><br />
+<span class="com">''&nbsp;the&nbsp;function&nbsp;returns&nbsp;it&nbsp;will&nbsp;contain&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;uncompressed&nbsp;data.</span><br />
+<span class="wrd">errlev</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">uncompress</span><span class="oth">(</span><span class="wrd">src</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">src_len</span><span class="oth">,</span>&nbsp;<span class="wrd">dest</span><span class="oth">,</span>&nbsp;<span class="wrd">dest_len</span><span class="oth">)</span><br />
+<span class="key">If</span>&nbsp;<span class="wrd">errlev</span>&nbsp;<span class="oth">&lt;&gt;</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;If&nbsp;the&nbsp;function&nbsp;returns&nbsp;a&nbsp;value&nbsp;other&nbsp;than&nbsp;0&nbsp;then&nbsp;an&nbsp;error&nbsp;occured.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"****&nbsp;Error&nbsp;during&nbsp;uncompress&nbsp;-&nbsp;code&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">errlev</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"&nbsp;****"</span><br />
+<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"Uncompressed&nbsp;to&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">src_len</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"&nbsp;bytes."</span><br />
+<br />
+<span class="com">''&nbsp;Make&nbsp;sure&nbsp;the&nbsp;checksum&nbsp;of&nbsp;the&nbsp;uncompressed&nbsp;data&nbsp;matches&nbsp;our&nbsp;original&nbsp;data.</span><br />
+<span class="key">If</span>&nbsp;<span class="wrd">crc</span>&nbsp;<span class="oth">&lt;&gt;</span>&nbsp;<span class="wrd">crc32</span><span class="oth">(</span><span class="num">0</span><span class="oth">,</span>&nbsp;<span class="wrd">src</span><span class="oth">,</span>&nbsp;<span class="wrd">src_len</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"crc32&nbsp;checksum&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;FAILED"</span><br />
+<span class="key">Else</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"crc32&nbsp;checksum&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;PASSED"</span><br />
+<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+<span class="com">''&nbsp;Free&nbsp;the&nbsp;buffers&nbsp;used&nbsp;in&nbsp;the&nbsp;test.</span><br />
+<span class="key">Deallocate</span><span class="oth">(</span><span class="wrd">src</span><span class="oth">)</span><br />
+<span class="key">Deallocate</span><span class="oth">(</span><span class="wrd">dest</span><span class="oth">)</span><br />
+<br />
+<span class="key">Print</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"Press&nbsp;any&nbsp;key&nbsp;to&nbsp;end&nbsp;.&nbsp;.&nbsp;.&nbsp;"</span><br />
+<span class="key">Sleep</span><br />
+</div></tt><br />
+<br \>
+</div></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

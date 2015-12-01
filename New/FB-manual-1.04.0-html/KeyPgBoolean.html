@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>Boolean</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Boolean</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Standard data type<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<a href="KeyPgDim.html">Dim</a> <i>variable</i> <a href="KeyPgAs.html">As</a> <b>Boolean</b><br \>
+</tt><br \>
+</div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+Boolean data type. Can hold the values <tt><a href="KeyPgTrue.html">True</a></tt> or <tt><a href="KeyPgFalse.html">False</a></tt>.<br \>
+<br \>
+<b>Notes on definition of boolean data type:</b> <i>Ideally, the definition of the boolean data type is that it holds the value of <tt><a href="KeyPgTrue.html">True</a></tt> or <tt><a href="KeyPgFalse.html">False</a></tt>, and that's it.  However, to make this concept a reality, we need a definition that uses real world connections.  A more realistic definition is that the boolean data type is a 1-bit integer, having the value 0 to indicate <tt><a href="KeyPgFalse.html">False</a></tt> and 1 to indicate <tt><a href="KeyPgTrue.html">True</a></tt>.  For a practical definition, we must consider, yet again, additional factors.  The most significant factor is that the hardware (processor) on which code is executed does not directly support a 1-bit data type; the smallest register or memory size we can work with is 8-bits or 1-byte.  Therefore, a practical definition of boolean data type is an integer, 8 bits wide, having the value 0 or 1, where all other values are undefined.  However, because of longstanding differences between C/C++ and FB with respect to logical operations, the interpretation of the value must also be considered.  Assume "false" is 0 in both C/C++ and FB.  C/C++ has logical 'not' operator '!' such that '!0' produces '1'.  FB has a bitwise <tt><a href="KeyPgOpNot.html">Not</a></tt> operator such that 'not 0' produces '-1'.  Therefore the definition for a C/C++ boolean is an unsigned 1-bit integer, zero extended to fill larger integer types, and the definition for a FB boolean is a signed 1-bit integer, sign extended to fill larger integer types.  However, the purpose and intent of the boolean data type remains, that it should only ever hold a <tt><a href="KeyPgTrue.html">True</a></tt> value or <tt><a href="KeyPgFalse.html">False</a></tt> value, regardless of the underlying details.</i><br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="key">Dim</span>&nbsp;<span class="wrd">boolvar</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">Boolean</span><br />
+<span class="wrd">boolvar</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">True</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"boolvar&nbsp;=&nbsp;"</span><span class="oth">,</span>&nbsp;<span class="wrd">boolvar</span><br />
+</div></tt><br />
+<b>Output:</b><br \>
+<pre class="fb_pre">boolvar =     true</pre><br \>
+</div><div class="fb_sect_title">Dialect Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> Not available in the <i><a href="CompilerOptlang.html">-lang qb</a></i> dialect unless referenced with the alias <tt><b>__Boolean</b></tt>.<br \>
+<br \>
+</ul></div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> New to FreeBASIC<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <tt><a href="KeyPgTrue.html">True</a></tt><br \>
+<li> <tt><a href="KeyPgFalse.html">False</a></tt><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

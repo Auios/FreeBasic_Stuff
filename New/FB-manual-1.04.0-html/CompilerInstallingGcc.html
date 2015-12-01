@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>Installing gcc for -gen gcc</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Installing gcc for -gen gcc</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	<br \>
+<b><u>Windows 32bit</u></b><br \>
+<br \>
+If you are using the <tt>FreeBASIC-x.xx.x-win32</tt> package, you can use our pre-made gcc package. Download <tt>gcc-x.x.x-for-FB-win32-gengcc.zip</tt> from the <a href="http://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/More/">Binaries - Windows/More/</a> directory at the fbc downloads area, and extract it into the FreeBASIC installation directory (where fbc.exe is), such that <tt>gcc.exe</tt> and <tt>cc1.exe</tt> will be placed in these locations:<br \>
+<br \>
+<ul><li> <tt>bin\win32\gcc.exe</tt><br \>
+<li> <tt>bin\libexec\gcc\i686-w64-mingw32\x.x.x\cc1.exe</tt><br \>
+<br \>
+</ul>You can also download Win32 versions of gcc directly from the MinGW.org or MinGW-w64 projects.<br \>
+<br \>
+<b><u>Windows 64bit</u></b><br \>
+<br \>
+The <tt>FreeBASIC-x.xx.x-win64</tt> package already comes with gcc included, and uses <tt>-gen gcc</tt> by default (because <tt>-gen gas</tt> does not support 64bit).<br \>
+<br \>
+<b><u>DOS</u></b><br \>
+<br \>
+It requires a (minimal) DJGPP installation. DJGPP can be downloaded from the <a href="http://www.delorie.com/djgpp/">DJGPP website</a>. At least the <tt>djdev*.zip</tt> and <tt>gcc*b.zip</tt> are needed. In order to run the DJGPP gcc, the <tt>DJGPP</tt> environment variable must be set to point to the <tt>djgpp.env</tt> file.<br \>
+<br \>
+To use the DJGPP gcc with the <tt>FreeBASIC-x.xx.x-dos</tt> package, copy gcc.exe and cc1.exe into the FreeBASIC installation directory, such that they will be placed in these locations:<br \>
+<br \>
+<ul><li> <tt>bin\dos\gcc.exe</tt><br \>
+<li> <tt>bin\libexec\gcc\djgpp\x.xx\cc1.exe</tt><br \>
+<br \>
+</ul><b><u>Linux</u></b><br \>
+<br \>
+Typically the <tt>gcc</tt> package is already installed, or it can be installed by doing something like:<br \>
+<div class="fb_indent"><tt>sudo apt-get install gcc</tt><br \>
+</div>(the exact command depends on your GNU/Linux distribution)<br \>
+<br \>
+<b><u>Non-standalone fbc installed into DJGPP/MinGW toolchains</u></b><br \>
+<br \>
+If you are using a non-standalone version of fbc (e.g. from one of the <tt>fbc-x.xx.x-win32</tt> packages), and have it installed inside a DJGPP or MinGW toolchain, then <tt>-gen gcc</tt> should already work, as the DJGPP or MinGW toolchains provide gcc.<br \>
+<br \>
+As long as gcc.exe is in the same directory as fbc.exe (typically <tt>C:\DJGPP\bin\</tt> or <tt>C:\MinGW\bin\</tt>), or available in the <tt>PATH</tt> environment variable, fbc.exe should be able to find and use it.<br \>
+<br \>
+<div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <a href="CompilerOptgen.html">-gen &lt;backend&gt;</a><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

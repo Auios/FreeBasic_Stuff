@@ -1,0 +1,135 @@
+<html>
+<head>
+<title>CondWait</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">CondWait</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Stops execution of current thread until some condition becomes true<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<a href="KeyPgDeclare.html">Declare</a> <a href="KeyPgSub.html">Sub</a> <b>CondWait</b> ( <a href="KeyPgByval.html">ByVal</a> <i>handle</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgAny.html">Any</a> <a href="KeyPgPtr.html">Ptr</a>, <a href="KeyPgByval.html">ByVal</a> <i>mutex</i> <a href="KeyPgAs.html">As</a> <a href="KeyPgAny.html">Any</a> <a href="KeyPgPtr.html">Ptr</a> )<br \>
+</tt><br \>
+</div><div class="fb_sect_title">Usage</div><div class="fb_sect_cont"><tt><br \>
+<b>CondWait</b> ( <i>handle</i>, <i>mutex</i> )<br \>
+</tt><br \>
+</div><div class="fb_sect_title">Parameters</div><div class="fb_sect_cont"><br \>
+<tt><i>handle</i></tt><br \>
+<div class="fb_indent">The handle of a conditional variable, or the null pointer (0) on failure.<br \>
+</div><tt><i>mutex</i></tt><br \>
+<div class="fb_indent">The mutex associated with this conditional variable, which must be locked when testing the condition and calling <tt><b>CondWait</b></tt>.<br \>
+<br \>
+</div></div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+Function that stops the thread where it is called until some other thread  <tt><a href="KeyPgCondSignal.html">CondSignal</a></tt>s or <tt><a href="KeyPgCondBroadcast.html">CondBroadcast</a></tt>s  the handle.<br \>
+<br \>
+Once the conditional variable is created with <tt><a href="KeyPgCondCreate.html">CondCreate</a></tt> and the threads are started, one of more of them (including the main thread executing main program) can be set to <tt><b>CondWait</b></tt> for the conditional; they will be stopped until some other thread <tt><a href="KeyPgCondSignal.html">CondSignal</a></tt>s that the waiting thread can restart. <tt><a href="KeyPgCondBroadcast.html">CondBroadcast</a></tt> can be used to restart all threads waiting for the conditional. At the end of the program <tt><a href="KeyPgCondDestroy.html">CondDestroy</a></tt> must be used to avoid leaking resources in the OS.<br \>
+<br \>
+When calling <tt><b>CondWait</b></tt>, <tt><i>mutex</i></tt> should already be locked (using the same <tt><i>mutex</i></tt> as one used with <tt><a href="KeyPgCondSignal.html">CondSignal</a></tt> or <tt><a href="KeyPgCondBroadcast.html">CondBroadcast</a></tt>). An atomic unlock of the <tt><i>mutex</i></tt> and wait on the conditional variable will occur. The calling thread execution is suspended and does not consume any CPU time until the condition variable is signaled. When the condition variable becomes signaled, <tt><i>mutex</i></tt> will be locked again and then execution will return to the thread after the <tt><b>CondWait</b></tt> call. The caller is then responsible for unlocking <tt><i>mutex</i></tt> when the thread is finished with it.<br \>
+<br \>
+<b>Note:</b> It is a good habit to use <tt><b>CondWait</b></tt> in a protected way against eventual spurious wakeups.<br \>
+For that, <tt><b>CondWait</b></tt> is put within a loop for checking that a Boolean predicate is indeed true (set by another thread just before executing <tt><a href="KeyPgCondSignal.html">CondSignal</a></tt> or <tt><a href="KeyPgCondBroadcast.html">CondBroadcast</a></tt>) when the thread has finished waiting.<br \>
+See example below for detailed coding.<br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+See also <tt><a href="KeyPgCondCreate.html">CondCreate</a></tt> and <tt><a href="KeyPgCondSignal.html">CondSignal</a></tt><br \>
+<br \>
+<tt><div class="freebasic">
+<span class="com">'&nbsp;This&nbsp;simple&nbsp;example&nbsp;code&nbsp;demonstrates&nbsp;the&nbsp;use&nbsp;of&nbsp;several&nbsp;condition&nbsp;variable&nbsp;routines.</span><br />
+<span class="com">'&nbsp;The&nbsp;main&nbsp;routine&nbsp;creates&nbsp;three&nbsp;threads.</span><br />
+<span class="com">'&nbsp;Two&nbsp;of&nbsp;the&nbsp;threads&nbsp;update&nbsp;a&nbsp;"count"&nbsp;variable.</span><br />
+<span class="com">'&nbsp;The&nbsp;third&nbsp;thread&nbsp;waits&nbsp;until&nbsp;the&nbsp;count&nbsp;variable&nbsp;reaches&nbsp;a&nbsp;specified&nbsp;value.</span><br />
+<br />
+<span class="def">#define&nbsp;numThread&nbsp;&nbsp;3<br />
+#define&nbsp;countThreshold&nbsp;6<br />
+</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">Shared</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">count</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">Shared</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">countMutex</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">Shared</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">countThresholdCV</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">threadID</span><span class="oth">(</span><span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="wrd">numThread</span><span class="oth">-</span><span class="num">1</span><span class="oth">)</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">Shared</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">ok</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+<br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">threadCount</span>&nbsp;<span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Starting&nbsp;threadCount():&nbsp;thread#"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">p</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Do</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"threadCount():&nbsp;thread#"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;locking&nbsp;mutex"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexLock</span><span class="oth">(</span><span class="wrd">countMutex</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">count</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'&nbsp;Check&nbsp;the&nbsp;value&nbsp;of&nbsp;count&nbsp;and&nbsp;signal&nbsp;waiting&nbsp;thread&nbsp;when&nbsp;condition&nbsp;is&nbsp;reached.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'&nbsp;Note&nbsp;that&nbsp;this&nbsp;occurs&nbsp;while&nbsp;mutex&nbsp;is&nbsp;locked.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="wrd">count</span>&nbsp;<span class="oth">&gt;=</span>&nbsp;<span class="wrd">countThreshold</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="wrd">count</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">countThreshold</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"threadCount():&nbsp;thread#"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;count&nbsp;=&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">count</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;threshold&nbsp;reached,&nbsp;unlocking&nbsp;mutex"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ok</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">CondSignal</span><span class="oth">(</span><span class="wrd">countThresholdCV</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Else</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"threadCount():&nbsp;thread#"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;count&nbsp;=&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">count</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;threshold&nbsp;exceeded,&nbsp;unlocking&nbsp;mutex"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexUnlock</span><span class="oth">(</span><span class="wrd">countMutex</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Exit</span>&nbsp;<span class="key">Do</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"threadCount():&nbsp;thread#"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;count&nbsp;=&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">count</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;unlocking&nbsp;mutex"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexUnlock</span><span class="oth">(</span><span class="wrd">countMutex</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span>&nbsp;<span class="num">100</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Loop</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">threadWatch</span>&nbsp;<span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Starting&nbsp;threadWatch():&nbsp;thread#"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;locking&nbsp;mutex,&nbsp;waiting&nbsp;for&nbsp;conditional"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexLock</span><span class="oth">(</span><span class="wrd">countMutex</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'&nbsp;Note&nbsp;that&nbsp;the&nbsp;Condwait&nbsp;routine&nbsp;will&nbsp;automatically&nbsp;and&nbsp;atomically&nbsp;unlock&nbsp;mutex&nbsp;while&nbsp;it&nbsp;waits.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">While</span>&nbsp;<span class="wrd">ok</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">CondWait</span><span class="oth">(</span><span class="wrd">countThresholdCV</span><span class="oth">,</span>&nbsp;<span class="wrd">countMutex</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Wend</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"threadWatch():&nbsp;thread#"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;condition&nbsp;signal&nbsp;received"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"threadWatch():&nbsp;thread#"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;count&nbsp;now&nbsp;=&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">count</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;unlocking&nbsp;mutex"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">MutexUnlock</span><span class="oth">(</span><span class="wrd">countMutex</span><span class="oth">)</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="com">'&nbsp;Create&nbsp;mutex&nbsp;and&nbsp;condition&nbsp;variable</span><br />
+<span class="wrd">countMutex</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">MutexCreate</span><br />
+<span class="wrd">countThresholdCV</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">CondCreate</span><br />
+<span class="com">'&nbsp;Create&nbsp;threads</span><br />
+<span class="wrd">threadID</span><span class="oth">(</span><span class="num">0</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">ThreadCreate</span><span class="oth">(@</span><span class="wrd">threadWatch</span><span class="oth">,</span>&nbsp;<span class="key">Cast</span><span class="oth">(</span><span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="num">1</span><span class="oth">))</span><br />
+<span class="wrd">threadID</span><span class="oth">(</span><span class="num">1</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">ThreadCreate</span><span class="oth">(@</span><span class="wrd">threadCount</span><span class="oth">,</span>&nbsp;<span class="key">Cast</span><span class="oth">(</span><span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="num">2</span><span class="oth">))</span><br />
+<span class="wrd">threadID</span><span class="oth">(</span><span class="num">2</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">ThreadCreate</span><span class="oth">(@</span><span class="wrd">threadCount</span><span class="oth">,</span>&nbsp;<span class="key">Cast</span><span class="oth">(</span><span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="num">3</span><span class="oth">))</span><br />
+<span class="com">'&nbsp;Wait&nbsp;for&nbsp;all&nbsp;threads&nbsp;to&nbsp;complete</span><br />
+<span class="key">For</span>&nbsp;<span class="wrd">I</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="wrd">numThread</span><span class="oth">-</span><span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ThreadWait</span><span class="oth">(</span><span class="wrd">threadID</span><span class="oth">(</span><span class="wrd">I</span><span class="oth">))</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Main():&nbsp;Waited&nbsp;on&nbsp;thread#"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">I</span><span class="oth">+</span><span class="num">1</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"&nbsp;Done"</span><br />
+<span class="key">Next</span>&nbsp;<span class="wrd">I</span><br />
+<span class="key">MutexDestroy</span><span class="oth">(</span><span class="wrd">countMutex</span><span class="oth">)</span><br />
+<span class="key">CondDestroy</span><span class="oth">(</span><span class="wrd">countThresholdCV</span><span class="oth">)</span><br />
+</div></tt><br />
+<br \>
+</div><div class="fb_sect_title">Platform Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> <b>Condwait</b> is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.<br \>
+<li> In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. <br \>
+<br \>
+</ul></div><div class="fb_sect_title">Dialect Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> Threading is not allowed in <i><a href="CompilerOptlang.html">-lang qb</a></i><br \>
+<br \>
+</ul></div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> New to FreeBASIC<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <tt><a href="KeyPgCondCreate.html">CondCreate</a></tt><br \>
+<li> <tt><a href="KeyPgCondDestroy.html">CondDestroy</a></tt><br \>
+<li> <tt><a href="KeyPgCondBroadcast.html">CondBroadcast</a></tt><br \>
+<li> <tt><a href="KeyPgCondSignal.html">CondSignal</a></tt><br \>
+<li> <tt><a href="KeyPgMutexCreate.html">MutexCreate</a></tt><br \>
+<li> <tt><a href="KeyPgMutexLock.html">MutexLock</a></tt><br \>
+<li> <tt><a href="KeyPgMutexUnlock.html">MutexUnlock</a></tt><br \>
+<li> <tt><a href="KeyPgThreadCreate.html">ThreadCreate</a></tt><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

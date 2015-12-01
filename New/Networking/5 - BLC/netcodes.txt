@@ -1,0 +1,14 @@
+True            1
+False           2
+
+Server Full		3
+Server Shutdown	4
+Kicked			5
+
+Chat            6
+
+Request auth    7
+Auth            8
+
+Disconnect		9
+

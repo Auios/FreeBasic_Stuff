@@ -1,0 +1,36 @@
+<html>
+<head>
+<title>Compiler Option: -static</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Compiler Option: -static</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Prefer static libraries over dynamic ones when linking<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<div class="fb_indent"><div class="fb_indent">-static<br \>
+</div></div></tt><br \>
+</div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+<div class="fb_indent">When creating an executable or a shared library/DLL, the <tt>-static</tt> compiler option can be used to tell the compiler to prefer linking against static libraries rather than shared libraries/DLLs. That way, if the linker finds both static and shared versions of a library, it will use the static version, rather than defaulting to the shared version.<br \>
+<br \>
+Installing the proper static libraries and then using <tt>-static</tt> can be used to avoid some or all dependencies on shared libraries.<br \>
+<br \>
+</div></div><div class="fb_sect_title">Platform Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> On Linux & co it is possible to create purely statically linked executables, because static versions of the system libraries used by FreeBASIC are available.<br \>
+<li> On Windows, there are no static versions of the system libraries, but <tt>-static</tt> can still be useful to decide between static library or DLL versions of other libraries, if both are installed.<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <a href="CompilerCmdLine.html">Using the Command Line</a><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

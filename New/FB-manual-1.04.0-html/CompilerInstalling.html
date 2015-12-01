@@ -1,0 +1,127 @@
+<html>
+<head>
+<title>Installing</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Installing</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Installing FreeBASIC, any additionally needed packages, and perhaps a text editor or IDE.<br \>
+<br \>
+<b><u>Windows 32bit</u></b><br \>
+<br \>
+<ul><li> Download the latest <a href="https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/">FreeBASIC-x.xx.x-win32.exe</a> installer<br \>
+<li> Run it and click through it. The installer will install FreeBASIC at <tt>C:\%ProgramFiles%\FreeBASIC</tt>, or if you chose a different installation directory, in your chosen directory. Start Menu shortcuts to the website will be installed as well.<br \>
+<li> Unless you already have a source code editor or IDE, you should install one too, as FreeBASIC itself does not include one. An IDE can be used to write and save .bas files and to launch the FreeBASIC Compiler to compile them. The following IDEs are known to explicitly support FreeBASIC:<br \>
+<ul><li> <a href="http://fbide.freebasic.net/">FBIDE</a><br \>
+<li> <a href="http://radasm.cherrytree.at/fbedit/">FBEdit</a><br \>
+<br \>
+</ul></ul><div class="fb_indent">To uninstall FreeBASIC, remove it from the system's list of installed software (<a href="http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/win_addprog_window_component.mspx">Add/remove programs</a>, <a href="http://windows.microsoft.com/en-US/windows-vista/Uninstall-or-change-a-program">Uninstall or change a program</a>).<br \>
+<br \>
+</div><b><u>Windows x64</u></b><br \>
+<br \>
+<ul><li> Download the latest <a href="https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/">FreeBASIC-x.xx.x-win64.zip</a> package<br \>
+<li> Extract it where you like, for example at <tt>C:\%ProgramFiles%\FreeBASIC</tt> (no further installation required to use fbc).<br \>
+<li> You may want to install a source code editor or IDE; also see the <b>Windows 32bit</b> section.<br \>
+<br \>
+</ul><div class="fb_indent">To uninstall FreeBASIC, simply deleted the directory where you extracted it.<br \>
+<br \>
+</div><b><u>Linux</u></b><br \>
+<br \>
+<ul><li> Download the latest <a href="https://sourceforge.net/projects/fbc/files/Binaries%20-%20Linux/">FreeBASIC-x.xx.x-linux-x86.tar.gz (32bit) or FreeBASIC-x.xx.x-linux-x86_64.tar.gz (64bit)</a> package<br \>
+<li> Extract the archive, for example by doing right-click -&gt; Extract Here, or manually in a terminal:<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><pre class="fb_pre">$ cd Downloads
+$ tar xzf FreeBASIC-x.xx.x-linux-x86.tar.gz</pre><br \>
+</div></div><ul><li> The FreeBASIC compiler can be used from where it was extracted. Usually it is installed into the <tt>/usr/local</tt> system directory though, so that the <tt>fbc</tt> program is available through-out the whole system. To do that, run the included installation script:<br \>
+</ul><div class="fb_indent"><div class="fb_indent"><pre class="fb_pre">$ cd FreeBASIC-x.xx.x-linux-x86
+$ sudo ./install.sh -i</pre><br \>
+The <tt>install.sh</tt> script can also be given a path as in <tt>./install.sh -i /usr</tt> if you prefer to install into a directory other than the default <tt>/usr/local</tt>. This default is a good choice though, as it avoids mixing with the content of <tt>/usr</tt> which is usually managed by the distribution's packaging tool.<br \>
+<br \>
+</div></div><ul><li> FreeBASIC requires several additional packages to be installed before it can be used to compile executables. In general, these are:<br \>
+<ul><ul><li> binutils<br \>
+<li> libc development files (installing gcc will typically install these too)<br \>
+<li> gcc<br \>
+<li> libncurses development files<br \>
+<li> X11 development files (for FB graphics programs)<br \>
+<li> libffi development files (for the <a href="KeyPgThreadCall.html">Threadcall</a> keyword)<br \>
+<li> gpm (general purpose mouse) daemon and libgpm (only needed for <a href="KeyPgGetmouse.html">GetMouse</a> support in the Linux console)<br \>
+</ul></ul></ul><div class="fb_indent"><div class="fb_indent">The actual package names to install vary depending on the GNU/Linux distribution.<br \>
+<br \>
+For native development (32bit FB on 32bit system, or 64bit FB on 64bit system):<br \>
+</div></div><ul><ul><ul><li> Debian/Ubuntu:<br \>
+<ul><li> gcc<br \>
+<li> libncurses5-dev<br \>
+<li> libffi-dev<br \>
+<li> libgl1-mesa-dev<br \>
+<li> libx11-dev libxext-dev libxrender-dev libxrandr-dev libxpm-dev<br \>
+</ul><li> Fedora:<br \>
+<ul><li> gcc<br \>
+<li> ncurses-devel<br \>
+<li> libffi-devel<br \>
+<li> mesa-libGL-devel<br \>
+<li> libX11-devel libXext-devel libXrender-devel libXrandr-devel libXpm-devel<br \>
+</ul><li> OpenSUSE:<br \>
+<ul><li> gcc<br \>
+<li> ncurses-devel<br \>
+<li> libffi46-devel<br \>
+<li> xorg-x11-devel<br \>
+</ul></ul></ul></ul><div class="fb_indent"><div class="fb_indent">For 32bit development on a 64bit system:<br \>
+</div></div><ul><ul><ul><li> Debian/Ubuntu:<br \>
+<ul><li> gcc-multilib<br \>
+<li> lib32ncurses5-dev<br \>
+<li> libx11-dev:i386 libxext-dev:i386 libxrender-dev:i386 libxrandr-dev:i386 libxpm-dev:i386<br \>
+<li> (See comment below re Ubuntu 10.04 LTS)<br \>
+</ul><li> OpenSUSE:<br \>
+<ul><li> gcc-32bit<br \>
+<li> ncurses-devel-32bit<br \>
+<li> xorg-x11-devel-32bit<br \>
+<li> xorg-x11-libX11-devel-32bit<br \>
+<li> xorg-x11-libXext-devel-32bit<br \>
+<li> xorg-x11-libXrender-devel-32bit<br \>
+<li> xorg-x11-libXpm-devel-32bit<br \>
+<li> libffi46-devel-32bit<br \>
+</ul></ul></ul><li> Unless you already have a text editor or IDE, you should install one too, as FreeBASIC itself does not include one. An IDE can be used to write and save .bas files and to launch the FreeBASIC Compiler to compile them. The following IDEs are known to explicitly support FreeBASIC:<br \>
+<ul><li> <a href="http://www.geany.org/">Geany</a><br \>
+</ul></ul><div class="fb_indent">To uninstall FreeBASIC from <tt>/usr/local</tt>, you can run the install.sh script again, but with the -u option: <tt>sudo ./install.sh -u</tt><br \>
+<br \>
+</div><b><u>DOS</u></b><br \>
+<br \>
+<ul><li> Download the latest <a href="https://sourceforge.net/projects/fbc/files/Binaries%20-%20DOS/">FreeBASIC-x.xx.x-dos.zip</a> archive<br \>
+<li> Find a place for FreeBASIC with at least 13 MiB free space.<br \>
+<li> Unpack the ZIP archive, making sure that the directory structure as used inside the archive is preserved ("PKUNZIP -d" for example). <br \>
+<li> The top-level directory is named FreeBASIC-x.xx.x-dos (will be truncated to "FREEBASI" in DOS without full LFN support), so you might want to rename it then to a convenient DOS-compliant name not longer than 8 characters and containing no white-spaces, like "FB".<br \>
+<li> All the important files used by the compiler (includes, libs) inside the archive do have DOS-compliant names, therefore DOSLFN is not required to use FreeBASIC, however, some examples and texts do have longer names and will be truncated when extracted without full LFN support.  <br \>
+</ul><div class="fb_indent">(Note: you can install the DOS version "over" the Windows one or vice-versa, or "merge" those installations later, but rename the FBC.EXE file of the previous installation to FBCW.EXE , FBCD.EXE or such, or it will be overwritten by the new one. Other platform specific files are placed in subdirectories making sure that they won't conflict.)<br \>
+<br \>
+</div><b><u>Compiling under Ubuntu 10.04 LTS, 64-bit:</u></b><br \>
+This comment applies to FB 1.01.0, and may apply to other builds also.<br \>
+Install all of the Libraries listed above; some of the entries ending in “:i386” may throw “not found” errors.<br \>
+To verify that you’re using a 64-bit build, use: “uname -a” or “uname -m” (it’ll show x86_64 for 64-bit, i386 for 32-bit).<br \>
+Then, when running FBC, an error may appear: “error while loading shared libraries: libtinfo.so.5: cannot open shared object file: No such file or directory”.<br \>
+<br \>
+“libtinfo.so.5” is available as a separate library in Ubuntu 11.10+, but it is built into “ncurses.so.5” in 10.04 LTS. So, we need to re-direct the libtinfo references into the ncurses.so.5 libraries:<br \>
+<ul><li> Issue: find / -name 'libtinfo.so.5' - just to verify that there are no confusing references to these libraries anywhere. Any references should be checked, and probably deleted?<br \>
+<li> Change to the folder containing the FBC executable (perhaps “/usr/local/bin/”).<br \>
+<li> Issue: ldd fbc - it will list the various library folder(s) being searched (probably “/lib32” in most cases).<br \>
+<li> Issue: sudo ln -s /lib32/libncurses.so.5 /lib32/libtinfo.so.5 (assuming “/lib32” was emitted in the previous step).<br \>
+<li> Issue: sudo ln -s /lib32/libtinfo.so.5     /lib32/libtinfo.so (assuming “/lib32”...)<br \>
+<li> Retry!<br \>
+<li> [Unrelated point: if "private" Libraries are needed for compiles, they were expected to be in /usr/local/lib/freebasic/. Now, they may have to be in /usr/local/lib/freebasic/linux-x86/].<br \>
+<li> [Mike Kennedy, Jan, 2015. (This note was not acceptable as a standard "comment" - I don't know why?)].<br \>
+<br \>
+<br \>
+</ul><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <a href="CompilerRunning.html">Invoking the Compiler</a><br \>
+<li> <a href="CompilerCmdLine.html">Compiler Command Line Options</a><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

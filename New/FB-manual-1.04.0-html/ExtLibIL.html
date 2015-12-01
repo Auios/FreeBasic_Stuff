@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>DevIL</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">DevIL</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	A full featured cross-platform image library.<br \>
+<br \>
+Website: http://openil.sourceforge.net/<br \>
+Platforms supported: Win32, Linux<br \>
+Headers to include: IL/il.bi, IL/ilu.bi, IL/ilut.bi<br \>
+Header version: 1.7.8<br \>
+Examples: in examples/files/DevIL/<br \>
+<br \>
+<div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;DevIL&nbsp;example</span><br />
+<br />
+<span class="def">#include&nbsp;once&nbsp;"IL/il.bi"<br />
+</span><br />
+<span class="com">''&nbsp;Version&nbsp;check</span><br />
+<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">ilGetInteger</span><span class="oth">(</span><span class="wrd">IL_VERSION_NUM</span><span class="oth">)</span>&nbsp;<span class="oth">&lt;</span>&nbsp;<span class="wrd">IL_VERSION</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"DevIL&nbsp;version&nbsp;is&nbsp;different"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+<span class="com">''&nbsp;Good&nbsp;practice&nbsp;to&nbsp;explicitely&nbsp;initialize&nbsp;it</span><br />
+<span class="wrd">ilInit</span><span class="oth">()</span><br />
+<br />
+<span class="com">''&nbsp;Load&nbsp;a&nbsp;bitmap</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">ILuint</span>&nbsp;<span class="wrd">fblogo</span><br />
+<span class="wrd">ilGenImages</span><span class="oth">(</span><span class="num">1</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">fblogo</span><span class="oth">)</span><br />
+<span class="wrd">ilBindImage</span><span class="oth">(</span><span class="wrd">fblogo</span><span class="oth">)</span><br />
+<br />
+<span class="key">Print</span>&nbsp;<span class="quo">"Loading&nbsp;fblogo.bmp..."</span><br />
+<span class="wrd">ilLoadImage</span><span class="oth">(</span><span class="quo">"fblogo.bmp"</span><span class="oth">)</span><br />
+<br />
+<span class="com">''&nbsp;Save&nbsp;a&nbsp;copy</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"Saving&nbsp;a&nbsp;copy,&nbsp;fblogo-copy.bmp..."</span><br />
+<span class="wrd">ilEnable</span><span class="oth">(</span><span class="wrd">IL_FILE_OVERWRITE</span><span class="oth">)</span><br />
+<span class="wrd">ilSaveImage</span><span class="oth">(</span><span class="quo">"fblogo-copy.bmp"</span><span class="oth">)</span><br />
+<br />
+<span class="com">''&nbsp;Clean&nbsp;up</span><br />
+<span class="wrd">ilDeleteImages</span><span class="oth">(</span><span class="num">1</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">fblogo</span><span class="oth">)</span><br />
+</div></tt><br />
+<br \>
+</div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

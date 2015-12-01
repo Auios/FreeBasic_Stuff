@@ -1,0 +1,136 @@
+<html>
+<head>
+<title>va_first</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">va_first</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Returns a pointer to the first argument in a variable argument list<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<i>pointer_variable</i> = <b>va_first</b>()<br \>
+</tt><br \>
+</div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+The <tt><b>va_first</b></tt> function provides an untyped <a href="ProPgPointers.html">pointer</a> value that points to the first variable argument passed to a function.<br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="key">Function</span>&nbsp;<span class="wrd">average</span>&nbsp;<span class="key">cdecl</span><span class="oth">(</span><span class="wrd">count</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="oth">...</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Double</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">arg</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">sum</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Double</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">arg</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">va_first</span><span class="oth">()</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">1</span>&nbsp;<span class="key">To</span>&nbsp;<span class="wrd">count</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">sum</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="key">va_arg</span><span class="oth">(</span><span class="wrd">arg</span><span class="oth">,</span>&nbsp;<span class="key">Double</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">arg</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">va_next</span><span class="oth">(</span><span class="wrd">arg</span><span class="oth">,</span>&nbsp;<span class="key">Double</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Return</span>&nbsp;<span class="wrd">sum</span>&nbsp;<span class="oth">/</span>&nbsp;<span class="wrd">count</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Function</span><br />
+<br />
+<span class="key">Print</span>&nbsp;<span class="wrd">average</span><span class="oth">(</span><span class="num">4</span><span class="oth">,</span>&nbsp;<span class="num">3.4</span><span class="oth">,</span><span class="num">5.0</span><span class="oth">,</span><span class="num">3.2</span><span class="oth">,</span><span class="num">4.1</span><span class="oth">)</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">average</span><span class="oth">(</span><span class="num">2</span><span class="oth">,</span>&nbsp;<span class="num">65.2</span><span class="oth">,</span><span class="num">454.65481</span><span class="oth">)</span><br />
+<span class="key">Sleep</span><br />
+</div></tt><br />
+<br \>
+The output would look like:<br \>
+<pre class="fb_pre">
+3.925
+259.927405
+</pre><br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Example&nbsp;of&nbsp;a&nbsp;simple&nbsp;custom&nbsp;printf</span><br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">myprintf</span>&nbsp;<span class="key">cdecl</span><span class="oth">(</span><span class="key">ByRef</span>&nbsp;<span class="wrd">formatstring</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><span class="oth">,</span>&nbsp;<span class="oth">...)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Get&nbsp;the&nbsp;pointer&nbsp;to&nbsp;the&nbsp;first&nbsp;var-arg</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">arg</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">va_first</span><span class="oth">()</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;For&nbsp;each&nbsp;char&nbsp;in&nbsp;format&nbsp;string...</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">UByte</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">p</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">StrPtr</span><span class="oth">(</span><span class="wrd">formatstring</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">todo</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Len</span><span class="oth">(</span><span class="wrd">formatstring</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">While</span>&nbsp;<span class="oth">(</span><span class="wrd">todo</span>&nbsp;<span class="oth">&gt;</span>&nbsp;<span class="num">0</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">char</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="oth">*</span><span class="wrd">p</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">p</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">todo</span>&nbsp;<span class="oth">-=</span>&nbsp;<span class="num">1</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Is&nbsp;it&nbsp;a&nbsp;format&nbsp;char?</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">char</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Asc</span><span class="oth">(</span><span class="quo">"%"</span><span class="oth">))</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">todo</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;%&nbsp;at&nbsp;the&nbsp;end</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"%"</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Exit</span>&nbsp;<span class="key">While</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;The&nbsp;next&nbsp;char&nbsp;should&nbsp;tell&nbsp;the&nbsp;type</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">char</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="oth">*</span><span class="wrd">p</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">p</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">todo</span>&nbsp;<span class="oth">-=</span>&nbsp;<span class="num">1</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Print&nbsp;var-arg,&nbsp;depending&nbsp;on&nbsp;the&nbsp;type</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Select</span>&nbsp;<span class="key">Case</span>&nbsp;<span class="wrd">char</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;integer?</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Case</span>&nbsp;<span class="key">Asc</span><span class="oth">(</span><span class="quo">"i"</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="key">Str</span><span class="oth">(</span><span class="key">va_arg</span><span class="oth">(</span><span class="wrd">arg</span><span class="oth">,</span>&nbsp;<span class="key">Integer</span><span class="oth">));</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Note,&nbsp;different&nbsp;from&nbsp;C:&nbsp;va_next()&nbsp;must&nbsp;be</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;used&nbsp;as&nbsp;va_arg()&nbsp;won't&nbsp;update&nbsp;the&nbsp;pointer.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">arg</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">va_next</span><span class="oth">(</span><span class="wrd">arg</span><span class="oth">,</span>&nbsp;<span class="key">Integer</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;long&nbsp;integer?&nbsp;(64-bit)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Case</span>&nbsp;<span class="key">Asc</span><span class="oth">(</span><span class="quo">"l"</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="key">Str</span><span class="oth">(</span><span class="key">va_arg</span><span class="oth">(</span><span class="wrd">arg</span><span class="oth">,</span>&nbsp;<span class="key">LongInt</span><span class="oth">));</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">arg</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">va_next</span><span class="oth">(</span><span class="wrd">arg</span><span class="oth">,</span>&nbsp;<span class="key">LongInt</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;single&nbsp;or&nbsp;double?</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Note:&nbsp;because&nbsp;the&nbsp;C&nbsp;ABI,&nbsp;all&nbsp;singles&nbsp;passed&nbsp;on</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;var-args&nbsp;are&nbsp;converted&nbsp;to&nbsp;doubles.</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Case</span>&nbsp;<span class="key">Asc</span><span class="oth">(</span>&nbsp;<span class="quo">"f"</span>&nbsp;<span class="oth">),</span>&nbsp;<span class="key">Asc</span><span class="oth">(</span>&nbsp;<span class="quo">"d"</span>&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="key">Str</span><span class="oth">(</span><span class="key">va_arg</span><span class="oth">(</span><span class="wrd">arg</span><span class="oth">,</span>&nbsp;<span class="key">Double</span><span class="oth">));</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">arg</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">va_next</span><span class="oth">(</span><span class="wrd">arg</span><span class="oth">,</span>&nbsp;<span class="key">Double</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;string?</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Case</span>&nbsp;<span class="key">Asc</span><span class="oth">(</span><span class="quo">"s"</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Strings&nbsp;are&nbsp;passed&nbsp;byval,&nbsp;so&nbsp;the&nbsp;length&nbsp;is&nbsp;unknown</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="oth">*</span><span class="key">va_arg</span><span class="oth">(</span><span class="wrd">arg</span><span class="oth">,</span>&nbsp;<span class="key">ZString</span>&nbsp;<span class="key">Ptr</span><span class="oth">);</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">arg</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">va_next</span><span class="oth">(</span><span class="wrd">arg</span><span class="oth">,</span>&nbsp;<span class="key">ZString</span>&nbsp;<span class="key">Ptr</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Select</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Ordinary&nbsp;char,&nbsp;just&nbsp;print&nbsp;as-is</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Else</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="key">Chr</span><span class="oth">(</span>&nbsp;<span class="wrd">char</span>&nbsp;<span class="oth">);</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Wend</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span>&nbsp;<span class="wrd">s</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"bar"</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">myprintf</span><span class="oth">(!</span><span class="quo">"integer=%i,&nbsp;longint=%l&nbsp;single=%f,&nbsp;double=%d,&nbsp;string=%s,&nbsp;string=%s\n"</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="num">1</span><span class="oth">,</span>&nbsp;<span class="num">1</span><span class="wrd">ll</span>&nbsp;<span class="key">Shl</span>&nbsp;<span class="num">32</span><span class="oth">,</span>&nbsp;<span class="num">2.2</span><span class="oth">,</span>&nbsp;<span class="num">3.3</span><span class="oth">,</span>&nbsp;<span class="quo">"foo"</span><span class="oth">,</span>&nbsp;<span class="wrd">s</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span><br />
+</div></tt><br />
+<br \>
+</div><div class="fb_sect_title">Dialect Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> Not available in the <i><a href="CompilerOptlang.html">-lang qb</a></i> dialect unless referenced with the alias <tt><b>__Va_first</b></tt>.<br \>
+<br \>
+</ul></div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> New to FreeBASIC<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <a href="KeyPgDots.html">... (Ellipsis)</a><br \>
+<li> <tt><a href="KeyPgVaArg.html">va_arg</a></tt><br \>
+<li> <tt><a href="KeyPgVaNext.html">va_next</a></tt><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

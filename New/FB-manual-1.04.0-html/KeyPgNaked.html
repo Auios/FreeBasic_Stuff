@@ -1,0 +1,139 @@
+<html>
+<head>
+<title>Naked</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Naked</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Write functions without prolog/epilog code<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+{<a href="KeyPgSub.html">Sub</a> | <a href="KeyPgFunction.html">Function</a>} <i>identifier</i> <b>Naked</b> [<i>calling_convention</i>] ( <i>param_list</i> ) [<a href="KeyPgAs.html">As</a> <i>data_type</i>]<br \>
+<div class="fb_indent"><i>asm_statements</i><br \>
+</div><a href="KeyPgEndblock.html">End</a> {<a href="KeyPgSub.html">Sub</a> | <a href="KeyPgFunction.html">Function</a>}<br \>
+</tt><br \>
+</div><div class="fb_sect_title">Parameters</div><div class="fb_sect_cont"><br \>
+<tt><i>identifier</i></tt> - name of the procedure.<br \>
+<tt><i>calling_convention</i></tt> - calling convention of the procedure - can be <tt><a href="KeyPgCdecl.html">cdecl</a></tt>, <tt><a href="KeyPgPascal.html">pascal</a></tt>, or <tt><a href="KeyPgStdcall.html">stdcall</a></tt><br \>
+<tt><i>asm_statements</i></tt> - the code in the procedure body.  The code for handling parameters and returning values must all be done manually.  Note that the methods for doing these can change, depending on the <a href="ProPgCallingConventions.html">calling convention</a>.<br \>
+<tt><i>param_list</i></tt> - parameters to be passed to the procedure.<br \>
+<tt><i>data_type</i></tt> - the <a href="DataType.html">data type</a> of the function.<br \>
+<br \>
+</div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+<tt><b>Naked</b></tt> allows the programmer to write procedures without the compiler generating any prolog/epilog code.  This is useful when writing small, fast functions in <tt><a href="KeyPgAsm.html">Asm</a></tt> without any unnecessary overhead.<br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Naked&nbsp;cdecl&nbsp;function</span><br />
+<span class="key">Function</span>&nbsp;<span class="wrd">subtract_c</span>&nbsp;<span class="wrd">Naked</span>&nbsp;<span class="key">cdecl</span>&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;parameters&nbsp;pushed&nbsp;onto&nbsp;call&nbsp;stack&nbsp;in&nbsp;reverse&nbsp;order&nbsp;of&nbsp;declaration</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">a</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">b</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;parameter&nbsp;pushed&nbsp;onto&nbsp;stack&nbsp;in&nbsp;first</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">)</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Asm</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">mov</span>&nbsp;<span class="wrd">eax</span><span class="oth">,</span>&nbsp;<span class="wrd">dword</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">[</span><span class="wrd">esp</span><span class="oth">+</span><span class="num">4</span><span class="oth">]</span>&nbsp;&nbsp;<span class="com">''&nbsp;eax&nbsp;=&nbsp;a</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">eax</span><span class="oth">,</span>&nbsp;<span class="wrd">dword</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">[</span><span class="wrd">esp</span><span class="oth">+</span><span class="num">8</span><span class="oth">]</span>&nbsp;&nbsp;<span class="com">''&nbsp;eax&nbsp;-=&nbsp;b</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ret</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;return&nbsp;result&nbsp;in&nbsp;eax</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Asm</span><br />
+&nbsp;&nbsp;&nbsp;<br />
+<span class="key">End</span>&nbsp;<span class="key">Function</span><br />
+<br />
+<span class="key">Print</span>&nbsp;<span class="wrd">subtract_c</span><span class="oth">(</span>&nbsp;<span class="num">5</span><span class="oth">,</span>&nbsp;<span class="num">1</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="com">''&nbsp;5&nbsp;-&nbsp;1</span><br />
+<br />
+<span class="com">''---------------------------------------------------------------------------------------------------------------------</span><br />
+<br />
+<span class="com">''&nbsp;Naked&nbsp;stdcall&nbsp;function</span><br />
+<span class="key">Function</span>&nbsp;<span class="wrd">subtract_s</span>&nbsp;<span class="wrd">Naked</span>&nbsp;<span class="key">stdcall</span>&nbsp;<span class="wrd">_</span>&nbsp;<span class="com">''&nbsp;parameters&nbsp;pushed&nbsp;onto&nbsp;call&nbsp;stack&nbsp;in&nbsp;reverse&nbsp;order&nbsp;of&nbsp;declaration</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;called&nbsp;procedure&nbsp;responsible&nbsp;for&nbsp;removing&nbsp;parameters&nbsp;from&nbsp;stack</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;&nbsp;&nbsp;(appending&nbsp;constant&nbsp;to&nbsp;RET&nbsp;instruction&nbsp;specifying&nbsp;number&nbsp;of&nbsp;bytes&nbsp;to&nbsp;release)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">a</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">b</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;parameter&nbsp;pushed&nbsp;onto&nbsp;stack&nbsp;in&nbsp;first</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">)</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Asm</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">mov</span>&nbsp;<span class="wrd">eax</span><span class="oth">,</span>&nbsp;<span class="wrd">dword</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">[</span><span class="wrd">esp</span><span class="oth">+</span><span class="num">4</span><span class="oth">]</span>&nbsp;&nbsp;<span class="com">''&nbsp;eax&nbsp;=&nbsp;a</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">eax</span><span class="oth">,</span>&nbsp;<span class="wrd">dword</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">[</span><span class="wrd">esp</span><span class="oth">+</span><span class="num">8</span><span class="oth">]</span>&nbsp;&nbsp;<span class="com">''&nbsp;eax&nbsp;-=&nbsp;b</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ret</span>&nbsp;<span class="num">8</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;return&nbsp;result&nbsp;in&nbsp;eax&nbsp;and&nbsp;8&nbsp;bytes&nbsp;(2&nbsp;integers)&nbsp;to&nbsp;release</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Asm</span><br />
+&nbsp;&nbsp;&nbsp;<br />
+<span class="key">End</span>&nbsp;<span class="key">Function</span><br />
+<br />
+<span class="key">Print</span>&nbsp;<span class="wrd">subtract_s</span><span class="oth">(</span>&nbsp;<span class="num">5</span><span class="oth">,</span>&nbsp;<span class="num">1</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="com">''&nbsp;5&nbsp;-&nbsp;1&nbsp;</span><br />
+<br />
+<span class="com">''---------------------------------------------------------------------------------------------------------------------</span><br />
+<br />
+<span class="com">''&nbsp;Naked&nbsp;pascal&nbsp;function</span><br />
+<span class="key">Function</span>&nbsp;<span class="wrd">subtract_p</span>&nbsp;<span class="wrd">Naked</span>&nbsp;<span class="key">pascal</span>&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;<span class="com">''&nbsp;parameters&nbsp;pushed&nbsp;onto&nbsp;call&nbsp;stack&nbsp;in&nbsp;same&nbsp;order&nbsp;as&nbsp;declaration</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;called&nbsp;procedure&nbsp;responsible&nbsp;for&nbsp;removing&nbsp;parameters&nbsp;from&nbsp;stack</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;&nbsp;&nbsp;(appending&nbsp;constant&nbsp;to&nbsp;RET&nbsp;instruction&nbsp;specifying&nbsp;number&nbsp;of&nbsp;bytes&nbsp;to&nbsp;release)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">a</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;parameter&nbsp;pushed&nbsp;onto&nbsp;stack&nbsp;in&nbsp;first</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">b</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">)</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Asm</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">mov</span>&nbsp;<span class="wrd">eax</span><span class="oth">,</span>&nbsp;<span class="wrd">dword</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">[</span><span class="wrd">esp</span><span class="oth">+</span><span class="num">8</span><span class="oth">]</span>&nbsp;&nbsp;<span class="com">''&nbsp;eax&nbsp;=&nbsp;a</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">eax</span><span class="oth">,</span>&nbsp;<span class="wrd">dword</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">[</span><span class="wrd">esp</span><span class="oth">+</span><span class="num">4</span><span class="oth">]</span>&nbsp;&nbsp;<span class="com">''&nbsp;eax&nbsp;-=&nbsp;b</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ret</span>&nbsp;<span class="num">8</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;return&nbsp;result&nbsp;in&nbsp;eax&nbsp;and&nbsp;8&nbsp;bytes&nbsp;(2&nbsp;integers)&nbsp;to&nbsp;release</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Asm</span><br />
+&nbsp;&nbsp;&nbsp;<br />
+<span class="key">End</span>&nbsp;<span class="key">Function</span><br />
+<br />
+<span class="key">Print</span>&nbsp;<span class="wrd">subtract_p</span><span class="oth">(</span>&nbsp;<span class="num">5</span><span class="oth">,</span>&nbsp;<span class="num">1</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="com">''&nbsp;5&nbsp;-&nbsp;1</span></div></tt><br />
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Naked&nbsp;cdecl&nbsp;function</span><br />
+<span class="com">''&nbsp;plus&nbsp;ecx&nbsp;register&nbsp;preserved&nbsp;in&nbsp;asm&nbsp;block&nbsp;by&nbsp;creating&nbsp;user&nbsp;stack</span><br />
+<span class="key">Function</span>&nbsp;<span class="wrd">subtract_cp</span>&nbsp;<span class="wrd">Naked</span>&nbsp;<span class="key">cdecl</span>&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;parameters&nbsp;pushed&nbsp;onto&nbsp;call&nbsp;stack&nbsp;in&nbsp;reverse&nbsp;order&nbsp;of&nbsp;declaration</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">a</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">b</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;parameter&nbsp;pushed&nbsp;onto&nbsp;stack&nbsp;in&nbsp;first</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">)</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Asm</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">push</span>&nbsp;<span class="wrd">ebp</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;push&nbsp;ebp&nbsp;onto&nbsp;stack&nbsp;&nbsp;&nbsp;=&gt;&nbsp;esp&nbsp;-=&nbsp;4</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">mov</span>&nbsp;<span class="wrd">ebp</span><span class="oth">,</span>&nbsp;<span class="wrd">esp</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;ebp&nbsp;=&nbsp;esp</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;&nbsp;&nbsp;&nbsp;=&gt;&nbsp;create&nbsp;user&nbsp;stack&nbsp;4&nbsp;bytes&nbsp;above&nbsp;call&nbsp;stack</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">push</span>&nbsp;<span class="wrd">ecx</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;push&nbsp;ecx&nbsp;onto&nbsp;user&nbsp;stack&nbsp;&nbsp;&nbsp;=&gt;&nbsp;esp&nbsp;-=&nbsp;4</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">mov</span>&nbsp;<span class="wrd">eax</span><span class="oth">,</span>&nbsp;<span class="wrd">dword</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">[(</span><span class="wrd">ebp</span><span class="oth">+</span><span class="num">4</span><span class="oth">)+</span><span class="num">4</span><span class="oth">]</span>&nbsp;&nbsp;<span class="com">''&nbsp;eax&nbsp;=&nbsp;a&nbsp;&nbsp;&nbsp;(supplementary&nbsp;offset&nbsp;of&nbsp;+4&nbsp;bytes&nbsp;only&nbsp;due&nbsp;to&nbsp;'push&nbsp;ebp')</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">mov</span>&nbsp;<span class="wrd">ecx</span><span class="oth">,</span>&nbsp;<span class="wrd">dword</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="oth">[(</span><span class="wrd">ebp</span><span class="oth">+</span><span class="num">8</span><span class="oth">)+</span><span class="num">4</span><span class="oth">]</span>&nbsp;&nbsp;<span class="com">''&nbsp;ecx&nbsp;=&nbsp;b&nbsp;&nbsp;&nbsp;(supplementary&nbsp;offset&nbsp;of&nbsp;+4&nbsp;bytes&nbsp;only&nbsp;due&nbsp;to&nbsp;'push&nbsp;ebp')</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">eax</span><span class="oth">,</span>&nbsp;<span class="wrd">ecx</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;eax&nbsp;-=&nbsp;ecx</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">pop</span>&nbsp;<span class="wrd">ecx</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;pop&nbsp;ecx&nbsp;from&nbsp;user&nbsp;stack&nbsp;&nbsp;&nbsp;=&gt;&nbsp;esp&nbsp;+=&nbsp;4</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">mov</span>&nbsp;<span class="wrd">esp</span><span class="oth">,</span>&nbsp;<span class="wrd">ebp</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;esp&nbsp;=&nbsp;ebp</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">pop</span>&nbsp;<span class="wrd">ebp</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;pop&nbsp;ebp&nbsp;from&nbsp;stack&nbsp;&nbsp;&nbsp;=&gt;&nbsp;esp&nbsp;+=&nbsp;4</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;&nbsp;&nbsp;&nbsp;=&gt;&nbsp;discard&nbsp;user&nbsp;stack</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ret</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;return&nbsp;result&nbsp;in&nbsp;eax</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">Asm</span><br />
+&nbsp;&nbsp;&nbsp;<br />
+<span class="key">End</span>&nbsp;<span class="key">Function</span><br />
+<br />
+<span class="key">Print</span>&nbsp;<span class="wrd">subtract_cp</span><span class="oth">(</span>&nbsp;<span class="num">5</span><span class="oth">,</span>&nbsp;<span class="num">1</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="com">''&nbsp;5&nbsp;-&nbsp;1</span></div></tt><br />
+</div><div class="fb_sect_title">Platform Differences</div><div class="fb_sect_cont"><br \>
+<ul><li> The default calling convention depends on the target platform, thus it is best to specify the expected calling convention explicitly when using <tt><b>Naked</b></tt>.<br \>
+<br \>
+</ul></div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> New to FreeBASIC<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <tt><a href="KeyPgAsm.html">Asm</a></tt><br \>
+<li> <tt><a href="ProPgCallingConventions.html">Calling Conventions</a></tt><br \>
+<li> <tt><a href="KeyPgFunction.html">Function</a></tt><br \>
+<li> <tt><a href="KeyPgSub.html">Sub</a></tt><br \>
+<li> <tt><a href="KeyPgCdecl.html">cdecl</a></tt><br \>
+<li> <tt><a href="KeyPgPascal.html">pascal</a></tt><br \>
+<li> <tt><a href="KeyPgStdcall.html">stdcall</a></tt><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

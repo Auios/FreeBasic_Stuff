@@ -1,0 +1,71 @@
+<html>
+<head>
+<title>Line continuation</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Line continuation</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	A single <tt>_</tt> (underscore) character at the end of a line of code tells the compiler that the line continues in the next line. This allows a single statement (line of code) to be spread across multiple lines in the input file, which can be a nice formatting help.<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;This&nbsp;Dim&nbsp;statement&nbsp;is&nbsp;spread&nbsp;across&nbsp;multiple&nbsp;lines,&nbsp;using&nbsp;the&nbsp;'_'&nbsp;character</span><br />
+<span class="key">Dim</span>&nbsp;<span class="wrd">myvariable</span>&nbsp;<span class="wrd">_</span><br />
+<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+</div></tt><br />
+<br \>
+This is often used to make very long lines of code easier to read, for example procedure declarations with a lot of parameters:<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Here's&nbsp;an&nbsp;example:</span><br />
+<br />
+<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">drawRectangle</span><span class="oth">(</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">x</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">y</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">w</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">h</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">)</span><br />
+<br />
+<span class="com">''&nbsp;which&nbsp;can&nbsp;also&nbsp;be&nbsp;written&nbsp;as:</span><br />
+<br />
+<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">drawRectangle</span><span class="oth">(</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">x</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">y</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">w</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">h</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">)</span><br />
+<br />
+<span class="com">''&nbsp;or:</span><br />
+<br />
+<span class="key">Declare</span>&nbsp;<span class="key">Sub</span>&nbsp;<span class="wrd">drawRectangle</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">x</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">y</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">w</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">h</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">)</span><br />
+<br />
+<span class="com">''&nbsp;(or&nbsp;any&nbsp;other&nbsp;formatting&nbsp;you&nbsp;like)</span><br />
+</div></tt><br />
+<br \>
+The <tt>_</tt> line continuation character can be inserted at pretty much any point in a line of code. It does not work inside comments though.<br \>
+<br \>
+Be careful when adding the <tt>_</tt> line continuation character right behind an identifier or keyword. It should be separated with at least one space character, otherwise it would be treated as part of the identifier or keyword.<br \>
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Declare&nbsp;variable&nbsp;"a_"</span><br />
+<span class="com">''&nbsp;(no&nbsp;line&nbsp;continuation&nbsp;happening,&nbsp;because&nbsp;the&nbsp;'_'&nbsp;character&nbsp;is&nbsp;part&nbsp;of</span><br />
+<span class="com">''&nbsp;the&nbsp;"a_"&nbsp;identifier)</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">a_</span><br />
+<br />
+<span class="com">''&nbsp;Declare&nbsp;variable&nbsp;"a"&nbsp;and&nbsp;initialize&nbsp;to&nbsp;value&nbsp;5</span><br />
+<span class="com">''&nbsp;(line&nbsp;continuation&nbsp;happening,&nbsp;because&nbsp;the&nbsp;'_'&nbsp;character</span><br />
+<span class="com">''&nbsp;was&nbsp;separated&nbsp;from&nbsp;the&nbsp;identifier&nbsp;"a"&nbsp;with&nbsp;a&nbsp;space&nbsp;character)</span><br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">a</span>&nbsp;<span class="wrd">_</span><br />
+<span class="oth">=</span>&nbsp;<span class="num">5</span><br />
+</div></tt><br />
+<br \>
+<b>Warning:</b> When an erroneous code line is spread over a multiple lines block by using the _ line continuation character, the error message refers only to the last line of the block.<br \>
+<br \>
+
+</div>
+</div> 
+</div> 
+</body>
+</html>

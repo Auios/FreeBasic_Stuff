@@ -1,0 +1,240 @@
+body {
+	padding: 0;
+	margin: 0;
+}
+
+p {
+	text-align: justify;
+	text-indent: 15px;
+}
+
+#signature {
+	text-align: right;
+	padding-right: 50px;
+}
+
+acronym {
+	cursor: pointer;
+	border-bottom: 1px dashed;
+}
+
+hr {
+	width: 100%;
+	border: 0;
+}
+
+
+h1 {
+	position: relative;
+	border-top: 1px solid;
+	border-bottom: 1px solid;
+	border-right: 0;
+	border-left: 0;
+	padding: 0.1em;
+	text-align: center;
+}
+
+h2 {
+	position: relative;
+	border-top: 1px solid;
+	border-bottom: 1px solid;
+	border-right: 0;
+	border-left: 0;
+	padding: 0.1em;
+	text-align: center;
+}
+
+h3 {
+	position: relative;
+	padding: 0 5em;
+	border-top: 1px solid;
+	border-bottom: 1px solid;
+}
+
+h3.subtitle {
+	top: -20px;
+	position: relative;
+	padding: 0;
+	border-top: 0;
+	border-right: 1px;
+	border-left: 1px;
+	border-bottom: 1px;
+	text-align: center;
+}
+
+h3.writer {
+	top: -20px;
+	position: relative;
+	padding: 0 5em;
+	border-top: 0;
+	border-right: 1px;
+	border-left: 1px;
+	border-bottom: 1px;
+	text-align: right;
+}
+
+h3.date {
+	top: -20px;
+	position: relative;
+	padding: 0 5em;
+	border-top: 0;
+	border-right: 1px;
+	border-left: 1px;
+	border-bottom: 1px;
+	text-align: center;
+}
+
+h4 {
+	position: relative;
+	padding: 0 2em;
+}
+
+dl {
+	margin-left: 2em;
+	margin-right: 2em;
+}
+
+dl dt {
+	font-weight: bold;
+	border-bottom: 1px solid;
+}
+
+input {
+	border: 1px solid;
+}
+
+.limited {
+	border-top: 1px solid;
+	border-bottom: 1px solid;
+	height: 10em;
+	overflow: auto;
+}
+
+p.top {
+	text-align: right;
+}
+
+p.top a {
+	border: 0;
+}
+
+p.footer {
+	position: relative;
+	padding: 0 5em;
+	border-top: 1px solid;
+	border-bottom: 1px solid;
+	text-align: center;
+}
+
+p.topquote {
+	top: -20px;
+	position: relative;
+	text-align: center;
+	padding: 0 5em;
+	border: 0;
+}
+
+
+ul.limited {
+	margin-left: 0;
+	padding-left: 1em;
+}
+
+#indented {
+	margin-left: 40px;
+}
+
+#banner {
+	padding: 0;
+}
+
+#summary {
+	display: none;
+}
+
+#menu ol {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	border-left: 1px solid;
+	border-right: 2px solid;
+	border-bottom: 2px solid;
+}
+
+#menu ol li {
+	display: inline;
+}
+
+#menu ol li a, #menu ol li span {
+	border-left: 1px solid;
+	border-right: 1px solid;
+	padding: 0 1em;
+}
+
+
+#content {
+	margin: 0 11% 0 11%;
+	border-left: 1px solid;
+	border-right: 1px solid;
+	border-bottom: 1px solid;
+}
+
+#content p {
+	margin: 0 1em 1em 1em;
+}
+
+#last {
+	border-right: 1px solid;
+}
+
+#sidebox-left {
+ border-right: 1px solid;
+ border-top: 1px solid;
+ border-bottom: 1px solid;
+ float: left;
+ width: 360;
+ margin: 10px 10px 0px 0px;
+ padding: 2px;
+ margin-right: 5px;
+ margin-top: 0px;
+ margin-left: 0px;
+ margin-bottom: 0px;
+}
+
+#sidebox-right {
+ border-left: 1px solid;
+ border-top: 1px solid;
+ border-bottom: 1px solid;
+ float: right;
+ width: 360;
+ margin: 0px>10px 0px>10px 0px 0px;
+ padding: 2px;
+ margin-left: 5px;
+ margin-top: 0px;
+ margin-right: 0px;
+ margin-bottom: 0px;
+}
+
+#contributors {
+ border-left: 1px solid;
+ border-top: 1px solid;
+ border-bottom: 1px solid;
+ float: right;
+ width: 220;
+ margin: 0px>10px 0px>10px 0px 0px;
+ padding: 2px;
+ margin-left: 5px;
+ margin-top: 0px;
+ margin-right: 0px;
+ margin-bottom: 0px;
+}
+
+#bigcode {
+	overflow: auto;
+	width: 100%;
+}
+
+pre {
+	overflow: auto;
+	width: 100%;
+}

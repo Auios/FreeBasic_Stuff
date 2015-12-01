@@ -1,0 +1,959 @@
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html">
+<link rel="stylesheet" type="text/css" href="qb.css">
+<link rel="stylesheet" type="text/css" href="qb-colors.css">
+<title>How To Program A Game With FreeBASIC - Lesson #1 (Redux)</title>
+</head>
+
+
+<body>
+
+<a name="tutorial1"></a>
+<DIV id=content>
+<H2>How To Program A Game With FreeBASIC - Lesson #1 (Redux)
+</H2>
+<H3 class=writer>Written by Lachie Dazdarian (August, 2011)</H3>
+
+<H3>Introduction</H3>
+<P>
+The objective of this series of lessons is to help newbies who know very little of BASIC to learn the basics of programming in FreeBASIC necessary to create any 2D computer game. Some elementary BASIC knowledge would help a lot,  though I believe that people who don't know BASIC at all should comprehend these lessons too. I'm using here the word (well, it's an acronym) "BASIC" and not FreeBASIC, because if you know the basics of QuickBASIC, Visual BASIC or any other variant of BASIC, these lessons should be easy to comprehend.
+</P><P>
+I'm starting this series because I feel that tutorials of this kind were always something what our community was lacking, even before FreeBASIC. I've corresponded during my programming lifetime with quite few programming newbies, and they all had almost identical problems when trying to program a game. So I think I'm able to detect what beginners need quite well and on what way the stuff needs to be explained to them. I also remember my beginnings and the problems I had with using separated routines that were never meant to be combined and used to create a game. The breaking point for me was the moment when I discovered RelLib (a QuickBASIC graphics library by R.E.Lope) and the scrolling engine that was created with it. That scrolling engine motivated me to explore its mechanics and expand on it (with some help from R.E.Lope). In one single moment I acquired the ability to program most of the stuff (necessary to complete a game) by myself. It's like driving a bike. The moment when you acquire the actual skill lasts for one second.
+</P><P>
+So that's my goal with this series. To learn you enough so you would be self-sufficient in 90% of cases in 2D game design. And the best way to learn new things is to see them applied. Many tutorials fail in this by being too generic. You will always need help from more expert programmers, but the point is that after these series you won't need it on every step. Have in mind that this depends on the type of game you are developing and the graphics library / tools you are using. 
+</P>
+<p>
+I am definitely not going to make you a good programmer or show you how to become one with these tutorials. Forget about it. I will only teach you enough to make a 2D game. The rest is up to you. You might ask me then why you shouldn't pick a game making software instead picking FreeBASIC and reading these tutorials. Well, because learing to program leaves you so much more space to build and expand on your basic knowledge and in the end makes you much more flexible when it comes to solving game design problems.
+</p>
+
+<P>
+The example programs and mini-games we'll create will be coded in <b>GFXlib</b> (the FreeBASIC's built-in graphics library). <a href="http://games.freebasic.net/dumpbyid.php?input=2">Lynn's Legacy</a>, <a href="http://games.freebasic.net/dumpbyid.php?input=3">ArKade</a>, <a href="http://games.freebasic.net/dumpbyid.php?input=71">Mighty Line</a> and <a href="http://games.freebasic.net/dumpbyid.php?input=29">Poxie</a> were coded in it (among many others), and I think those games are good references. But don't worry. Switching from one graphics library to another is relatively easy when you know how to code in at least one.
+</P><P>
+This tutorial will not deal with raycasting engines (3D programming) or something "advanced" like that. If you want that but are a beginner, you NEED the following lessons FIRST.
+</P><P>
+Since we are going to code in <b>FreeBASIC</b> you need to get FreeBASIC first (if you don't have it yet) from <a href="http://www.freebasic.net">http://www.freebasic.net</a> (the examples were compiled with version 0.23), and one of the FreeBASIC IDEs available. I recommend <a href="http://fbide.freebasic.net">FBIDE</a> or <a href="http://radasm.cherrytree.at/fbedit/">FBEdit</a>.
+</P>
+
+<H3>Example #1: A simple program - The circle moves!</H3>
+<P>
+We'll start with some elementary stuff. The first program we'll code will not feature external graphics, because loading graphics from external files (usually BMP images) is always a dirty business and will confuse you at this point. Trust me on this. Be patient.
+</P><P>
+The program we'll create will allow you to move a circle around the screen. A very simple program, but through making it we'll learn important facts and a lot of elementary statements and methods necessary to create any game with GFXlib.
+</P><P>
+As we are using GFXlib you need to be aware of the <i>gfxlib.txt</i> file(<a href="HowToLesson1/gfxlib015b.txt" TARGET = "TOP">GFXlib's documentation</a>) placed in the <i>/FreeBASIC/docs</i> directory. That's our Bible and very useful with these lessons since I will not explain every parameter of every statement used in the example programs (most likely). FreeBASIC manual is your friend: <a href="http://www.freebasic.net/wiki/wikka.php?wakka=DocToc">FBWiki</a>. Read it first before asking how something is done.
+</P><P>
+Open a new program in FBIDE. First thing we'll do is set the graphic mode. What's setting a graphic mode? Choosing the program's graphic resolution and color depth in bits (8-bit, 16-bit, ...). For example, 8-bit color depth is the standard 256 colors mode (8 bits per pixel). The graphic mode is set with the SCREEN statement like this:
+</P>
+<blockquote class="code"><pre>SCREEN 18,8,2,0</pre></blockquote>
+<P>
+18 means 640*480 graphic resolution, 8 means 8-bit graphics, 2 means two work pages, and 0 means window mode (input 1 for full screen mode). Minimum of 2 work pages is recommended for any graphics dependant program. These things will become clearer a little bit later. For more details about the SCREEN statement refer to GFXlib's documentation or FreeBASIC Wiki (a more "advanced" version of the SCREEN statement is SCREENRES).
+</P><P>
+The next thing we'll do is set a loop that plays until the user pushes the letter Q on the keyboard. Loops are foundation of any program, not just a computer game. Coding a program on a way it would stop/halt every now and then and wait for the user to type something in is a BAD and WRONG way to program anything you want for other people to play. We'll use loops as places where the program waits for the user to do something (clicks with mouse or pushes a key) and where the program executes some routine according to user's action. It will also be used as a place where objects not controlled by the player (enemies) are managed/moved. Loops are a must have. 
+</P><P>
+If you are aware of all these things, you can skip to the end of this section and download the completed example (with comments). If there is something in it you don't understand, then get back here.
+</P><P>
+We can set a loop on more ways (with WHILE:WEND statements, using the GOTO statement - Noooo!), but the best way is to use DO...LOOP. This type of loop simply repeats a block of statements in it until the condition is met. You set the condition(s) after LOOP with UNTIL. Check the following code:
+</P>
+<blockquote class="code"><pre>
+SCREEN 18,8,2,0 ' Sets the graphic mode
+DO
+' We'll put our statemens here later
+LOOP UNTIL INKEY$ = "Q" or INKEY$ = "q"
+</pre></blockquote>
+<P>
+If you compile this code and run it, you'll get a small black empty 640*480 window which you can turn off by pushing the letter Q (you might need to hold it). The program simply loops until you press "Q or "q". I used both upper and lower case "Q" symbol in case Caps Lock is turned on on your keyboard. INKEY$ is a statement that returns the last key pushed on the keyboard. I will explain later why it shouldn't be used with games and what's a better substitute.
+</P><P>
+To draw a circle we'll use the CIRCLE statement (refer to GFXlib's documentation). Check the following code:
+</P>
+
+<blockquote class="code"><pre>
+SCREEN 18,8,2,0 ' Sets the graphic mode
+
+DO
+
+CIRCLE (150, 90), 10, 15 
+
+LOOP UNTIL INKEY$ = "Q" or INKEY$ = "q"
+</pre></blockquote> 
+
+<P>
+The last code draws a small circle on coordinates 150, 90 with a radius of 10 and color 15 (plain white) in a loop, which you can check if you compile the code. So how to move that circle? We need to connect its coordinates with VARIABLES. For this we'll use two variables named <i>circlex</i> and <i>circley</i>. Check the following code:
+</P>
+
+<blockquote class="code"><pre>
+DIM SHARED AS SINGLE circlex, circley
+
+SCREEN 13,8,2,0 ' Sets the graphic mode
+
+circlex = 150 ' Initial circle position
+circley = 90
+
+DO
+
+CIRCLE (circlex, circlex), 10, 15 
+
+LOOP UNTIL INKEY$ = "Q" or INKEY$ = "q"
+</pre></blockquote>
+
+<P>
+This makes no change in the result of our program, but it's a step to what we want to accomplish. You can change the amounts to which <i>circlex</i> and <i>circley</i> equal to change the circle's initial position, but that's not what we really want. In order to move the circle we need to connect <i>circlex</i> and <i>circley</i> variables with keyboard statements. 
+<P>
+We declared first two variables in our program. <b>Since FreeBASIC ver.0.17 all variables in FreeBASIC programs MUST be declared</b>, although if you use <i>–lang qb</i> command line during compiling you can compile using old QBasic compatibility dialect (I don’t recommend it as it will keep you deprived of possible advances and extensions which default FB compatibility mode already provides and will provide in the future).  For more info on this check the appropriate page of the FreeBASIC wiki - <a href="http://www.freebasic.net/wiki/wikka.php?wakka=CompilerCmdLine">Using the command line</a>. 
+Variables are declared (dimensioned) on this way: 
+
+<blockquote class="code"><pre>
+
+DIM variable_name [AS type_of_variable] 
+
+</pre></blockquote>
+
+<p>
+Or...
+</p>
+
+<blockquote class="code"><pre>
+
+DIM [AS type_of_variable] variable1, variable2, variable3, ... 
+
+</pre></blockquote>
+
+<p>
+The data inside [ ] is optional and the brackets are not used. Types of variables available in FreeBASIC are BYTE, SHORT, INTEGER, STRING, SINGLE, DOUBLE and few others, but I don't find details about them important on this level. What you need to know now is that you should declare variables or arrays AS INTEGER when they hold graphics data (memory buffers holding graphics, but a better alternative in FB is ANY PTR and I'll demonstrate later why) or when they represent data which doesn't need decimal precision (number of lives, points, etc.). Variables that need decimal precision are declared AS SINGLE or DOUBLE. Those are usually variables used in games which rely on physics formulae like arcade car driving games or jump 'n run games (gravity effect). Simply, the difference between the speed of two pixels per cycle and the speed of one pixel per cycle is most often too large, and in those limits you can't emulate effects like fluid movement on the most satisfactory way. Also, behind DIM you put SHARED which makes that the specific variable readable in the entire program (all subroutines). Don't use SHARED only with variables declared inside subroutines. If you are going to declare ARRAYS inside a subroutine, I advise you to replace DIM with REDIM. Strings are used to hold text data.
+Like <i>YourName = "Dodo"</i>, but you need to declare <i>YourName AS STRING</i> first. 
+</p>
+<p>Certain programmers shun global variables (declared with SHARED) and consider them a bad programming habbit. I strongly disagree with their sentiment, but you should just be aware that many don't agree with strong usage of shared variables. In my own opinion and years of experience, using SHARED variables is rarely if ever a cause of bugs or crashes. On the contrary, strong usage of pointers and object oriented programming is.
+</p>
+
+</P><P>
+Now I will introduce a new statement instead of INKEY$ which can detect multiple keypresses and is much more responsive (perfect response) than INKEY$. The flaw of INKEY$, as well as being very non-responsive (which you probably were able to detect when trying to shut down the previously compiled examples), is that it can detect only one keypress at any given moment which renders it completely unusable in games. 
+</P><P>
+The substitute we'll use is MULTIKEY (a GFXlib statement) which features only one parameter, and that's the DOS scancode of the key you want to query. You might be lost now. DOS scancode is nothing but a code referred by the computer to a certain keyboard key. If you check Appendix A of the GFXlib's documentation, you will see what each code stands for. For example, <i>MULTIKEY(&h1C)</i> queries if you pushed ENTER. GFXlib allows you to replace these scancodes with "easy to read" constants like it's explained in Appendix A. To use GFXlib you need to include its .bi file (<i>fbgfx.bi</i>) into your source. What's a .bi file? Well, it can be any kind of module you would attach to your source code and which can feature various subroutines (if you don't know what a subroutine is, we'll get on that later) and declarations used in your main module. The code you need to add are these two lines as it follows:
+</P>
+
+<blockquote class="code"><pre>
+#include "fbgfx.bi" 
+Using FB
+</pre></blockquote>
+
+<P>
+It's best to put these two lines somewhere on the beginning of your program (before or after the sub declarations). You don't need to set a path to <i>fbgfx.bi</i> since it's placed in the <i>/FreeBASIC/inc</i> directory. You only need to set a path to a .bi file if it's not in that directory or not in the directory where the source code is. <i>Using FB</i> tells the program that we will be accessing GFXlib symbols without namespace, meaning, without having to put '<b>FB.</b>' in front of every GFXlib symbol. Refer to FreeBASIC Wiki on USING.
+</P><P>
+Now the fun starts.
+</P><P>
+We will add a new variable named <i>circlespeed</i> which flags (sets) how many pixels the circle will move in one cycle (loop). The movement will be done with the arrows key. Every time the user pushes a certain arrow key we will tell the program to change either <i>circlex</i> or <i>circley</i> (depends on the pushed key) by the amount of <i>circlespeed</i>. Check the following code:
+</P>
+
+<blockquote class="code"><pre>
+#include "fbgfx.bi"
+Using FB
+
+DIM SHARED AS SINGLE circlex, circley, circlespeed 
+
+SCREEN 18,8,2,0 ' Sets the graphic mode
+
+circlex = 150   ' Initial circle position
+circley = 90
+circlespeed = 1 ' Circle's speed => 1 pixel per loop
+
+DO
+
+CIRCLE (circlex, circley), 10, 15
+
+' According to pushed key we change the circle's coordinates.
+IF MULTIKEY(SC_RIGHT) THEN circlex = circlex + circlespeed
+IF MULTIKEY(SC_LEFT) THEN circlex = circlex - circlespeed
+IF MULTIKEY(SC_DOWN) THEN circley = circley + circlespeed
+IF MULTIKEY(SC_UP) THEN circley = circley - circlespeed
+
+LOOP UNTIL MULTIKEY(SC_Q) OR MULTIKEY(SC_ESCAPE)
+</pre></blockquote>
+
+<P>
+As you see we also changed the condition after UNTIL since we are using MULTIKEY now. Now you can exit the program by pressing ESCAPE too (I added one more condition).
+</P><P>
+If you compile the last version of the code, two things we don't want to happen will happen. The program will run so fast you won't even notice the movement of the circle, and the circle will "smear" the screen (the circles drawn on different coordinates in previous cycles will remain on the screen). To avoid smearing you need to have the CLS statement (clears the screen) in the loop so that in every new cycle the old circle from the previous cycle is erased before the new is drawn.
+</P><P>
+To reduce the speed of the program the quickest fix is the SLEEP command. What it does? It waits until the specified amount of time has elapsed (in milliseconds) or a key is pressed. To escape the key press option use <i>SLEEP milliseconds, 1</i>. This statement is also an efficient solution for the 100 % CPU usage problem. You see, if you don't use that statement any kind of FreeBASIC program with a loop (even the simplest one) will hold up all the computer cycles and make all the other Windows tasks you might be running to crawl. It also makes difficult for you to operate with other tasks while that kind of FreeBASIC program is running. Err...this is not a huge problem and a fair amount of programmers that have released FreeBASIC games so far did not bother to fix it.
+</P><P>
+Copy and paste the following code and compile it:
+</P>
+
+<blockquote class="code"><pre>
+#include "fbgfx.bi"
+Using FB
+
+DIM SHARED AS SINGLE circlex, circley, circlespeed  
+
+SCREEN 18,8,2,0 ' Sets the graphic mode
+
+circlex = 150   ' Initial circle position
+circley = 90
+circlespeed = 1 ' Circle's speed => 1 pixel per loop
+
+DO
+
+CLS
+CIRCLE (circlex, circley), 10, 15
+
+' According to pushed key we change the circle's coordinates.
+IF MULTIKEY(SC_RIGHT) THEN circlex = circlex + circlespeed
+IF MULTIKEY(SC_LEFT) THEN circlex = circlex - circlespeed
+IF MULTIKEY(SC_DOWN) THEN circley = circley + circlespeed
+IF MULTIKEY(SC_UP) THEN circley = circley - circlespeed
+
+SLEEP 1, 1
+
+LOOP UNTIL MULTIKEY(SC_Q) OR MULTIKEY(SC_ESCAPE)
+</pre></blockquote>
+
+<P>
+Viola! Our circle is moving and "slow enough".
+</P><P>
+The last version of the code does not represent the desirable way of coding, but I had to simplify the code in order to make this lesson easy to understand. What we need to do next is declare our variables on the way they should be declared in any "serious" program, and show why we are having two work pages and what we can do with them.
+</P><P>
+The way variables are declared in the above code is not the most convenient in larger projects where we have huge amount of variables usually associated to several objects (an object can be the player, enemy or anything that is defined with MORE THAN ONE variable).
+</P><P>
+So first we'll define a user defined data type with the statement TYPE that can contain more variables/arrays (stay with me). We'll name this user data type <i>ObjectType</i>. The code:
+</P>
+
+<blockquote class="code"><pre>
+TYPE ObjectType
+     x AS SINGLE
+     y AS SINGLE
+     speed AS SINGLE
+END TYPE
+</pre></blockquote>
+
+<P>
+After this we declare our circle as an object:
+</P>
+
+<blockquote class="code"><pre>
+DIM SHARED CircleM AS ObjectType
+' We can't declare this variable with "Circle"
+' since then FB can't differ it from 
+' the statement CIRCLE, thus "CircleM".
+</pre></blockquote>
+
+<P>
+How is this method beneficial? It allows us to manage the program variables on a more efficient and cleaner way. Instead of (in this example) having to declare each circle's characteristic (it's position, speed, etc.) separately, we'll simply use a type:def that includes all these variables and associate a variable or an array to it (in this case that's <i>CircleM</i>). So now the circle's x position is flagged with <i>CircleM.X</i>, circle's y position with <i>CircleM.Y</i> and circle's speed with <i>CircleM.speed</i>. I hope you see now why this is better. One user defined type can be connected with more variables or arrays. In this example you can add another object with something like <i>DIM SHARED EnemyCircle(8) AS ObjectType</i> which would allow us to manage 8 "evil" circles with a specific set of routines (an AI of some sort) using the variables from the <i>ObjectType</i> type:def (x, y, speed), and these circles could "attack" the user's circle on some way. In the next lesson all this will become more clear. Have in mind that not ALL variables need to be declared using a type:def. This is only for "objects" in your game that are defined (characterized) with more variables (like a hero determined by health, money, score, strength, etc.).
+</P><P>
+After the change the final version of the code looks like this:
+</P>
+<blockquote class="code"><pre>
+#include "fbgfx.bi"
+Using FB 
+
+' Our user defined type.
+TYPE ObjectType
+     x AS SINGLE
+     y AS SINGLE
+     speed AS SINGLE
+END TYPE
+
+DIM SHARED CircleM AS ObjectType
+' We can't declare this variable with "Circle"
+' since then FB can't differ it from 
+' the statement CIRCLE, thus "CircleM".
+
+SCREEN 18,8,2,0 ' Sets the graphic mode
+SETMOUSE 0,0,0 ' Hides the mouse cursor
+
+CircleM.x = 150   ' Initial circle's position
+CircleM.y = 90
+CircleM.speed = 1 ' Circle's speed => 1 pixel per loop
+
+DO
+
+CLS
+CIRCLE (CircleM.x, CircleM.y), 10, 15
+
+' According to pushed key we change the circle's coordinates.
+IF MULTIKEY(SC_RIGHT) THEN CircleM.x = CircleM.x + CircleM.speed
+IF MULTIKEY(SC_LEFT) THEN CircleM.x = CircleM.x - CircleM.speed
+IF MULTIKEY(SC_DOWN) THEN CircleM.y = CircleM.y + CircleM.speed
+IF MULTIKEY(SC_UP) THEN CircleM.y = CircleM.y - CircleM.speed
+
+SLEEP 1, 1 ' Wait for 1 millisecond.
+
+LOOP UNTIL MULTIKEY(SC_Q) OR MULTIKEY(SC_ESCAPE)
+
+</pre></blockquote>
+
+<P>
+You will notice I added one more statement in the code. The SETMOUSE statement positions the system mouse cursor (first two parameters) and shows or hides it (third parameter; 0 hides it). You should input this statement with these parameters in every program AFTER the SCREEN statement (IMPORTANT!) by default, because even if your program is going to feature a mouse controllable interface, you will most likely draw your own cursor. Trust me on this. Uh, I using that line way too often. 
+</P><P>
+<b>Download</b> the completed example with extra comments inside the source: <a href="HowToLesson1/move_circle.zip">move_circle.zip</a>
+</P><P>
+Phew, we are done with the first example. Some of you might think I went into too many details, but I feel all this dance was needed to make the next examples and lessons a more enjoyable adventure.
+</P><P>
+Nevertheless, this example is far from what we want, right? So the next chapter will learn you how to load graphics from external files among other things.
+</P>
+
+<H3>Example #2: A warrior running around a green field</H3>
+
+<P>
+In the next example we will be applying all the knowledge from the first example, so don't expect for this example to go into every statement again. I will explain every new statement and just brush off the old ones.
+</P><P>
+In this section we'll start to code our mini-game which won't be completed in this lesson. In this lesson we'll just create a program where a warrior runs around a green field (single screen).
+</P><P>
+First I'll show you what graphics we'll be using. We are going to work in 8-bit color depth mode, so the images that we are going to use need to be saved in that mode (256 colors mode). For warrior sprites I'll use the sprites of the main character from my first game Dark Quest.</P>
+<P><center><a href="HowToLesson1/SPRITES.bmp" TARGET="TOP"><img src="HowToLesson1/SPRITES.bmp" border=0></a></center></P>
+<P>
+As you see this image features 12 sprites of our warrior, each 40*40 pixels large. Two for each direction (walk animation) and one sprite for each direction when the warrior is swinging with his sword. Sword swinging won’t be implemented in the first lesson but will become necessary later.
+</P><P>
+Second image is the background image which you can check/download if you click <a href="HowToLesson1/BACKGRND.bmp" TARGET="TOP">here</a> (640*480 pixels large, 8-bit BMP image).</P>
+
+<P>
+Download both images and place them where you will place the source, or just download the completed example at the end of this section.
+</P><P>
+On the beginning of our program we should include <i>fbgfx.bi</i>, same as in the first example, and then set the same graphic mode. The code:
+</P>
+
+<blockquote class="code"><pre>
+#include "fbgfx.bi" 
+Using FB
+
+SCREEN 18,8,2,0 ' Sets the graphic mode
+SETMOUSE 0,0,0  ' Hides the mouse cursor
+</pre></blockquote>
+
+<P>
+Now we will declare two memory pointers that will point to memory buffers where our graphics will be stored (one for the sprites and one for the background).
+</P><P>
+The first pointer we'll name <i>background1</i> and declare it with the following line:
+</P>
+
+<blockquote class="code"><pre>
+DIM SHARED background1 AS ANY PTR
+</pre></blockquote>
+
+<P>
+ANY PTR tells us that <i>background1</i> will actually be a memory pointer. A pointer defined as an ANY PTR disables the compiler checking for the type of data it points to. It is useful as it can point to different types of data. We'll use pointers because we will allocate memory for our graphics using the IMAGECREATE statement. IMAGECREATE allocates the right amount of memory for a piece of graphics (sprite/image) if we input its height and width. Otherwise we would have to do it manually, meaning, calculate the needed amount of memory as the result of the sprite size, bit-depth and variable size. IMAGECREATE does this for use. As IMAGECREATE results with a pointer, we need to refer a pointer to it and not a variable. Don't worry if you don't know anything about pointers. You don't need to (to comprehend this tutorial).
+</P><P>
+The next pointer we'll declare will point to the memory buffer that holds the 12 warrior sprites. We will dimension this pointer as a single dimension array, each element in the array representing one sprite.
+</P>
+
+<blockquote class="code"><pre>
+DIM SHARED WarriorSprite(12) AS ANY PTR
+</pre></blockquote>
+
+<P>
+Both these lines should be put in the code before the SCREEN statement. That's the way you'll write every program. Subroutine declarations, then variable declarations, then extra subroutine declarations if needed, and then the real code. The beginning of our program should now look like this:
+</P>
+
+<blockquote class="code"><pre>
+#include "fbgfx.bi" 
+Using FB
+
+DIM SHARED background1 AS ANY PTR ' A pointer that points to a memory
+                                  ' buffer holding the background graphics
+DIM SHARED WarriorSprite(12) AS ANY PTR ' A pointer that points to a memory
+                                        ' buffer holding the warrior sprites
+
+SCREEN 18,8,2,0 ' Sets the graphic mode
+SETMOUSE 0,0,0  ' Hides the mouse cursor
+</pre></blockquote>
+
+<P>
+After the screen resolution, color depth and number of work pages are set, we will hide our work page before loading graphics onto it since we don't want for the user to see all of the program's graphics every time he or she starts our program. To accomplish that we'll use the SCREENSET statement. What it does? It sets the work page (first parameter) and the visible page (second parameter). In our case we will set page 1 as the work page and page 0 as the visible page. After using 'SCREENSET 1, 0' every time we draw or load something on the screen it will be loaded/drawn on the work page and won't be visible to the user until we use the statement SCREENCOPY or SCREENSET with different parameters (SCREENSET 1, 1). This allows us to load graphics onto the screen we don't want for the user to see and delete it before coping the content on the work page to the visible page. This page flipping is also useful in loops with "graphics demanding" programs to avoid flicker or some other unwanted occurrence. It is possible to acomplish this with only using SCREENLOCK before loading and SCREENUNLOCK when you want to show the updated screen, but I feel this gives more flexibility. A matter of preference.
+</P><P>
+BMP (bitmap) files are loaded in GFXlib with the statement BLOAD. BLOAD can also load BSAVEd images (images saved with the BSAVE statement). BMP images can be loaded directly into an array or onto the screen. When an image is loaded with BLOAD image's associated palette will be set as program's current palette. In 8-bit mode all your graphics should be in the same palette. In 16-bit and higher color depth modes you don't have to think about palettes. Check GFXlib's documentation for more details on these statements. For alternative image loading libraries, I can recommend <a href="HowToLesson1/fbpng_v3_2_q.tar.gz">FreeBASIC PNG library</a> (version 3.2) which loads PNG images.
+</P><P>
+The first image we'll load is the background image, and we'll load it onto the screen first and then store (capture) that data into a memory buffer with the GET statement. I prefer that way over loading images directly into memory buffers as a result of habbit. Just have in mind that you can BLOAD directly into a memory buffer, as well as GET graphics directly from a memory buffer. Often people create a memory buffer than acts like the full screen, and then BLOAD to it, as well as GET from it. The background image is loaded and stored into memory with the following code:
+</P>
+
+<blockquote class="code"><pre>
+SCREENSET 1, 0
+
+background1 = IMAGECREATE (640, 480)
+
+BLOAD "BACKGRND.bmp", 0
+GET (0,0)-(638,479), background1
+</pre></blockquote>
+
+<P>
+<i>BACKGRND.bmp</i> is the name of the image we are loading. If it's placed in some subdirectory (not where the compiled program is), you need to set a path to it. If, for example, it's placed in the subdirectory "Graphics" you need to replace <i>BACKGRND.bmp</i> with "Graphics/BACKGRND.bmp". DON'T USE HARD PATHS in you programs like "C:/FreeBASIC/myprograms/Bobo/BACKGRND.bmp", because that's some of the stupidest things you can do in game design. It forces the user to extract your program in a specific directory and have death wishes about you. Parameter 0 in the BLOAD statement means we want to load the image onto the screen. Like I previously noted, instead of 0 you can put an address (memory pointer) where to store the image. The GET statement in the previous code captures the graphics on the screen from the coordinates (0,0) to (639,479) and refers the <i>background1</i> memory pointer to it. Note how we had to initiate our memory pointer with IMAGECREATE previously, sizing it with the appropriate image height and width.
+</P><P>
+The second image we'll load is the one with the warrior sprites after which we'll store them into the <i>WarriorSprite</i> array. There are 12 sprites and each one is 40*40 pixels large. The code that loads the second image as stores the sprites is as follows: 
+</P>
+
+<blockquote class="code"><pre>
+WarriorSprite(1) = IMAGECREATE (40, 40)
+WarriorSprite(2) = IMAGECREATE (40, 40)
+WarriorSprite(3) = IMAGECREATE (40, 40)
+WarriorSprite(4) = IMAGECREATE (40, 40)
+WarriorSprite(5) = IMAGECREATE (40, 40)
+WarriorSprite(6) = IMAGECREATE (40, 40)
+WarriorSprite(7) = IMAGECREATE (40, 40)
+WarriorSprite(8) = IMAGECREATE (40, 40)
+WarriorSprite(9) = IMAGECREATE (40, 40)
+WarriorSprite(10) = IMAGECREATE (40, 40)
+WarriorSprite(11) = IMAGECREATE (40, 40)
+WarriorSprite(12) = IMAGECREATE (40, 40)
+
+BLOAD "SPRITES.bmp", 0
+GET (0,0)-(19,19),  WarriorSprite(1)
+GET (24,0)-(43,19), WarriorSprite(2)
+GET (48,0)-(67,19), WarriorSprite(3)
+GET (72,0)-(91,19), WarriorSprite(4)
+GET (96,0)-(115,19), WarriorSprite(5)
+GET (120,0)-(139,19), WarriorSprite(6)
+GET (144,0)-(163,19), WarriorSprite(7)
+GET (168,0)-(187,19), WarriorSprite(8)
+GET (192,0)-(211,19), WarriorSprite(9)
+GET (216,0)-(235,19), WarriorSprite(10)
+GET (240,0)-(259,19), WarriorSprite(11)
+GET (264,0)-(283,19), WarriorSprite(12)
+</pre></blockquote>
+
+<P>
+Boy, all that code to store mere 12 sprites! Each GET goes for one sprite and you see how we stored each one on a different position in the array. Now what if your game features hundreds of sprites and tiles? What to do then? Well, you can apply a form of automation in sprites/tiles capturing if you align (compile) sprites or tiles sequentially in the BMP image. Place them one after another with 0 or more pixels of space between them. You probably noticed a certain order in coordinates used in the twelve GET statements from the last code. That's because these 12 sprites are nicely arranged in the image in one line (from left to right) and with 8 pixels between every sprite. This allows us to load all of them with a single GET statement and a FOR loop. Like this (this replaces the last piece of code):</P>
+
+<blockquote class="code"><pre>
+FOR imagepos AS INTEGER = 1 TO 12
+	WarriorSprite(imagepos) = IMAGECREATE (40, 40)
+	GET (0+(imagepos-1)*48,0)-(39+(imagepos-1)*48,39),  WarriorSprite(imagepos)
+NEXT imagepos
+</pre></blockquote>
+
+<P>
+If you don't understand how FOR loops work, I’ll explain it. A FOR loop simply executes the statement(s) between FOR and NEXT until the variable specified with FOR reaches the number behind TO. In our code in the first cycle (loop) variable <i>imagepos</i> equals 1, and the coordinates in the GET statement are (try to calculate them manually) (0,0) and (39,39). When imagepos equals 12 (last cycle) the coordinates are (528,0) and (566,39). So this FOR loop simply "goes through" all the sprites and stores them on the appropriate positions inside the <i>WarriorSprite</i> array. Oh, the wonders of FOR loops. Anyway, try to apply this knowledge when construction ways of loading large numbers of tiles and/or sprites from BMP images. Note how I used the same FOR loop to initiate the storages for all the sprites using IMAGECREATE.
+<br><br>
+The sprites are now saved on these positions:
+<br><br>
+WarriorSprite(1) - warrior moving down image #1<br>
+WarriorSprite(2) - warrior moving down image #2<br>
+WarriorSprite(2) - warrior moving up image #1<br>
+WarriorSprite(4) - warrior moving up image #2<br>
+WarriorSprite(5) - warrior moving left image #1<br>
+WarriorSprite(6) - warrior moving left image #2<br>
+WarriorSprite(7) - warrior moving right image #1<br>
+WarriorSprite(8) - warrior moving right image #2<br>
+WarriorSprite(9) - warrior swinging up<br>
+WarriorSprite(10) - warrior swinging down<br>
+WarriorSprite(11) - warrior swinging left<br>
+WarriorSprite(12) - warrior swinging right<br>
+</P><P>
+The entire code so far should look like this:
+</P>
+
+<blockquote class="code"><pre>
+#include "fbgfx.bi" 
+Using FB
+
+SCREEN 18,8,2,0 ' Sets the graphic mode
+SETMOUSE 0,0,0  ' Hides the mouse cursor
+
+DIM SHARED background1 AS ANY PTR ' A pointer that points to a memory
+                                  ' buffer holding the background graphics
+DIM SHARED WarriorSprite(12) AS ANY PTR ' A pointer that points to a memory
+                                        ' buffer holding the warrior sprites
+' Let's hide the work page since we are
+' going to load program graphics directly
+' on the screen.
+SCREENSET 1, 0
+
+' Load the background image and store
+' it into a memory buffer.
+background1 = IMAGECREATE (640, 480)
+BLOAD "BACKGRND.bmp", 0
+GET (0,0)-(639,479), background1
+
+CLS ' Clear our screen since we
+    ' are loading a new image (not
+    ' neccesary but wise).
+
+' Load the sprites onto the screen and store them 
+' into an array.
+BLOAD "SPRITES.bmp", 0
+FOR imagepos AS INTEGER = 1 TO 12
+	WarriorSprite(imagepos) = IMAGECREATE (40, 40)
+	GET (0+(imagepos-1)*48,0)-(39+(imagepos-1)*48,39),  WarriorSprite(imagepos)
+NEXT imagepos
+</pre></blockquote>
+
+<P>
+We are finally done with loading graphics. Now we will declare additional variables needed in this example. I'll define a data type like in the previous example, but it will contain more variables. The following code should be placed before the pointers declarations.
+
+</P>
+
+<blockquote class="code"><pre>
+TYPE ObjectType
+X          AS SINGLE
+Y          AS SINGLE
+Speed      AS SINGLE
+Frame      AS INTEGER
+Direction  AS INTEGER
+Move       AS INTEGER
+Attack     AS INTEGER
+Alive      AS INTEGER
+END TYPE
+</pre></blockquote>
+
+<P>
+The object that will be used to control the warrior is declared with:
+</P>
+
+<blockquote class="code"><pre>
+DIM SHARED Player AS ObjectType
+</pre></blockquote>
+
+<P>
+<i>Frame</i> variable will be used to flag the sprite that needs to be displayed (according to warrior's direction, if he is moving or not, etc.). <i>Direction</i> will be used to flag the warrior's direction, <i>Move</i> if he is moving or not, <i>Attack</i> if he is attacking or not (so we could flag the proper sprite), and <i>Alive</i> if he is alive or not (not used in this example but most often necessary).
+</P>
+<P>
+Let's set a loop on the way it's done in the previous example, but also implement screen page swaping into it.
+</P>
+
+<blockquote class="code"><pre>
+DO
+    
+screenlock ' Lock our screen (nothing will be
+           ' displayed until we unlock the screen).
+screenset workpage, workpage xor 1 ' Swap work pages.
+
+CLS
+
+' Our graphics code goes in here.
+
+workpage xor = 1 ' Swap work pages.
+screenunlock ' Unlock the page to display what has been drawn.
+
+SLEEP 10, 1 ' Slow down the program and prevent 100 % CPU usage.
+    
+LOOP UNTIL MULTIKEY(SC_Q) OR MULTIKEY(SC_ESCAPE)
+</pre></blockquote>
+
+<P>
+For the loop to work declare <i>workpage</i> AS SHARED and INTEGER together with other variable declarations.</P>
+<P>
+We should now add a statement in the loop that will draw our warrior. To paste graphics onto the screen with GFXlib we use the PUT statement. It's very simple and functions like this:
+</P>
+
+<blockquote class="code"><pre>
+PUT (x coordinate, y coordinate), array, Mode
+</pre></blockquote>
+
+<P>
+Where <i>array</i> is the name of the array (or memory pointer which points to) where our image/sprite/tile is stored.
+<i>Mode</i> represents several methods of pasting graphics, but at this point you should be aware of two. PSET pastes all the image pixels, while TRANS skips pixels that are of background color (transparent background effect). In 16-bit and higher color depth modes transparent color is the color RGB 255,0,255 (pink; 255 should be the highest value in the palette editor you are using, but some drawing programs feature a different number as a maximum color value so have that in mind), while in 8-bit mode it's the color 0 (first in the palette). Our sprites must be pasted with TRANS or they would be pasted with a black square around them (consisted of color 0). By using MULTIKEY statements according to pushed arrow key we'll change warrior's position and flag the proper direction (with a number). According to direction we will paste the proper sprite. Here we go (entire code):
+</P>
+
+<blockquote class="code"><pre>
+#include "fbgfx.bi" 
+Using FB
+
+' Useful constants (makes your code easier to read and write).
+const FALSE = 0
+const TRUE = 1
+
+SCREEN 18,8,2,0 ' Sets the graphic mode
+SETMOUSE 0,0,0  ' Hides the mouse cursor
+
+DIM SHARED background1 AS ANY PTR ' A pointer that points to a memory
+                                  ' buffer holding the background graphics
+DIM SHARED WarriorSprite(12) AS ANY PTR ' A pointer that points to a memory
+					' buffer holding the warrior sprites
+DIM SHARED workpage AS INTEGER
+
+' Let's hide the work page since we are
+' going to load program graphics directly
+' on the screen.
+SCREENSET 1, 0
+
+' Load the background image and store
+' it into a memory buffer.
+background1 = IMAGECREATE (640, 480)
+BLOAD "BACKGRND.bmp", 0
+GET (0,0)-(639,479), background1
+
+CLS ' Clear our screen since we
+    ' are loading a new image (not
+    ' neccesary but wise).
+
+' Load the sprites onto the screen and store them 
+' into an array.
+BLOAD "SPRITES.bmp", 0
+FOR imagepos AS INTEGER = 1 TO 12
+	WarriorSprite(imagepos) = IMAGECREATE (40, 40)
+	GET (0+(imagepos-1)*48,0)-(39+(imagepos-1)*48,39),  WarriorSprite(imagepos)
+NEXT imagepos
+
+TYPE ObjectType
+X          AS SINGLE
+Y          AS SINGLE
+Speed      AS SINGLE
+Frame      AS INTEGER
+Direction  AS INTEGER
+Move       AS INTEGER
+Attack     AS INTEGER
+Alive      AS INTEGER
+END TYPE
+
+DIM SHARED Player AS ObjectType
+
+' Warrior's (player's) initial
+' position, speed (constant)
+' and direction (1 = right)
+Player.X = 150
+Player.Y = 90
+Player.Speed = 1
+Player.Direction = 1
+
+DO
+    
+' Player.Direction = 1 -> warrior moving right
+' Player.Direction = 2 -> warrior moving left
+' Player.Direction = 3 -> warrior moving down
+' Player.Direction = 4 -> warrior moving up
+
+Player.Move = FALSE ' By deafult the player is not
+                    ' moving.
+                    
+' According to pushed key move the
+' player and flag the proper direction.
+IF MULTIKEY(SC_RIGHT) THEN 
+    Player.X = Player.X + Player.Speed
+    Player.Direction = 1
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_LEFT) THEN 
+    Player.X = Player.X - Player.Speed
+    Player.Direction = 2
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_DOWN) THEN 
+    Player.Y = Player.Y + Player.Speed
+    Player.Direction = 3
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_UP) THEN 
+    Player.Y = Player.Y - Player.Speed
+    Player.Direction = 4
+    Player.Move = TRUE
+END IF
+
+    
+screenlock ' Lock our screen (nothing will be
+           ' displayed until we unlock the screen).
+screenset workpage, workpage xor 1 ' Swap work pages.
+
+' According to player's direction flag the 
+' proper sprite (check in the tutorial on which
+' position each sprite is stored).
+IF Player.Direction = 1 THEN Player.Frame = 7
+IF Player.Direction = 2 THEN Player.Frame = 5
+IF Player.Direction = 3 THEN Player.Frame = 1
+IF Player.Direction = 4 THEN Player.Frame = 3
+
+CLS ' Clear the screen.
+
+' Paste the warrior on Player.X and Player.Y coordinates, 
+' using sprite number Player.Frame, and skip background color.
+PUT (Player.X, Player.Y), WarriorSprite(Player.Frame), TRANS
+
+workpage xor = 1 ' Swap work pages.
+screenunlock ' Unlock the page to display what has been drawn.
+
+SLEEP 10, 1 ' Slow down the program and prevent 100 % CPU usage.
+    
+LOOP UNTIL MULTIKEY(SC_Q) OR MULTIKEY(SC_ESCAPE)
+
+</pre></blockquote>
+
+<P>
+Take a note of the two constants which I added in the code and which allow us to make our code easier to write and read. Instead of dealing with 0 and 1 as conditions with variables than should only be true or false, we declare in our code that FALSE will mean 0 and TRUE will mean 1.
+If you compile this code, you'll be able to move the warrior around a black screen (we'll add the background later), but his legs won't move. How to enable "walk" animation? Well, it's quite easy. You'll see how the <i>Move</i> variable comes in handy now. You should input this code right after CLS:
+</P>
+
+<blockquote class="code"><pre>
+Frame1 = (Frame1 MOD 2) + 1
+IF Player.Move = FALSE OR Frame1 = 0 THEN Frame1 = 1
+</pre></blockquote>
+
+<P>
+Be sure to declare <i>Frame1</i> (together with other variable declarations) with:
+</P>
+
+<blockquote class="code"><pre>
+DIM SHARED AS INTEGER Frame1
+</pre></blockquote>
+
+<P>
+The line <i>Frame1 = (Frame1 MOD 2) + 1</i> is a substitute for:
+</P>
+
+<blockquote class="code"><pre>
+Frame1 = Frame1 + 1
+IF Frame1 > 2 THEN Frame1 = 1
+</pre></blockquote>
+
+<P>
+MOD finds the remainder from a division operation. So <i>Frame1 MOD 2</i> results with the remainder when we divide <i>Frame1</i> with 2. If <i>Frame1</i> is 1, divided by 2 it results with the remainder of 0.5, which is rounded on 1. If you add 1 to 1, you get 2. If <i>Frame1</i> is 2, divided by 2 it results with the remainder of 0. If you add 0 to 1, you get 1. So with <i>Frame1 = (Frame1 MOD 2) + 1</i> we loop from 1 to 2, adding one unit in each cycle.
+</p><p>
+All you need to know is that this formula changes variable <i>Frame1</i> by 1 in each cycle from number 1 to the number specified after MOD. If you want for <i>Frame1</i> to loop from 50 to 66 you need to input <i>Frame1 = (Frame1 MOD 16) + 50</i>, but that's not what we need. We need a variable that toggles from 1 to 2 in each cycle to enable walk animation. To make this work we need to change the 4 lines of code preceding CLS (where according to player's direction the proper sprite is flagged) to this:
+</P>
+
+<blockquote class="code"><pre>
+IF Player.Direction = 1 THEN Player.Frame = 6 + Frame1
+IF Player.Direction = 2 THEN Player.Frame = 4 + Frame1
+IF Player.Direction = 3 THEN Player.Frame = 0 + Frame1
+IF Player.Direction = 4 THEN Player.Frame = 2 + Frame1
+</pre></blockquote>
+
+<P>
+So when <i>Frame1</i> equals 1 and the player is moving right (<i>Player.Direction = 1</i>) <i>Player.Frame</i> equals 7, while when <i>Frame1</i> equals 2 <i>Player.Frame</i> is 8. Check the lesson on the place where I specified on which position each sprite is stored in the <i>WarriorSprite</i> array. You'll see that "moving right" sprites are stored on positions 7 and 8. Now why we need that condition where the <i>Player.Move</i> variable is used? When the player is not moving <i>Frame1</i> needs to be 1 or 2 IN EVERY CYCLE (no sprite rotation). Second condition (<i>IF Frame1 = 0</i>) is there to prevent errors (when the loop starts <i>Frame1</i> might equal 0 and the program might load a sprite out of bounds or something; I highly advise this sort of precaution measure).
+</P><P>
+If you compile the code again with these changes, you'll notice that warrior's legs are moving too fast. How to set the speed of sprite rotation? You need another variable like <i>Frame1</i> (we'll named it <i>Frame2</i>) that will grow to a higher number and connect it with <i>Frame1</i>. This results in <i>Frame1</i> not changing in every cycle but only when <i>Frame2</i> equals a certain number. Check the following code:
+</P>
+
+<blockquote class="code"><pre>
+Frame2 = (Frame2 MOD 16) + 1
+IF Frame2 = 10 THEN Frame1 = (Frame1 MOD 2) + 1
+</pre></blockquote>
+
+<P>
+Now <i>Frame1</i> will change (from 1 to 2 or vice versa) every time <i>Frame2</i> equals 10, and <i>Frame2</i> will equal 10 every 16 cycles (it grows from 1 to 16 by 1 in every cycle and then drops to 1). We reduced the speed of rotation of the <i>Frame1</i> variable! Change 16 to some other number to get a different speed of sprite rotation. Be sure to declare <i>Frame2</i> as you did with <i>Frame1</i>. Using several "Frame" variables in your code, some connected and some not, will become necessary in larger projects where you will have many objects represented with sprites that need to rotate with different speeds (monsters which walk with different paces, the speed of explosion animations, etc.). With "walking" objects you need to synchronize the speed of that object with sprite rotation (the best you can) or your "walking" object (player, monster, etc.) might seem like it’s sliding or running in place.
+</P><P>
+One of the last things we'll do in the second example is add a line that pastes the background. It should be placed before the PUT statement that pastes the warrior (as the warrior is pasted OVER the background):
+</P>
+
+<blockquote class="code"><pre>
+PUT (0, 0), background1, PSET
+</pre></blockquote>
+
+<P>
+You can also remove CLS now since in every new cycle of the loop the background is pasted over the entire screen erasing all the graphics from the previous cycle.
+</P><P>
+Last 4 conditions we'll add in the code are there to prevent the warrior to walk off the screen.
+</P>
+
+<blockquote class="code"><pre>
+IF Player.X < 0 THEN 
+Player.Move = FALSE
+Player.X = 0
+END IF
+IF Player.X > 600 THEN 
+Player.Move = FALSE
+Player.X = 600
+END IF
+IF Player.Y < 0 THEN 
+Player.Move = FALSE
+Player.Y = 0
+END IF
+IF Player.Y > 440 THEN 
+Player.Move = FALSE
+Player.Y = 440
+END IF
+</pre></blockquote>
+
+<P>
+You should be able now to understand this code. <i>Player.Move</i> is changed to FALSE so that the warrior doesn't seem like he is trying to push the edge of the screen. Try to REM these lines (<i>Player.Move = FALSE</i>) and see it yourself.
+</P>
+<P>
+The FINAL version of the code (for this lesson) looks like this (yippee!):
+</P>
+
+<blockquote class="code"><pre>
+#include "fbgfx.bi" 
+Using FB
+
+' Useful constants (makes your code easier to read and write).
+const FALSE = 0
+const TRUE = 1
+
+SCREEN 18,8,2,0 ' Sets the graphic mode
+SETMOUSE 0,0,0  ' Hides the mouse cursor
+
+DIM SHARED background1 AS ANY PTR ' A pointer that points to a memory
+                                  ' buffer holding the background graphics
+DIM SHARED WarriorSprite(12) AS ANY PTR ' A pointer that points to a memory
+					' buffer holding the warrior sprites
+DIM SHARED workpage AS INTEGER
+DIM SHARED AS INTEGER Frame1, Frame2
+
+' Let's hide the work page since we are
+' going to load program graphics directly
+' on the screen.
+SCREENSET 1, 0
+
+' Load the background image and store
+' it into a memory buffer.
+background1 = IMAGECREATE (640, 480)
+BLOAD "BACKGRND.bmp", 0
+GET (0,0)-(639,479), background1
+
+CLS ' Clear our screen since we
+    ' are loading a new image (not
+    ' neccesary but wise).
+
+' Load the sprites onto the screen and store them 
+' into an array.
+BLOAD "SPRITES.bmp", 0
+FOR imagepos AS INTEGER = 1 TO 12
+	WarriorSprite(imagepos) = IMAGECREATE (40, 40)
+	GET (0+(imagepos-1)*48,0)-(39+(imagepos-1)*48,39),  WarriorSprite(imagepos)
+NEXT imagepos
+
+TYPE ObjectType
+X          AS SINGLE
+Y          AS SINGLE
+Speed      AS SINGLE
+Frame      AS INTEGER
+Direction  AS INTEGER
+Move       AS INTEGER
+Attack     AS INTEGER
+Alive      AS INTEGER
+END TYPE
+
+DIM SHARED Player AS ObjectType
+
+' Warrior's (player's) initial
+' position, speed (constant)
+' and direction (1 = right)
+Player.X = 150
+Player.Y = 90
+Player.Speed = 1
+Player.Direction = 1
+
+DO
+    
+' Player.Direction = 1 -> warrior moving right
+' Player.Direction = 2 -> warrior moving left
+' Player.Direction = 3 -> warrior moving down
+' Player.Direction = 4 -> warrior moving up
+
+Player.Move = FALSE ' By deafult the player is not
+                    ' moving.
+                    
+' According to pushed key move the
+' player and flag the proper direction.
+IF MULTIKEY(SC_RIGHT) THEN 
+    Player.X = Player.X + Player.Speed
+    Player.Direction = 1
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_LEFT) THEN 
+    Player.X = Player.X - Player.Speed
+    Player.Direction = 2
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_DOWN) THEN 
+    Player.Y = Player.Y + Player.Speed
+    Player.Direction = 3
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_UP) THEN 
+    Player.Y = Player.Y - Player.Speed
+    Player.Direction = 4
+    Player.Move = TRUE
+END IF
+
+' The following 4 conditions prevent
+' the warrior to walk off the screen.
+IF Player.X < 0 THEN 
+Player.Move = FALSE
+Player.X = 0
+END IF
+IF Player.X > 600 THEN 
+Player.Move = FALSE
+Player.X = 600
+END IF
+IF Player.Y < 0 THEN 
+Player.Move = FALSE
+Player.Y = 0
+END IF
+IF Player.Y > 440 THEN 
+Player.Move = FALSE
+Player.Y = 440
+END IF
+
+screenlock ' Lock our screen (nothing will be
+           ' displayed until we unlock the screen).
+screenset workpage, workpage xor 1 ' Swap work pages.
+
+' Frame1 changes from 1 to 2 or vice versa every
+' 16 cycles (set with Frame2 variable).
+Frame2 = (Frame2 MOD 16) + 1
+IF Frame2 = 10 THEN Frame1 = (Frame1 MOD 2) + 1
+IF Player.Move = FALSE OR Frame1 = 0 THEN Frame1 = 1
+
+' According to player's direction flag the 
+' proper sprite (check in the tutorial on which
+' position each sprite is stored).
+IF Player.Direction = 1 THEN Player.Frame = 6 + Frame1
+IF Player.Direction = 2 THEN Player.Frame = 4 + Frame1
+IF Player.Direction = 3 THEN Player.Frame = 0 + Frame1
+IF Player.Direction = 4 THEN Player.Frame = 2 + Frame1
+
+' Pastes the background.
+PUT (0, 0), background1, PSET
+' Paste the warrior on Player.X and Player.Y coordinates, 
+' using sprite number Player.Frame, and skip background color.
+PUT (Player.X, Player.Y), WarriorSprite(Player.Frame), TRANS
+
+
+workpage xor = 1 ' Swap work pages.
+screenunlock ' Unlock the page to display what has been drawn.
+
+SLEEP 10, 1 ' Slow down the program and prevent 100 % CPU usage.
+    
+LOOP UNTIL MULTIKEY(SC_Q) OR MULTIKEY(SC_ESCAPE)
+
+' Destroy our memory buffers before ending the program
+' (free memory).
+IMAGEDESTROY (background1)
+FOR imagepos AS INTEGER = 1 TO 12
+IMAGEDESTROY WarriorSprite(imagepos)
+NEXT imagepos
+
+</pre></blockquote>
+
+<P>
+Note how I used the IMAGEDESTROY statement to free the memory before ending the program. Always use this when allocating memory with IMAGECREATE.
+</P><P>
+Compile and test the program. 
+</P><P>
+<b>Download</b> the completed example compiled with the graphics files: <a href="HowToLesson1/move_warrior.zip">move_warrior.zip</a>
+</P>
+
+<H3>Extra stuff: 24-bit color depth and example #2</H3>
+<P>
+If you want to convert example #2 into 16-bit or higher color depth mode, you need to convert the two images used in that example to 24-bit color depth mode (24 BPP). The best tool for this task is <a href="http://www.irfanview.com/">IrfanView</a>, which is something anyone who owns a PC must have. But if you are going to use 24- or 32-bit screen modes,  you should use Paint Shop Pro or some other similar program. With IrfanView the transparent bright pink color is not converted properly from 8-bit mode. With sprites you need to replace the background color 0 with color RGB 255,0,255 (bright pink) like it's done on this image (click on it):<P><center><a href="HowToLesson1/SPRITES24bit.bmp" TARGET="TOP"><img src="HowToLesson1/SPRITES24bit.bmp" border=0></a></center></P>
+</P>
+
+<P>
+Another change you need to do is change the second parameter with SCREEN to 16 or 24.The code:</P>
+
+<blockquote class="code"><pre>
+SCREEN 18,16,2,0 
+
+...
+</pre></blockquote>
+
+<P>
+<b>Download</b> the entire code with all the changes and new graphics files (24-bit version of example #2):  <a href="HowToLesson1/move_warrior24bit.zip">move_warrior24bit.zip</a>
+</P>
+
+<HR>
+<P>
+That's all for lesson #1.
+</P>
+<P>
+In the next issue we'll deal with some more complex stuff, like artificial smarts, particles layers, more insight into FPS control and time-based movement. Stay tuned!
+</P>
+<HR>
+<p>
+A tutorial written by Lachie D. (<a href="mailto:lachie13@yahoo.com">lachie13@yahoo.com</a> ; <a href="http://lachie.phatcode.net">The Maker Of Stuff</a>)
+</p>
+
+</div>
+
+
+</body>
+
+</html>
+

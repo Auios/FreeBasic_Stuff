@@ -1,0 +1,392 @@
+#include "fbgfx.bi" 
+Using FB
+
+' Our subroutine declarations will go here!
+DECLARE SUB MainMenu ' Sub that runs our main menu loop.
+DECLARE SUB MainLoop ' Sub that runs our main game loop.
+DECLARE SUB LoadGraphics ' Sub that loads all the program's graphics.
+DECLARE SUB InitVariables ' Sub that initiates the game variables
+                          ' (should be called before every new game).
+DECLARE SUB MoveDrawSheep ' Sub that moves and draws the sheep.
+DECLARE SUB MoveDrawPlayer ' Sub that moves and draws the player
+
+' Useful constants (makes your code easier to read and write).
+const FALSE = 0
+const TRUE = 1
+
+DIM SHARED background1 AS ANY PTR ' A pointer that points to a memory
+                                  ' buffer holding the background graphics
+DIM SHARED WarriorSprite(12) AS ANY PTR ' A pointer that points to a memory
+                                        ' buffer holding warrior sprites
+
+DIM SHARED ExtraSprite(18) AS ANY PTR   ' An array that will hold
+                                        ' the additional sprites.
+                                            
+DIM SHARED workpage AS INTEGER ' Our work page
+DIM SHARED AS INTEGER Frame1, Frame2
+DIM SHARED AS INTEGER KeyPressed
+
+SCREEN 18,8,2,0 ' Sets the graphic mode
+		' 18 means 640 * 480
+                ' 8 means 8bit color depth; 2 means two work pages and
+                ' 0 means window mode( 1 would be full screen mode).
+                ' When your program is running you can toggle
+                ' between full screen/window mode with ALT+ENTER.
+                
+SETMOUSE 0,0,0  ' Hides the mouse cursor.
+
+
+' Our user defined type containing 8 variables.
+TYPE ObjectType
+X          AS SINGLE
+Y          AS SINGLE
+Speed      AS SINGLE
+Frame      AS INTEGER
+Direction  AS INTEGER
+Move       AS INTEGER
+Attack     AS INTEGER
+Alive      AS INTEGER
+END TYPE
+
+DIM SHARED Player AS ObjectType ' Our player.
+DIM SHARED Sheep(10) AS ObjectType ' Our sheep.
+
+LoadGraphics ' Load the program's graphics.
+MainMenu ' Initiate main menu.
+' Destroy our memory buffers before ending the program
+' (free memory).
+IMAGEDESTROY (background1)
+FOR imagepos AS INTEGER = 1 TO 12
+IMAGEDESTROY WarriorSprite(imagepos)
+NEXT imagepos
+FOR imagepos AS INTEGER = 1 TO 18
+IMAGEDESTROY ExtraSprite(imagepos)
+NEXT imagepos
+
+END ' End program.
+
+' MAIN MODULE ENDS HERE!
+' **********************
+
+SUB LoadGraphics
+    
+' Let's hide the work page since we are
+' going to load program graphics directly
+' on the screen.
+SCREENSET 1, 0
+
+' Load the background image and store
+' it into a memory buffer.
+background1 = IMAGECREATE (640, 480)
+BLOAD "BACKGRND.bmp", 0
+GET (0,0)-(639,479), background1
+
+CLS ' Clear our screen since we
+    ' are loading a new image (not
+    ' neccesary but wise).
+
+' Load the sprites onto the screen and store them 
+' into an array.
+BLOAD "SPRITES.bmp", 0
+FOR imagepos AS INTEGER = 1 TO 12
+	WarriorSprite(imagepos) = IMAGECREATE (40, 40)
+	GET (0+(imagepos-1)*48,0)-(39+(imagepos-1)*48,39),  WarriorSprite(imagepos)
+NEXT imagepos
+
+' Load the image holding the additional sprites and store
+' them into the "ExtraSprite" array on specific positions.
+BLOAD "EXTRASPR.BMP", 0
+' Load the sheep sprites.
+FOR imagepos AS INTEGER = 1 TO 8
+    ExtraSprite(imagepos) = IMAGECREATE (40, 40)
+    GET (0+(imagepos-1)*48,0)-(39+(imagepos-1)*48,39), ExtraSprite(imagepos)
+NEXT imagepos
+' Load the bloody sheep meat.
+FOR meatpos AS INTEGER  = 1 TO 7
+    ExtraSprite(meatpos + 8) = IMAGECREATE (24, 19)
+    GET (12+(meatpos-1)*26,50)-(34+(meatpos-1)*26,68), ExtraSprite(meatpos + 8)
+NEXT meatpos
+' Load the fireball.
+ExtraSprite(16) = IMAGECREATE (24, 24)
+GET (22, 84)-(46, 106), ExtraSprite(16)
+' Load the mouse cursor.
+ExtraSprite(17) = IMAGECREATE (33, 42)
+GET (212, 44)-(246, 85), ExtraSprite(17)
+' Load the menu pointer.
+ExtraSprite(18) = IMAGECREATE (24, 25)
+GET (254, 50)-(278, 74), ExtraSprite(18)
+
+' The sprites are saved in the "ExtraSprite" array as follows:
+' ExtraSprite(1, 0) - sheep moving down image #1
+' ExtraSprite(2, 0) - sheep moving down image #2
+' ExtraSprite(3, 0) - sheep moving up image #1
+' ExtraSprite(4, 0) - sheep moving up image #2
+' ExtraSprite(5, 0) - sheep moving left image #1
+' ExtraSprite(6, 0) - sheep moving left image #2
+' ExtraSprite(7, 0) - sheep moving right image #1
+' ExtraSprite(8, 0) - sheep moving right image #2
+' ExtraSprite(9, 0) - ExtraSprite(15, 0) - 7 bloody meat pieces
+' ExtraSprite(16, 0) - the fireball sprite
+' ExtraSprite(17, 0) - the mouse cursor
+' ExtraSprite(18, 0) - the menu pointer
+
+END SUB
+
+SUB MainLoop
+
+DO
+
+screenlock ' Lock our screen (nothing will be
+           ' displayed until we unlock the screen).
+screenset workpage, workpage xor 1 ' Swap work pages.
+
+' Frame1 changes from 1 to 2 or vice versa every
+' 16 cycles (set with Frame2 variable).
+Frame2 = (Frame2 MOD 16) + 1
+IF Frame2 = 10 THEN Frame1 = (Frame1 MOD 2) + 1
+
+' Pastes the background.
+PUT (0, 0), background1, PSET
+
+MoveDrawPlayer ' draw/move our player
+MoveDrawSheep ' draw/move our sheep
+
+workpage xor = 1 ' Swap work pages.
+screenunlock ' Unlock the page to display what has been drawn.
+
+SLEEP 10, 1 ' Slow down the program and prevent 100 % CPU usage.
+
+LOOP UNTIL MULTIKEY(SC_Q) OR MULTIKEY(SC_ESCAPE) 
+' Execute the loop until the user presses Q or ESCAPE.
+
+END SUB
+
+SUB MainMenu
+    
+' Will add code here later that calls
+' the main loop after the player clicks
+' on an option in the menu. For now
+' the main loop is called right away.
+
+' Load initial variables(player's position, etc.).
+InitVariables
+' Call the main game loop.
+MainLoop
+
+END SUB
+
+SUB InitVariables
+    
+RANDOMIZE TIMER
+    
+' Warrior's(player's) initial
+' position, speed(constant)
+' and direction(1 = right).
+Player.X = 150
+Player.Y = 90
+Player.Speed = 1.5
+Player.Direction = 1
+
+' Initiate all the sheep(their positions, etc.).
+FOR countsheep AS INTEGER = 1 TO 10
+    ' Randomize a number 1 to 600 (sheep's X position).
+    Sheep(countsheep).X = INT(RND * 600) + 1 
+    ' Randomize a number 1 to 440 (sheep's Y position).
+    Sheep(countsheep).Y = INT(RND * 440) + 1 
+    ' Randomize a number 1 to 4.
+    Sheep(countsheep).Direction = INT(RND * 4) + 1 
+    ' New game -> all sheep alive by deafult.
+    Sheep(countsheep).Alive = TRUE
+    ' Speed of all sheep.
+    Sheep(countsheep).Speed = 0.9
+NEXT countsheep
+    
+END SUB
+
+SUB MoveDrawPlayer
+    
+' Player.Direction = 1 -> warrior moving right
+' Player.Direction = 2 -> warrior moving left
+' Player.Direction = 3 -> warrior moving down
+' Player.Direction = 4 -> warrior moving up
+
+Player.Move = FALSE ' By deafult player is not
+                    ' moving.
+
+' According to pushed key move the
+' player and flag the proper direction.
+IF MULTIKEY(SC_RIGHT) THEN 
+    Player.X = Player.X + Player.Speed
+    Player.Direction = 1
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_LEFT) THEN 
+    Player.X = Player.X - Player.Speed
+    Player.Direction = 2
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_DOWN) THEN 
+    Player.Y = Player.Y + Player.Speed
+    Player.Direction = 3
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_UP) THEN 
+    Player.Y = Player.Y - Player.Speed
+    Player.Direction = 4
+    Player.Move = TRUE
+END IF
+
+' The following 4 conditions prevent
+' the warrior to walk off the screen.
+IF Player.X < 0 THEN 
+    Player.Move = FALSE
+    Player.X = 0
+END IF
+IF Player.X > 600 THEN 
+    Player.Move = FALSE
+    Player.X = 600
+END IF
+IF Player.Y < 0 THEN 
+    Player.Move = FALSE
+    Player.Y = 0
+END IF
+IF Player.Y > 440 THEN 
+    Player.Move = FALSE
+    Player.Y = 440
+END IF
+
+IF Player.Move = FALSE OR Frame1 = 0 THEN Frame1 = 1
+
+' Attack variable needs to reduce to 0 by 1 in
+' each cycle since we want for the attack to 
+' "time out" once we initiate it(swing with the
+' sword).
+Player.Attack = Player.Attack - 1
+IF Player.Attack < 0 THEN Player.Attack = 0
+
+' When the player presses SPACE and the SPACE
+' key is released from the last time you 
+' swung the sword (KeyPressed = FALSE)
+' initiate new attack (Player.Attack = 10) and
+' flag that SPACE is pressed (KeyPressed = TRUE).
+' KeyPressed variable is used to prevent the
+' player to be able to hold the SWING. This can
+' be done on more ways like prevent the player
+' to swing until Player.Attack = 0 (replace
+' KeyPressed = FALSE with this condition).
+IF MULTIKEY(SC_SPACE) AND KeyPressed = FALSE THEN
+	KeyPressed = TRUE
+	Player.Attack = 10
+END IF
+
+' According to player's direction flag the 
+' proper sprite (check in the tutorial on which
+' position each sprite is stored).
+IF Player.Direction = 1 THEN Player.Frame = 6 + Frame1
+IF Player.Direction = 2 THEN Player.Frame = 4 + Frame1
+IF Player.Direction = 3 THEN Player.Frame = 0 + Frame1
+IF Player.Direction = 4 THEN Player.Frame = 2 + Frame1
+
+' If the player is attacking flag the proper attack
+' sprite according to player's direction.
+IF Player.Attack >0 THEN
+	IF Player.Direction = 1 THEN Player.Frame = 12
+	IF Player.Direction = 2 THEN Player.Frame = 11
+	IF Player.Direction = 3 THEN Player.Frame = 10
+	IF Player.Direction = 4 THEN Player.Frame = 9	
+END IF
+
+' Paste the warrior on Player.X and Player.Y coordinates, 
+' using sprite number Player.Frame, and skip background color.
+PUT (Player.X, Player.Y), WarriorSprite(Player.Frame), TRANS
+
+' Flag KeyPressed as FALSE (pressing is not locked!) only when
+' the player releases SPACE and ENTER.
+IF NOT MULTIKEY(SC_ENTER) AND NOT MULTIKEY(SC_SPACE) THEN KeyPressed = FALSE
+
+END SUB
+
+SUB MoveDrawSheep
+ 
+' Loop through all the sheep. 
+FOR countsheep AS INTEGER = 1 TO 10
+	 
+	' The current sheep is not moving by default. 
+	Sheep(countsheep).Move = FALSE
+
+	' Sheep(countsheep).Direction = 1 -> sheep moving right
+	' Sheep(countsheep).Direction = 2 -> sheep moving left
+	' Sheep(countsheep).Direction = 3 -> sheep moving down
+	' Sheep(countsheep).Direction = 4 -> sheep moving up
+
+	' The next 4 IF clauses is the AS (artificial smart) algorithm. 
+	' In more demanding projects your AS code will most likely be more 
+	' complex so you will probably place it in a separate sub.
+	' Each IF checks if the player is less than 100 pixels away from
+	' the sheep in both directions (scope of detection - change all 100 to 
+	' higher or less number to get a different scope of detection/reaction). 
+	' The first condition in each IF checks where's the player according 
+	' to sheep (in X or Y direction) and then we flag the sheep's direction 
+	' if that condtition is met. The last two IFs have another condition 
+	' inside them which is just nitpicking and gives slightly better result.
+	IF Player.Y < Sheep(countsheep).Y AND ABS(Player.Y-Sheep(countsheep).Y) < 100 AND ABS(Player.X-Sheep(countsheep).X) < 100 THEN
+			Sheep(countsheep).Move = TRUE
+			Sheep(countsheep).Direction = 3
+	END IF
+	IF Player.Y > Sheep(countsheep).Y AND ABS(Player.Y-Sheep(countsheep).Y) < 100 AND ABS(Player.X-Sheep(countsheep).X) < 100 THEN
+			Sheep(countsheep).Move = TRUE
+			Sheep(countsheep).Direction = 4
+	END IF
+	IF Player.X > Sheep(countsheep).X AND ABS(Player.X-Sheep(countsheep).X) < 100 AND ABS(Player.Y-Sheep(countsheep).Y) < 100 THEN
+			Sheep(countsheep).Move = TRUE
+			IF ABS(Player.X-Sheep(countsheep).X) > 40 THEN Sheep(countsheep).Direction = 2
+	END IF
+	IF Player.X < Sheep(countsheep).X AND ABS(Player.X-Sheep(countsheep).X) < 100 AND ABS(Player.Y-Sheep(countsheep).Y) < 100 THEN
+			Sheep(countsheep).Move = TRUE
+			IF ABS(Player.X-Sheep(countsheep).X) > 40 THEN Sheep(countsheep).Direction = 1
+	END IF
+
+	' If the current sheep is moving change its position
+	' according to its direction (flagged with the AS code). 
+	' If the current sheep is out of bounds prevent it to
+	' walk off the screen. Note how the SELECT CASE statement
+	' works.
+	IF Sheep(countsheep).Move = TRUE THEN
+			SELECT CASE Sheep(countsheep).Direction
+				CASE 1
+				Sheep(countsheep).X = Sheep(countsheep).X + Sheep(countsheep).Speed
+				IF Sheep(countsheep).X > 600 THEN Sheep(countsheep).X = 600
+				CASE 2
+				Sheep(countsheep).X = Sheep(countsheep).X - Sheep(countsheep).Speed
+				IF Sheep(countsheep).X < 0 THEN Sheep(countsheep).X = 0
+				CASE 3
+				Sheep(countsheep).Y = Sheep(countsheep).Y + Sheep(countsheep).Speed
+				IF Sheep(countsheep).Y > 440 THEN Sheep(countsheep).Y = 440
+				CASE 4
+				Sheep(countsheep).Y = Sheep(countsheep).Y - Sheep(countsheep).Speed
+				IF Sheep(countsheep).Y < 0 THEN Sheep(countsheep).Y = 0
+			END SELECT
+	END IF
+
+	' The current sheep frame(sprite) by default(sheep not moving).
+	IF Sheep(countsheep).Direction = 1 THEN Sheep(countsheep).Frame = 7
+	IF Sheep(countsheep).Direction = 2 THEN Sheep(countsheep).Frame = 5
+	IF Sheep(countsheep).Direction = 3 THEN Sheep(countsheep).Frame = 1
+	IF Sheep(countsheep).Direction = 4 THEN Sheep(countsheep).Frame = 3
+
+	' If the current sheep is moving flag the proper sprite according 
+	' to its direction.
+	IF Sheep(countsheep).Move = TRUE THEN
+	IF Sheep(countsheep).Direction = 1 THEN Sheep(countsheep).Frame = 6 + Frame1
+	IF Sheep(countsheep).Direction = 2 THEN Sheep(countsheep).Frame = 4 + Frame1
+	IF Sheep(countsheep).Direction = 3 THEN Sheep(countsheep).Frame = 0 + Frame1
+	IF Sheep(countsheep).Direction = 4 THEN Sheep(countsheep).Frame = 2 + Frame1
+	END IF
+
+	' If the current sheep is ALIVE draw it!
+	IF Sheep(countsheep).Alive = TRUE THEN PUT (Sheep(countsheep).X, Sheep(countsheep).Y), ExtraSprite(Sheep(countsheep).Frame), TRANS
+
+NEXT countsheep
+    
+END SUB
+

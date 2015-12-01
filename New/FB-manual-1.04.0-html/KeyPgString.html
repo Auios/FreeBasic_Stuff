@@ -1,0 +1,113 @@
+<html>
+<head>
+<title>String</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">String</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Standard data type: 8 bit character string<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<a href="KeyPgDim.html">Dim</a> <i>variable</i> <a href="KeyPgAs.html">As</a> <b>String</b> [ * <i>size</i>]<br \>
+</tt><br \>
+</div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+A <tt><b>String</b></tt> is an array of characters.<br \>
+<br \>
+A <tt><b>String</b></tt> declared without the <tt><i>size</i></tt> parameter is dynamically resized depending on the length of the string. The length can range from 0 bytes to 2 gigabytes. A descriptor contains a pointer to the actual string, the length of the string, and the amount of space allocated for it. <tt><a href="KeyPgOpVarptr.html">VarPtr</a></tt> will return a pointer to the descriptor, while <tt><a href="KeyPgOpStrptr.html">StrPtr</a></tt> will point to the actual string.<br \>
+<br \>
+Because of the hidden descriptor with a <tt><b>String</b></tt>, manual allocation of space, for example using the memory allocation function <tt><a href="KeyPgCallocate.html">CAllocate</a></tt> (preferentially), for a <tt><b>String</b></tt> is not encouraged. The common way to ensure a certain amount of space is reserved for a <tt><b>String</b></tt>, to prevent unnecessary allocations inside a loop for instance, is to use the <tt><a href="KeyPgSpace.html">Space</a></tt> or <tt><a href="KeyPgStringFunction.html">String</a></tt> functions.<br \>
+<br \>
+Nevertheless if necessary, dynamic allocation may be carefully used by means of the memory allocation functions <tt><a href="KeyPgAllocate.html">Allocate</a></tt>, <tt><a href="KeyPgCallocate.html">CAllocate</a></tt>, <tt><a href="KeyPgReallocate.html">Reallocate</a></tt> (see precautions for use) and string pointer (which is a pointer to a string descriptor, not string data). When memory is allocated to hold string descriptors, the string must always be destroyed (setting to <tt>"</tt><tt>"</tt>) before deallocate each string descriptor (allowing to deallocate the memory taken up by the string data), otherwise, it is not possible to deallocate it later, and it may induce memory leak in the program continuation. <br \>
+<br \>
+Despite the use of the descriptor, an implicit <tt>NULL</tt> character (<tt><a href="KeyPgChr.html">Chr</a>(0)</tt>) is added to the end of the string, to allow passing them to functions in external libraries without making slow copies.  FreeBASIC's internal functions will ignore this character, and not treat it as part of the string.<br \>
+<br \>
+A <tt><b>String</b></tt> declared with a <tt><i>fixed size</i></tt> is a QB-style fixed length string, with the exception that unused characters are set to 0, regardless of what "-lang" compiler option is used. It has no descriptor and it is not resized to fit its contents. As in QB, if data overflows the size of the string, it is truncated on the right side.<br \>
+Fixed length strings are also terminated with a <tt>NULL</tt> character, and so they use <tt><i>size</i> + 1</tt> bytes of space.  This <tt>NULL</tt> terminator may be removed in future, to prevent the redundant character complicating data layout in user-defined <tt><a href="KeyPgType.html">Type</a></tt>s.<br \>
+<br \>
+String variable names need not end in a dollar sign <tt>$</tt> as in other dialects of BASIC.  In <i><a href="CompilerDialects.html">lang fb</a></i> variable suffixes, including the dollar sign, are disallowed entirely.<br \>
+<br \>
+</div><div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Variable&nbsp;length</span><br />
+<span class="key">Dim</span>&nbsp;<span class="wrd">a</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><br />
+<br />
+<span class="wrd">a</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"Hello"</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">a</span><br />
+<br />
+<span class="wrd">a</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="quo">",&nbsp;world!"</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">a</span><br />
+<br />
+<span class="key">Var</span>&nbsp;<span class="wrd">b</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"Welcome&nbsp;to&nbsp;FreeBASIC"</span><br />
+<span class="key">Print</span>&nbsp;<span class="wrd">b</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="quo">"!&nbsp;"</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="wrd">a</span><br />
+</div></tt><br />
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;QB-like&nbsp;$&nbsp;suffixes</span><br />
+<span class="def">#lang&nbsp;"qb"<br />
+</span><br />
+<span class="com">''&nbsp;DIM&nbsp;based&nbsp;on&nbsp;$&nbsp;suffix</span><br />
+<span class="key">Dim</span>&nbsp;<span class="wrd">a$</span><br />
+<span class="wrd">a$</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"Hello"</span><br />
+<br />
+<span class="com">''&nbsp;Implicit&nbsp;declaration&nbsp;based&nbsp;on&nbsp;$&nbsp;suffix</span><br />
+<span class="wrd">b$</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">",&nbsp;world!"</span><br />
+<br />
+<span class="key">Print</span>&nbsp;<span class="wrd">a$</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="wrd">b$</span><br />
+</div></tt><br />
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Variable-length&nbsp;strings&nbsp;as&nbsp;buffers</span><br />
+<br />
+<span class="com">''&nbsp;Reserving&nbsp;space&nbsp;for&nbsp;a&nbsp;string,</span><br />
+<span class="com">''&nbsp;using&nbsp;Space()&nbsp;to&nbsp;produce&nbsp;lots&nbsp;of&nbsp;space&nbsp;characters&nbsp;(ASCII&nbsp;32)</span><br />
+<span class="key">Var</span>&nbsp;<span class="wrd">mybigstring</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Space</span><span class="oth">(</span><span class="num">1024</span><span class="oth">)</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"buffer&nbsp;address:&nbsp;&amp;h"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="key">Hex</span><span class="oth">(</span>&nbsp;<span class="key">StrPtr</span><span class="oth">(</span>&nbsp;<span class="wrd">mybigstring</span>&nbsp;<span class="oth">),</span>&nbsp;<span class="num">8</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;length:&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="key">Len</span><span class="oth">(</span>&nbsp;<span class="wrd">mybigstring</span>&nbsp;<span class="oth">)</span><br />
+<br />
+<span class="com">''&nbsp;Explicitly&nbsp;destroying&nbsp;a&nbsp;string</span><br />
+<span class="wrd">mybigstring</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">""</span><br />
+<span class="key">Print</span>&nbsp;<span class="quo">"buffer&nbsp;address:&nbsp;&amp;h"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="key">Hex</span><span class="oth">(</span>&nbsp;<span class="key">StrPtr</span><span class="oth">(</span>&nbsp;<span class="wrd">mybigstring</span>&nbsp;<span class="oth">),</span>&nbsp;<span class="num">8</span>&nbsp;<span class="oth">)</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">",&nbsp;length:&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="key">Len</span><span class="oth">(</span>&nbsp;<span class="wrd">mybigstring</span>&nbsp;<span class="oth">)</span><br />
+</div></tt><br />
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Variable-length&nbsp;string&nbsp;as&nbsp;Const&nbsp;parameter</span><br />
+<br />
+<span class="com">''&nbsp;Const&nbsp;qualifier&nbsp;preventing&nbsp;string&nbsp;from&nbsp;being&nbsp;modified</span><br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">silly_print</span><span class="oth">(</span>&nbsp;<span class="key">ByRef</span>&nbsp;<span class="wrd">printme</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Const</span>&nbsp;<span class="key">String</span>&nbsp;<span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">".o0(&nbsp;"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">printme</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"&nbsp;)0o."</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'next&nbsp;line&nbsp;will&nbsp;cause&nbsp;error&nbsp;if&nbsp;uncommented</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">'printme&nbsp;=&nbsp;"silly&nbsp;printed"</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="key">Var</span>&nbsp;<span class="wrd">status</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"OK"</span><br />
+<br />
+<span class="wrd">silly_print</span><span class="oth">(</span>&nbsp;<span class="quo">"Hello&nbsp;FreeBASIC!"</span>&nbsp;<span class="oth">)</span><br />
+<span class="wrd">silly_print</span><span class="oth">(</span>&nbsp;<span class="quo">"Status:&nbsp;"</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="wrd">status</span>&nbsp;<span class="oth">)</span><br />
+</div></tt><br />
+<br \>
+</div><div class="fb_sect_title">Differences from QB</div><div class="fb_sect_cont"><br \>
+<ul><li> In QB the strings were limited to 32767 characters.<br \>
+<li> In QB, the unused characters of a fixed-length string were initialized with 32 (space, or " ", in ASCII).<br \>
+<li> In QB static or fixed-size strings were often used in records to represent a number of bytes of data;  for example, a string of 1 length to represent 1 byte in a UDT read from a file.  This is not possible in FreeBASIC since strings always have an <tt>NULL</tt> character following.  When converting QBasic code that reads UDTs from files, make sure all instances of "<tt>As String * <i>n</i></tt>" are replaced with "<tt>As uByte (0 to <i>n</i> - 1)</tt>" or your files will be incompatible.<br \>
+<br \>
+</ul></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <tt><a href="KeyPgStringFunction.html">String (Function)</a></tt><br \>
+<li> <tt><a href="KeyPgSpace.html">Space</a></tt><br \>
+<li> <tt><a href="KeyPgZstring.html">ZString</a></tt><br \>
+<li> <tt><a href="KeyPgWstring.html">WString</a></tt><br \>
+<li> <tt><a href="KeyPgStr.html">Str</a></tt><br \>
+<li> <tt><a href="KeyPgOpStrptr.html">StrPtr</a></tt><br \>
+<li> <tt><a href="KeyPgOpVarptr.html">VarPtr</a></tt><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

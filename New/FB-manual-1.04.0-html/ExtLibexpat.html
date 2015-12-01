@@ -1,0 +1,153 @@
+<html>
+<head>
+<title>Expat</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Expat</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Stream oriented XML parser library with several useful features.<br \>
+<br \>
+Website: http://expat.sourceforge.net/<br \>
+Platforms supported: Win32, Linux<br \>
+Headers to include: expat.bi<br \>
+Header version: 1.95.8<br \>
+Examples: in examples/xml/<br \>
+<br \>
+<div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;XML&nbsp;file&nbsp;parser&nbsp;command&nbsp;line&nbsp;tool&nbsp;based&nbsp;on&nbsp;libexpat</span><br />
+<br />
+<span class="com">''&nbsp;Can&nbsp;use&nbsp;zstring&nbsp;or&nbsp;wstring&nbsp;(libexpat&nbsp;or&nbsp;libexpatw):</span><br />
+<span class="com">'#define&nbsp;XML_UNICODE</span><br />
+<br />
+<span class="def">#include&nbsp;once&nbsp;"expat.bi"<br />
+</span><br />
+<span class="def">#define&nbsp;FALSE&nbsp;0<br />
+#define&nbsp;NULL&nbsp;0<br />
+</span><br />
+<span class="key">Const</span>&nbsp;<span class="wrd">BUFFER_SIZE</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">1024</span><br />
+<br />
+<span class="key">Type</span>&nbsp;<span class="wrd">Context</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">nesting</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">XML_char</span>&nbsp;<span class="oth">*</span>&nbsp;<span class="oth">(</span><span class="wrd">BUFFER_SIZE</span><span class="oth">+</span><span class="num">1</span><span class="oth">)</span>&nbsp;<span class="wrd">text</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">textlength</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Type</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="key">Shared</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">Context</span>&nbsp;<span class="wrd">ctx</span><br />
+<br />
+<span class="com">''&nbsp;Callback&nbsp;called&nbsp;by&nbsp;libexpat&nbsp;when&nbsp;begin&nbsp;of&nbsp;XML&nbsp;tag&nbsp;is&nbsp;found</span><br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">elementBegin</span>&nbsp;<span class="key">cdecl</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">userdata</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">element</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">XML_char</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">attributes</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">XML_char</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Show&nbsp;its&nbsp;name</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="key">Space</span><span class="oth">(</span><span class="wrd">ctx.nesting</span><span class="oth">);*</span><span class="wrd">element</span><span class="oth">;</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;and&nbsp;its&nbsp;attributes&nbsp;(attributes&nbsp;are&nbsp;given&nbsp;as&nbsp;an&nbsp;array&nbsp;of&nbsp;XML_char&nbsp;pointers</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;much&nbsp;like&nbsp;argv,&nbsp;for&nbsp;each&nbsp;attribute&nbsp;there&nbsp;will&nbsp;apparently&nbsp;be&nbsp;the&nbsp;one</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;element&nbsp;representing&nbsp;the&nbsp;name&nbsp;and&nbsp;a&nbsp;second&nbsp;element&nbsp;representing&nbsp;the</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;specified&nbsp;value)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">While</span>&nbsp;<span class="oth">(*</span><span class="wrd">attributes</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"&nbsp;"</span><span class="oth">;**</span><span class="wrd">attributes</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">attributes</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"='"</span><span class="oth">;**</span><span class="wrd">attributes</span><span class="oth">;</span><span class="quo">"'"</span><span class="oth">;</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">attributes</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Wend</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ctx.nesting</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ctx.text</span><span class="oth">[</span><span class="num">0</span><span class="oth">]</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ctx.textlength</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="com">''&nbsp;Callback&nbsp;called&nbsp;by&nbsp;libexpat&nbsp;when&nbsp;end&nbsp;of&nbsp;XML&nbsp;tag&nbsp;is&nbsp;found</span><br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">elementEnd</span>&nbsp;<span class="key">cdecl</span><span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="wrd">userdata</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">element</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">XML_char</span>&nbsp;<span class="key">Ptr</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Show&nbsp;text&nbsp;collected&nbsp;in&nbsp;charData()&nbsp;callback&nbsp;below</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="key">Space</span><span class="oth">(</span><span class="wrd">ctx.nesting</span><span class="oth">);</span><span class="wrd">ctx.text</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ctx.text</span><span class="oth">[</span><span class="num">0</span><span class="oth">]</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ctx.textlength</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ctx.nesting</span>&nbsp;<span class="oth">-=</span>&nbsp;<span class="num">1</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">charData</span>&nbsp;<span class="key">cdecl</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">userdata</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Any</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">chars</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">XML_char</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span>&nbsp;&nbsp;<span class="com">''&nbsp;Note:&nbsp;not&nbsp;null-terminated</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">length</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;This&nbsp;callback&nbsp;will&nbsp;apparently&nbsp;recieve&nbsp;every&nbsp;data&nbsp;between&nbsp;xml&nbsp;tags</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;(really?),&nbsp;including&nbsp;newlines&nbsp;and&nbsp;space.</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Append&nbsp;to&nbsp;our&nbsp;buffer,&nbsp;if&nbsp;there&nbsp;still&nbsp;is&nbsp;free&nbsp;room,&nbsp;so&nbsp;we&nbsp;can&nbsp;print&nbsp;it&nbsp;out&nbsp;later</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">length</span>&nbsp;<span class="oth">&lt;=</span>&nbsp;<span class="oth">(</span><span class="wrd">BUFFER_SIZE</span>&nbsp;<span class="oth">-</span>&nbsp;<span class="wrd">ctx.textlength</span><span class="oth">))</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">fb_MemCopy</span><span class="oth">(</span><span class="wrd">ctx.text</span><span class="oth">[</span><span class="wrd">ctx.textlength</span><span class="oth">],</span>&nbsp;<span class="wrd">chars</span><span class="oth">[</span><span class="num">0</span><span class="oth">],</span>&nbsp;<span class="wrd">length</span>&nbsp;<span class="oth">*</span>&nbsp;<span class="key">SizeOf</span><span class="oth">(</span><span class="wrd">XML_char</span><span class="oth">))</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ctx.textlength</span>&nbsp;<span class="oth">+=</span>&nbsp;<span class="wrd">length</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">ctx.text</span><span class="oth">[</span><span class="wrd">ctx.textlength</span><span class="oth">]</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="com">''</span><br />
+<span class="com">''&nbsp;Main</span><br />
+<span class="com">''</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span>&nbsp;<span class="wrd">filename</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Command</span><span class="oth">(</span><span class="num">1</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="key">Len</span><span class="oth">(</span><span class="wrd">filename</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Usage:&nbsp;expat&nbsp;&lt;xmlfilename&gt;"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">XML_Parser</span>&nbsp;<span class="wrd">parser</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">XML_ParserCreate</span><span class="oth">(</span><span class="wrd">NULL</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">parser</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">NULL</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"XML_ParserCreate&nbsp;failed"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''XML_SetUserData(parser,&nbsp;userdata_pointer)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">XML_SetElementHandler</span><span class="oth">(</span><span class="wrd">parser</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">elementBegin</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">elementEnd</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">XML_SetCharacterDataHandler</span><span class="oth">(</span><span class="wrd">parser</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">charData</span><span class="oth">)</span><br />
+<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="key">Open</span><span class="oth">(</span><span class="wrd">filename</span><span class="oth">,</span>&nbsp;<span class="key">For</span>&nbsp;<span class="key">Input</span><span class="oth">,</span>&nbsp;<span class="key">As</span>&nbsp;<span class="oth">#</span><span class="num">1</span><span class="oth">))</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Could&nbsp;not&nbsp;open&nbsp;file:&nbsp;'"</span><span class="oth">;</span><span class="wrd">filename</span><span class="oth">;</span><span class="quo">"'"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Static</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">UByte</span>&nbsp;<span class="wrd">buffer</span><span class="oth">(</span><span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="oth">(</span><span class="wrd">BUFFER_SIZE</span><span class="oth">-</span><span class="num">1</span><span class="oth">))</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">reached_eof</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">FALSE</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Do</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">size</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">BUFFER_SIZE</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">result</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="key">Get</span><span class="oth">(#</span><span class="num">1</span><span class="oth">,</span>&nbsp;<span class="oth">,</span>&nbsp;<span class="wrd">buffer</span><span class="oth">(</span><span class="num">0</span><span class="oth">),</span>&nbsp;<span class="wrd">size</span><span class="oth">,</span>&nbsp;<span class="wrd">size</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">result</span>&nbsp;<span class="key">Or</span>&nbsp;<span class="oth">(</span><span class="wrd">size</span>&nbsp;<span class="oth">&lt;=</span>&nbsp;<span class="num">0</span><span class="oth">))</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"File&nbsp;input&nbsp;error"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">reached_eof</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="oth">(</span><span class="key">EOF</span><span class="oth">(</span><span class="num">1</span><span class="oth">)</span>&nbsp;<span class="oth">&lt;&gt;</span>&nbsp;<span class="wrd">FALSE</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">XML_Parse</span><span class="oth">(</span><span class="wrd">parser</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">buffer</span><span class="oth">(</span><span class="num">0</span><span class="oth">),</span>&nbsp;<span class="wrd">size</span><span class="oth">,</span>&nbsp;<span class="wrd">reached_eof</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">FALSE</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="wrd">filename</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"("</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">XML_GetCurrentLineNumber</span><span class="oth">(</span><span class="wrd">parser</span><span class="oth">)</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"):&nbsp;Error&nbsp;from&nbsp;XML&nbsp;parser:&nbsp;"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="oth">*</span><span class="wrd">XML_ErrorString</span><span class="oth">(</span><span class="wrd">XML_GetErrorCode</span><span class="oth">(</span><span class="wrd">parser</span><span class="oth">))</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Loop</span>&nbsp;<span class="key">While</span>&nbsp;<span class="oth">(</span><span class="wrd">reached_eof</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">FALSE</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">XML_ParserFree</span><span class="oth">(</span><span class="wrd">parser</span><span class="oth">)</span><br />
+</div></tt><br />
+<br \>
+</div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

@@ -1,0 +1,75 @@
+<html>
+<head>
+<title>Compiler Option: -arch</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Compiler Option: -arch</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Set target architecture for improved/restricted code generation or cross-compiling<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<div class="fb_indent"><b>-arch</b> &lt; <i>architecture</i> &gt;<br \>
+</div></tt><br \>
+</div><div class="fb_sect_title">Parameters</div><div class="fb_sect_cont"><br \>
+<div class="fb_indent"><tt><i>architecture</i></tt><br \>
+<div class="fb_indent">The target architecture. Recognized values:<br \>
+<br \>
+</div></div><ul><ul><ul><li> Related to 32bit x86:<br \>
+<ul><li> <tt>386</tt><br \>
+<li> <tt>486</tt> (default for x86)<br \>
+<li> <tt>586</tt><br \>
+<li> <tt>686</tt><br \>
+<li> <tt>athlon</tt><br \>
+<li> <tt>athlon-xp</tt><br \>
+<li> <tt>athlon-fx</tt><br \>
+<li> <tt>k8-sse3</tt><br \>
+<li> <tt>pentium-mmx</tt><br \>
+<li> <tt>pentium2</tt><br \>
+<li> <tt>pentium3</tt><br \>
+<li> <tt>pentium4</tt><br \>
+<li> <tt>pentium4-sse3</tt><br \>
+</ul><li> Related to 64bit x86_64:<br \>
+<ul><li> <tt>x86_64</tt>, <tt>x86-64</tt>, <tt>amd64</tt><br \>
+</ul><li> Related to 32bit ARM:<br \>
+<ul><li> <tt>armv6</tt><br \>
+<li> <tt>armv7-a</tt> (default for ARM)<br \>
+</ul><li> Related to 64bit ARM (AArch64):<br \>
+<ul><li> <tt>aarch64</tt><br \>
+</ul><li> Others:<br \>
+<ul><li> <tt>native</tt>: For compiling to the architecture which the compiler is running on.<br \>
+<li> <tt>32</tt>, <tt>64</tt>: For quick cross-compiling to the 32bit or 64bit version of the default architecture.<br \>
+<br \>
+</ul></ul></ul></ul></div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+<div class="fb_indent">The <tt>-arch</tt> compiler option sets the target CPU architecture. This can be used for multiple purposes:<br \>
+<br \>
+</div><ul><ul><li> Improving code generation; for example: You can use <tt>-arch 686</tt> to override the default <tt>-arch 486</tt>, and the compiler will generate faster code in some cases, by using certain instructions which were not available on i486 (or other CPUs older than i686).<br \>
+<li> Restricting code generation; for example: You can use <tt>-arch 386</tt> to limit the compiler to using only i386-compatible instructions.<br \>
+<li> Cross-compiling; for example: You can use <tt>-arch x86_64</tt> on 32bit x86 systems to cross-compile to 64bit x86_64.<br \>
+</ul></ul><div class="fb_indent">The exact impact which the <tt>-arch</tt> setting has on code generation depends on the <a href="CompilerOptgen.html">code generation backend</a> that is being used. The x86 ASM backend (<tt>-gen gas</tt>) handles the <tt>-arch</tt> setting and adjusts code generation accordingly in some cases. When using the GCC backend (<tt>-gen gcc</tt>), the specified architecture will be passed on to gcc via <tt>gcc -march=&lt;...&gt;</tt>, causing gcc to generate code for the specified architecture.<br \>
+<br \>
+However, <tt>-arch</tt> only affects newly generated code, but not pre-compiled code such as the FreeBASIC runtime libraries, or any other library from the <tt>lib/</tt> directory. For example, using <tt>-arch 386</tt> is not necessarily enough to get a pure i386 executable -- it also depends on how all the libraries that will be linked in were compiled.<br \>
+<br \>
+The <tt>-arch 32</tt> and <tt>-arch 64</tt> shortcuts are similar to gcc's <tt>-m32/-m64</tt> options. On 32bit architectures, <tt>-arch 64</tt> is an abbreviation for cross-compiling to the default 64bit version of the architecture (e.g. from 32bit x86 to 64bit x86_64, or 32bit ARM to 64bit AArch64), and <tt>-arch 32</tt> does nothing. On 64bit systems, it is the other way round: <tt>-arch 32</tt> cross-compiles to the default 32bit architecture, while <tt>-arch 64</tt> does nothing.<br \>
+<br \>
+The <tt>-arch native</tt> shortcut is similar to gcc's <tt>-march=native</tt> option. On x86, it causes fbc to try and detect the host CPU automatically based on the <tt>cpuid</tt> instruction and its availability or results. On other architectures, this will currently simply use the architecture which the compiler itself was built for. Under -gen gcc this will use <tt>gcc -march=native</tt>.<br \>
+<br \>
+Specifying an <tt>-arch</tt> setting incompatible to the native architecture will trigger <a href="DevCrossCompiling.html">cross-compilation</a>, just like the <tt><a href="CompilerOpttarget.html">-target</a></tt> option, except that only the target architecture, but not the target operating system, is changed.<br \>
+<br \>
+<br \>
+</div></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <a href="CompilerCmdLine.html">Using the Command Line</a><br \>
+<li> <a href="CompilerOpttarget.html">-target</a><br \>
+<li> <a href="DevCrossCompiling.html">FB and cross-compiling</a><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

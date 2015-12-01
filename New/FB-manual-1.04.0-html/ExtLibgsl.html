@@ -1,0 +1,75 @@
+<html>
+<head>
+<title>gsl, The GNU Scientific Library</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">gsl, The GNU Scientific Library</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Provides a wide range of mathematical routines such as random number generators, special functions and least-squares fitting.<br \>
+<br \>
+Website: http://www.gnu.org/software/gsl/, Windows port: http://gnuwin32.sourceforge.net/packages/gsl.htm <br \>
+Platforms supported: Win32, Linux<br \>
+Headers to include: gsl/*.bi<br \>
+Header version: 1.6<br \>
+Examples: in examples/math/GSL/<br \>
+<br \>
+<div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Elementary&nbsp;math&nbsp;example</span><br />
+<span class="def">#include&nbsp;"gsl/gsl_math.bi"<br />
+</span><br />
+<span class="com">''&nbsp;Raise&nbsp;the&nbsp;value&nbsp;of&nbsp;3.141&nbsp;to&nbsp;the&nbsp;fourth&nbsp;power</span><br />
+<span class="oth">?</span>&nbsp;<span class="quo">"3.141&nbsp;^&nbsp;4&nbsp;=&nbsp;"</span><span class="oth">;</span>&nbsp;<span class="wrd">gsl_pow_4</span><span class="oth">(</span><span class="num">3.141</span><span class="oth">)</span><br />
+<span class="oth">?</span><br />
+<br />
+<span class="com">''&nbsp;Find&nbsp;the&nbsp;hypotenuse&nbsp;of&nbsp;a&nbsp;right&nbsp;triangle&nbsp;with&nbsp;sides&nbsp;3&nbsp;and&nbsp;4&nbsp;</span><br />
+<span class="oth">?</span>&nbsp;<span class="quo">"The&nbsp;hypotenuse&nbsp;of&nbsp;a&nbsp;right&nbsp;triangle&nbsp;with&nbsp;sides&nbsp;of&nbsp;length&nbsp;3&nbsp;and&nbsp;4&nbsp;is"</span><span class="oth">;</span>&nbsp;<span class="wrd">gsl_hypot</span><span class="oth">(</span><span class="num">3</span><span class="oth">,</span><span class="num">4</span><span class="oth">)</span><br />
+<span class="oth">?</span><br />
+<br />
+<span class="key">Sleep</span><br />
+</div></tt><br />
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;Matrix&nbsp;example</span><br />
+<span class="def">#include&nbsp;"gsl/gsl_matrix.bi"<br />
+</span><br />
+<span class="com">''&nbsp;gsl&nbsp;uses&nbsp;the&nbsp;c-style&nbsp;row&nbsp;major&nbsp;order,&nbsp;unlike&nbsp;VB&nbsp;or&nbsp;Fortran&nbsp;</span><br />
+<span class="oth">?</span>&nbsp;<span class="quo">"A&nbsp;3x3&nbsp;matrix"</span>&nbsp;<br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">gsl_matrix</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">m</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">gsl_matrix_alloc</span><span class="oth">(</span><span class="num">3</span><span class="oth">,</span>&nbsp;<span class="num">3</span><span class="oth">)</span><br />
+<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="num">2</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">j</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="num">2</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">gsl_matrix_set</span>&nbsp;<span class="oth">(</span><span class="wrd">m</span><span class="oth">,</span>&nbsp;<span class="wrd">i</span><span class="oth">,</span>&nbsp;<span class="wrd">j</span><span class="oth">,</span>&nbsp;<span class="num">0.23</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="num">100</span><span class="oth">*</span><span class="wrd">i</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="wrd">j</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+<span class="key">Next</span><br />
+<br />
+<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="num">2</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">j</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="num">2</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"m("</span><span class="oth">;</span><span class="wrd">i</span><span class="oth">;</span><span class="quo">","</span><span class="oth">;</span><span class="wrd">j</span><span class="oth">;</span><span class="quo">")&nbsp;=&nbsp;"</span><span class="oth">;</span>&nbsp;<span class="wrd">gsl_matrix_get</span>&nbsp;<span class="oth">(</span><span class="wrd">m</span><span class="oth">,</span>&nbsp;<span class="wrd">i</span><span class="oth">,</span>&nbsp;<span class="wrd">j</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+<span class="key">Next</span><br />
+<span class="oth">?</span><br />
+<br />
+<span class="wrd">gsl_matrix_transpose</span><span class="oth">(</span><span class="wrd">m</span><span class="oth">)</span><br />
+<br />
+<span class="oth">?</span>&nbsp;<span class="quo">"And&nbsp;its&nbsp;transpose"</span><br />
+<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="num">2</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">j</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="num">2</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"m("</span><span class="oth">;</span><span class="wrd">i</span><span class="oth">;</span><span class="quo">","</span><span class="oth">;</span><span class="wrd">j</span><span class="oth">;</span><span class="quo">")&nbsp;=&nbsp;"</span><span class="oth">;</span>&nbsp;<span class="wrd">gsl_matrix_get</span>&nbsp;<span class="oth">(</span><span class="wrd">m</span><span class="oth">,</span>&nbsp;<span class="wrd">i</span><span class="oth">,</span>&nbsp;<span class="wrd">j</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+<span class="key">Next</span><br />
+<br />
+<span class="key">Sleep</span><br />
+</div></tt><br />
+<br \>
+</div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

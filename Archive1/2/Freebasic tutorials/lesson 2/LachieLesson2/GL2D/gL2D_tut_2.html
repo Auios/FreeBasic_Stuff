@@ -1,0 +1,575 @@
+﻿
+<div id="box_content"><h2>Basic 2D Rendering in OpenGL using Easy GL2D: Part 2</h2>
+<h5>By Relminator (Richard Eric M. Lope BSN RN)<br>
+http://rel.betterwebber.com</h5>
+<h4>Part II (aka SPAM)</h4>
+<h4>What is Easy GL2D?</h4>
+<p>Easy GL2D is a very simple 2D OpenGL based rendering library.  My goals in making this lib are:</p>
+<ol>
+    <li>Ease of use</li>
+    <li>Globally available functions (FB does not have static members so singleton is a no go)</li>
+    <li>Fast and small</li>
+    <li>FBGFX image compatible</li>
+    <li>Self-contained</li>
+    <li>Tested on a real game (Used the same approach on my Nintendo DS game so I know it works well)</li>
+</ol>
+<p>Easy GL2D started as a proof-of-concept over at the FB forums. I just decided to port my <a href="http://rel.betterwebber.com/junk.php?id=101">2D DS rendering lib</a> to the PC one day and the result is Easy GL2D. At first my purpose was just to &quot;show&quot; how easy it is to use HW as long as the lib design is simple.  However, people somehow liked it and wanted me to extend it.  The result?  Easy GL2D and my DS game stagnating.</p>
+<p>The initial release of the lib has all of its functions self-contained.  No function needs anything except OpenGL and FB to work. However, I have since added some stuff like glowlines and a system font routine for print debugging so I introduced 3 globals( which are inside the namespace so it's kinda safe).</p>
+<h4>So how do we use GL2D?</h4>
+<p>All you have to do is include these lines on top of your programs.</p>
+<p>For the FB.image compatible version:</p>
+<p><code>
+<pre>
+#include once &quot;fbgl2d.bi&quot;  
+#include once &quot;fbgl2d.bas&quot;
+</pre>
+</code></p>
+<p>For the standard version:</p>
+<p><code>
+<pre>
+#include once &quot;gl2d.bi&quot;  
+#include once &quot;gl2d.bas&quot;
+</pre>
+</code></p>
+<p>However, I would like to stress that you should use the &quot;[fb]gl2d.bas&quot; files as a module and not as an include but the above seems easier for most.</p>
+<p>Then set up the screen, draw some stuff, etc.</p>
+<p><code>
+<pre>
+#include once &quot;fbgl2d.bi&quot;  
+#include once &quot;fbgl2d.bas&quot;
+const SCR_WIDTH = 640
+const SCR_HEIGHT = 480
+const as single PI = atn(1)*4
+'' initialize gl2d (640 x 480)
+gl2d.screen_init( SCR_WIDTH, SCR_HEIGHT )
+gl2d.vsync_on()   '' set vsynch on
+dim as integer frame = 0
+do
+     frame += 1
+     '' clear buffer always
+     gl2d.clear_screen()
+     '' circle test
+     gl2d.circle_2d_filled(100,100,150-abs(sin(frame/25)*150),GL2D_RGBA(0,255,0,255))
+     gl2d.circle_2d(100,100,abs(sin(frame/25)*150),GL2D_RGBA(255,255,0,255)
+     '' Draw black box
+     gl2d.set_blend_mode(GL2D.E_SOLID)
+     GL2D.box_filled(400,40,639,479,GL2D_RGBA(0,0,0,0))
+     '' ellipse test
+     gl2d.set_blend_mode(GL2D.E_BLENDED) 
+     gl2d.ellipse(320, 240, 50, 200, PI/6*5, GL2D_RGBA(255, 128, 64, 255))
+     gl2d.ellipse_filled(320, 240, 10+abs(sin(frame/25)*250), 10+250-abs(sin(frame/25)*250), frame/65, GL2D_RGBA(255, 128, 64, 255))
+     '' box
+     GL2D.box(400,40,639,479,GL2D_RGBA(220,255,55,0))
+     '' triangle test
+     gl2d.triangle(480,100,630,50,560,200,GL2D_RGBA(25,2,255,255))
+     GL2D.Triangle_filled(490,105,610,60,590,135,GL2D_RGBA(255,255,255,255))
+     glColor4ub(255,255,255,64)      '' factor of 64/256 blending
+     gl2d.set_blend_mode(GL2D.E_BLENDED)
+     GL2D.Triangle_filled_gradient(290,150,510,60,490,135,_
+                            GL2D_RGBA(0,255,255,255),_
+                            GL2D_RGBA(255,255,0,255),_
+                            GL2D_RGBA(255,0,255,255))
+    
+     gl2d.set_blend_mode(GL2D.E_SOLID)  '' back to solid
+     glColor4ub(255,255,255,255)          '' Opaque again
+     '' pset test
+     for i as integer = 0 to 359 step 10
+           dim as integer px = 20 * cos(i*PI/180)
+           dim as integer py = 20 * sin(i*PI/180)
+           gl2d.put_pixel(430+px,70+py,GL2D_RGBA(255,2,255,255))
+     next i
+     gl2d.set_blend_mode(GL2D.E_GLOW)
+     '' glow lines on steroids
+     for i as integer = frame to 359+frame step 20
+           dim as integer px = 120 * cos(i*PI/180)
+           dim as integer py = 120 * sin(i*PI/180)
+           dim as integer px2 = 120 * cos((i+20)*PI/180)
+           dim as integer py2 = 120 * sin((i+20)*PI/180)
+           dim as integer adder = abs(7*sin(frame/20))
+           for j as integer= 0 to adder
+                gl2d.line_glow (320+px,240+py,320+px2,240+py2,20-(adder*2),GL2D_RGBA(255+frame,255-frame,128+frame,255))
+           next j
+     next i  
+     '' limit fps to 60 frames per second
+     dim as single FPS = gl2d.fps_limit(60)    
+     '' Test print
+     gl2d.set_blend_mode(GL2D.E_TRANS)   '' blended
+     glColor4ub(255,255,255,255)  '' no transluceny
+     gl2d.print_scale(40, 10,2, &quot;Easy GL2D simple test   FPS = &quot; + str(fps))
+    flip
+     sleep 1,1
+Loop Until Multikey( FB.SC_ESCAPE )
+</pre>
+</code></p>
+<p>The complete code above draws some primitives, glowlines, circles, ellipse, etc and animates them using a frame counter. I've commented the code as much as I can. It also calls an FPS limiter since vsynch somehow does not work on some cards.</p>
+<p>You will notice that I can also issue standard OpenGL comands. I made Easy GL2D compatible with standard OpenGL so that you could use all the power you have at your disposal.</p>
+<p>So doing this:</p>
+<p><code> </code></p>
+<p><code>
+<pre>
+     gl2d.set_blend_mode(GL2D.E_SOLID)
+     GL2D.box_filled(400,40,639,479,GL2D_RGBA(0,0,0,0))
+</pre>
+</code></p>
+<p>&nbsp;</p>
+<p>Would draw a black solid screen while this:</p>
+<p><code> </code></p>
+<p><code>
+<pre>
+     gl2d.set_blend_mode(GL2D.E_BLENDED)
+     GL2D.box_filled(400,40,639,479,GL2D_RGBA(255,255,255,128))
+</pre>
+</code></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Would draw a 1/2 or 128/256 blended white box(Useful for fade effects).</p>
+<p>Current blend modes and colors will stay unless you change states. Always remember that gl2d is a state machine like OpenGL. I would suggest you play around with the code to see the effects.</p>
+<h4>Sprites</h4>
+<p>Sprites are easy to manage in easy GL2D. Since I made Easy GL2D FB.image compatible, you can use HW instead of SW with a simple cast().</p>
+<p>So instead of:</p>
+<p><code> </code></p>
+<p><code>
+<pre>
+put(100,250),img
+</pre>
+</code></p>
+<p>&nbsp;</p>
+<p>You do this:</p>
+<p><code> </code></p>
+<p><code>
+<pre>
+    gl2d.sprite(100,250,cast(gl2d.image ptr,img))
+</pre>
+</code></p>
+<p>&nbsp;</p>
+<p>It's that simple. In fact if you use a spriteset, you never have to cast at all. Here's a complete example.</p>
+<p><code> </code></p>
+<p><code>
+<pre>
+'' Code supplement on how to use:
+''  1. Sprites and its plethora of uses
+''  2. Shadows
+''  3. Fading
+'' Relminator(Richard Eric M. Lope BSN RN)
+'' Http://rel.betterwebber.com
+#include once &quot;fbgl2d.bi&quot;  
+#include once &quot;fbgl2d.bas&quot;
+declare sub draw_bg(byval spr as any ptr)
+using FB
+const SCR_WIDTH = 640
+const SCR_HEIGHT = 480
+const as single PI = atn(1)*4
+const false = 0
+const true = not false
+'' initialize gl2d (640 x 480)
+gl2d.screen_init( SCR_WIDTH, SCR_HEIGHT )
+gl2d.vsync_on()   '' set vsynch on
+''===================== FB EXAMPLE FILE TEST ===============================================
+'' Got this sprite in the CHM examples
+     dim img as fb.image ptr = imagecreate( 32, 32, rgb(255, 0, 255), 32 )
+     circle img, (16, 16), 15, rgb(255, 255, 0),     ,     , 1, f
+     circle img, (10, 10), 3,  rgb(255, 0, 255),     ,     , 2, f
+     circle img, (23, 10), 3,  rgb(255, 0, 255),     ,     , 2, f
+     circle img, (16, 18), 10, rgb(255, 0, 255), 3.14, 6.28
+	 
+     '' load the sprite to HW (SW data still remains for whatever purposes you want)
+     '' Pixel perfect collision FTW!!!
+     gl2d.load_image_to_HW(cast(gl2d.image ptr, img))
+''================= END FB EXAMPLE FILE TEST ===============================================
+dim as integer xa, ya, xb, yb
+xa = 100
+ya = 100
+xb = 200
+yb = 100
+dim as integer frame = 0
+dim as integer fade = false
+dim as integer fade_alpha = 0
+do
+     frame += 1
+     '' clear buffer
+     gl2d.clear_screen()
+	 
+     '' draw our bg
+     draw_bg(img)
+     '' normal color
+     glColor4ub(255,255,255,255)
+     '' =================================
+     '' SOLID
+     '' Solid simple
+     gl2d.set_blend_mode(GL2D.E_SOLID)
+     gl2d.sprite(100,150,cast(gl2d.image ptr,img))
+     '' solid rotated
+     '' add 1/2 dimensions since rotation is center-based
+     gl2d.sprite_rotate(200 + (img-&gt;width/2),150 + (img-&gt;height/2),frame,cast(gl2d.image ptr,img))
+     '' solid rotated and scaled
+     gl2d.sprite_rotate_scale(300 + (img-&gt;width/2),150 + (img-&gt;height/2),-frame,sin(frame/30)*3,cast(gl2d.image ptr,img))
+     '' solid flipped
+     gl2d.sprite_flip(400,150,GL2D.E_VH,cast(gl2d.image ptr,img))
+     '' =================================
+     '' TRANSPARENT
+     '' Trans simple
+     gl2d.set_blend_mode(GL2D.E_TRANS)
+     gl2d.sprite(100,250,cast(gl2d.image ptr,img))
+     '' Trans rotated
+     '' add 1/2 dimensions since rotation is center-based
+     gl2d.sprite_rotate(200 + (img-&gt;width/2),250 + (img-&gt;height/2),frame,cast(gl2d.image ptr,img))
+     '' Trans rotated and scaled
+     gl2d.sprite_rotate_scale(300 + (img-&gt;width/2),250 + (img-&gt;height/2),-frame,sin(frame/30)*3,cast(gl2d.image ptr,img))
+     '' Trans flipped
+     gl2d.sprite_flip(400,250,GL2D.E_VH,cast(gl2d.image ptr,img))
+     '' =================================
+     '' BLENDED
+     '' set color to 200/256 blending
+     glColor4ub(255,255,255,200)
+     '' blend simple
+     gl2d.set_blend_mode(GL2D.E_BLENDED)
+     gl2d.sprite(100,350,cast(gl2d.image ptr,img))
+     '' blend rotated
+     '' add 1/2 dimensions since rotation is center-based
+     gl2d.sprite_rotate(200 + (img-&gt;width/2),350 + (img-&gt;height/2),frame,cast(gl2d.image ptr,img))
+     '' blend rotated and scaled
+     gl2d.sprite_rotate_scale(300 + (img-&gt;width/2),350 + (img-&gt;height/2),-frame,sin(frame/30)*3,cast(gl2d.image ptr,img))
+     '' blend flipped
+     gl2d.sprite_flip(400,350,GL2D.E_VH,cast(gl2d.image ptr,img))
+     '' =================================
+     '' Green blended streched
+     gl2d.set_blend_mode(GL2D.E_BLENDED)
+     glColor4ub(0,255,255,200)
+     gl2d.sprite_stretch_h(xb,yb,32+abs(sin(frame/20)*300),cast(gl2d.image ptr,img))
+     '' red transparent
+     gl2d.set_blend_mode(GL2D.E_TRANS)
+     glColor4ub(255,0,0,255)
+     gl2d.sprite(xa,ya,cast(gl2d.image ptr,img))
+     '' shadow and fade effect
+     gl2d.set_blend_mode(GL2D.E_BLACK)   '' transparent
+     glColor4ub(0,255,255,abs(sin(frame/50)*255))
+     '' blend rotated and scaled
+     gl2d.sprite_rotate_scale(500 + (img-&gt;width/2),100 + (img-&gt;height/2),-frame,sin(frame/30)*5,cast(gl2d.image ptr,img))
+     '' Sprite stencil (draws a sprite in pure RGBA color)
+     gl2d.Set_blend_mode(GL2D.E_TRANS)
+     '' enable sprite stencil with colour of GL2D_RGBA(0,0,255,255) and env color of GL2D_RGBA(255,0,255,255)
+     gl2d.enable_sprite_stencil(true, GL2D_RGBA(0,0,255,255), GL2D_RGBA(255,0,255,255))
+     '' Fuchsia color transparent
+     gl2d.sprite_rotate_scale(500 + (img-&gt;width/2),250 + (img-&gt;height/2),frame,sin(frame/20)*5,cast(gl2d.image ptr,img))
+     '' Pure white blended
+     gl2d.enable_sprite_stencil(true, GL2D_RGBA(255,255,255,255), GL2D_RGBA(255,255,255,255))
+     gl2d.set_blend_mode(GL2D.E_BLENDED)   '' blending
+     glColor4ub(0,0,255,127)
+     gl2d.sprite_rotate_scale(500 + (img-&gt;width/2),400 + (img-&gt;height/2),-frame,sin(frame/24)*5,cast(gl2d.image ptr,img))
+     '' disable sprite stencil
+     gl2d.enable_sprite_stencil(false)
+     if multikey(SC_LEFT ) and xa &gt;   0 then xa = xa - 1
+                If multikey(SC_RIGHT) and xa &lt; 639 then xa = xa + 1
+                if multikey(SC_UP   ) and ya &gt;   0 then ya = ya - 1
+                if multikey(SC_DOWN ) and ya &lt; 479 then ya = ya + 1
+     if multikey(SC_SPACE) then fade = true
+     if fade then
+           gl2d.set_blend_mode(GL2D.E_BLENDED)   '' fade to white by blending
+           gl2d.box_filled(0,0, SCR_WIDTH-1, SCR_HEIGHT-1, GL2D_RGBA(255,255,255,fade_alpha))
+           if frame and 7 then fade_alpha += 1   '' increase alpha every 8th frame
+           if fade_alpha = 255 then exit do   '' exit if full
+     EndIf
+     '' limit fps to 60 frames per second
+     dim as single FPS = gl2d.fps_limit(60)    
+     '' Test print
+     gl2d.set_blend_mode(GL2D.E_TRANS)   '' transparent
+     glColor4ub(255,255,255,255)  '' no transluceny
+     gl2d.print_scale(0, 10,2, &quot;Simple sprites      FPS = &quot; + str(fps))
+     gl2d.set_blend_mode(GL2D.E_BLENDED)   '' transparent
+     glColor4ub(0,255,255,200)  '' 1/2 transluceny
+     gl2d.print_scale(0, 30,1.5, &quot;Use arrow keys to move.&quot;)
+     gl2d.print_scale(0, 50,1.5, &quot;Press &lt;space&gt; to fade.&quot;)
+               flip
+     sleep 1,1
+Loop Until Multikey( FB.SC_ESCAPE )
+'' destroy da happy face
+gl2d.destroy_image(cast(gl2d.image ptr,img))
+gl2d.destroy()
+'' Reset screen and test the sprite in
+'' FBGFX mode
+screenres 640, 480, 32
+cls
+Print &quot;Back in FBGFX&quot;
+put(100,100), img, trans
+sleep
+sleep
+end
+sub draw_bg(byval spr as any ptr)
+     dim as FB.image ptr temp = spr
+     dim as integer tiles_x = SCR_WIDTH\temp-&gt;width
+     dim as integer tiles_Y = SCR_HEIGHT\temp-&gt;height
+     gl2d.set_blend_mode(GL2D.E_TRANS)
+     for y as integer = 0 to tiles_y
+           for x as integer = 0 to tiles_x
+                glColor4ub(x*2 / (tiles_x) * 255, y*4 / (tiles_y) * 255, (y+x)*2 / (tiles_y) * 255,255)
+                gl2d.sprite(x * temp-&gt;width,y * temp-&gt;height,cast(gl2d.image ptr, spr))
+           next x
+     next y
+End Sub
+</pre>
+</code></p>
+<p>&nbsp;</p>
+<p>The above code showcases some sprite routines. I haven't used some of the more obscure sprite routines to make it simple. Try downloading easy GL2D for some more sprite drawing examples.</p>
+<p>Salient code from above:</p>
+<p><code> </code></p>
+<p><code>
+<pre>
+     dim img as fb.image ptr = imagecreate( 32, 32, rgb(255, 0, 255), 32 )
+     circle img, (16, 16), 15, rgb(255, 255, 0),     ,     , 1, f
+     circle img, (10, 10), 3,  rgb(  0,   0, 0),     ,     , 2, f
+     circle img, (23, 10), 3,  rgb(  0,   0, 0),     ,     , 2, f
+     circle img, (16, 18), 10, rgb(  0,   0, 0), 3.14, 6.28
+     '' load the sprite to HW (SW data still remains for whatever purposes you want)
+     gl2d.load_image_to_HW(cast(gl2d.image ptr, img))
+</pre>
+</code></p>
+<p>&nbsp;</p>
+<p>The happy face drawing code I copied from the FB help file.  Note that you only need one call to gl2d.load_image_to_HW() to upload your image to VRAM.</p>
+<p>You will also notice that all the drawing codes shared by the example blits (from solid to blended) are the same.  All you need to do to change blitting behavior is to call gl2d.Set_blend(). What could be easier than that?</p>
+<h4>Spritesets</h4>
+<p>To really abuse the speed of HW rendering, it is always a good practice to batch your textures. Batching textures limit the amount of glBindTexture() calls ergo, making your engine run at an astonishing speed.  That is why I made this:</p>
+<p><a href="http://rel.betterwebber.com/junk.php?id=106">rel's texture packer</a></p>
+<p><i>Why would you use my texture atlas generator?</i></p>
+<ol>
+    <li>Because my texture packer can do 8-bit images (Easy GL2D converts them to 32 bits during load).</li>
+    <li>It spits out a BI file ready to be used by FB.</li>
+    <li>It makes managing your sprites easier.</li>
+    <li>It would reduce memory bindings so your games run faster.</li>
+    <li>It's a very small download.</li>
+    <li>It would run in Windows, DOS and Linux.</li>
+    <li>I made this article so I spam it.</li>
+</ol>
+<p><i>So, how do I use your texture packer?</i></p>
+<ol>
+    <li>First you need to download and extract it.</li>
+    <li>Then put a bunch of tiles inside the &ldquo;images/&rdquo; folder.</li>
+    <li>3Double-click &ldquo;launcher.exe&rdquo;</li>
+    <li>Set up parameters.</li>
+    <li>Go!</li>
+    <li>Check out the &ldquo;textures/&rdquo; folder</li>
+</ol>
+<p>Assuming you have these tiles inside the images folder&hellip;</p>
+<img width="600" height="495" alt="" src="images/image011.png">
+<p>When you double-click the launcher&hellip;</p>
+<img width="312" height="288" alt="" src="images/image013.png">
+<p>I set it up to have a name of &ldquo;crono&rdquo;, width = 256, Height = 128 pixels and 8 BPP (Easy GL2D would automatically convert it to 32 bits on load).</p>
+<p>After pressing &ldquo;Go!&rdquo; you will have these files at the &ldquo;texture/&rdquo; folder&hellip;</p>
+<ol>
+    <li>&ldquo;uvcoord_crono.bi&rdquo;</li>
+    <li>&ldquo;crono.bmp&rdquo;</li>
+    <img width="256" height="128" alt="" src="images/image015.png">
+    <li>&ldquo;crono_idx[_h].bmp&rdquo;</li>
+    <img width="550" height="32" alt="" src="images/image017.png"> </ol>
+    <ul>
+        <li>The file &ldquo;uvcoord_crono.bi&rdquo; is an auto-generated file that has UV coords, positions and dimensions of each sprite on the spriteset used by init_sprites()</li>
+        <li>&ldquo;Crono.bmp&rdquo; is the actual tileset to be loaded and used in-game.</li>
+        <li>&ldquo;Crono_idx[_h].bmp&rdquo; is a helper file so that the coder can see the animation indices of his spriteset (not used in coding at all).</li>
+    </ul>
+    <p>Then just include  &ldquo;uvcoord_crono.bi&rdquo;, call init_sprites() and call sprite(x,y,spriteset(index)). Easy huh? Here's an example of how to use the files generated by my texture packer in Easy GL2D. Of course you may not want to use my texture packer and use a rigid system where all tiles in a spriteset has the same dimensions so you could just load your spriteset init_sprites uisng the second calling convention:</p>
+    <p>image of the tileset (256x256) with 16x16 tiles</p>
+    <img width="128" height="256" alt="" src="images/image019.png">  <code> </code>
+    <p><code> </code></p>
+    <p><code>
+    <pre>
+'' Code supplement on how to use:
+''  1. Loading spritesets made with my texture packer
+''  2. loading tilesets with the same tile dimensions
+'' Relminator(Richard Eric M. Lope BSN RN)
+'' Http://rel.betterwebber.com
+#include once &quot;fbgl2d.bi&quot;  
+#include once &quot;fbgl2d.bas&quot;
+'' include auto_generated texture coords
+'' by my texture packer
+#include once &quot;uvcoord_crono.bi&quot;
+'' A randomized bg
+declare sub draw_bg(sprites() as GL2D.image ptr, map() as ubyte)
+using FB
+const SCR_WIDTH = 640
+const SCR_HEIGHT = 480
+const as single PI = atn(1)*4
+const false = 0
+const true = not false
+'' our randomized BG map
+redim as ubyte map(SCR_WIDTH * SCR_HEIGHT)
+'' initialize gl2d (640 x 480)
+gl2d.screen_init( SCR_WIDTH, SCR_HEIGHT )
+'' crono and tiles
+'' redim it to force dynamic memory
+redim as GL2D.IMAGE ptr tiles(0)
+redim as GL2D.IMAGE ptr crono(0)
+'' init spritesheet using my texture packer
+gl2d.init_sprites(crono(),crono_texcoords(),&quot;crono.bmp&quot;)
+'' TRY to REM the above and UNREM this for bi-linear filtering
+'' gl2d.init_sprites(crono(),crono_texcoords(),&quot;crono.bmp&quot;, GL_LINEAR)
+'' init our sprites without the help of the texture packer
+'' since we know our tiles are 16 x 16 in size
+gl2d.init_sprites(tiles(),16,16,&quot;tiles_128x256_16x16.bmp&quot;)
+'' init our map with randomized munbers
+'' Notice thai I'm using ubound for safety
+'' tileset is resized after init_sprites
+'' maxtiles = ubound(tiles)
+'' I subtracted stuff because we have some dead
+'' tiles at the end of the tileset.
+'' More reason to use my texture packer
+for i as integer = 0 to ubound(map)
+     map(i) = i  mod int((ubound(tiles)-38))
+next
+gl2d.vsync_on()   '' set vsynch on
+dim as integer frame = 0
+dim as integer char_index = 0  ' crono animation
+do
+     frame += 1
+     '' clear buffer
+     gl2d.clear_screen()
+    
+     '' draw our bg
+     draw_bg(tiles(), map())
+     '' animate
+     if (frame and 7) = 0 then
+           char_index = (char_index + 1) mod 6        '' mod 6 since we have 6 frames of animation
+     endif
+     '' scale it 2x since it's gonna be too small otherwise
+     '' normal transparent
+     glColor4ub(255, 255, 255, 255)
+     gl2d.sprite_scale( 100,150,2, crono(char_index) )
+     gl2d.sprite_scale( 150,150,2, crono(6 + char_index) )
+     gl2d.sprite_scale( 200,150,2, crono(12+ char_index) )
+     '' color it red
+     glColor4ub(255, 0, 0, 255)
+     gl2d.sprite_scale( 300,150,2, crono(char_index) )
+     '' pink
+     glColor4ub(255, 0, 255, 255)
+     gl2d.sprite_scale( 350,150,2, crono(6 + char_index) )
+     '' blue
+     glColor4ub(0, 0, 255, 255)
+     gl2d.sprite_scale( 400,150,2, crono(12+ char_index) )
+     '' blend it by 200/255
+     gl2d.set_blend_mode(GL2D.E_BLENDED)
+     glColor4ub(255, 255, 255, 200)
+     gl2d.sprite_scale( 100,250,2, crono(char_index) )
+     gl2d.sprite_scale( 150,250,2, crono(6 + char_index) )
+     gl2d.sprite_scale( 200,250,2, crono(12+ char_index) )
+     ' Enable sprite stencil
+     gl2d.set_blend_mode(GL2D.E_TRANS)
+     glColor4ub(255, 255, 255, 255)
+     gl2d.enable_sprite_stencil(true, GL2D_RGBA(255,255,255,255), GL2D_RGBA(255,255,255,255))
+     gl2d.sprite_scale( 300,250,2, crono(char_index) )
+     gl2d.enable_sprite_stencil(true, GL2D_RGBA(0,255,0,255), GL2D_RGBA(0,0,255,255))
+     gl2d.sprite_scale( 350,250,2, crono(6 + char_index) )
+     gl2d.enable_sprite_stencil(true, GL2D_RGBA(0,0,0,255), GL2D_RGBA(0,255,255,255))
+     gl2d.sprite_scale( 400,250,2, crono(12+ char_index) )
+     '' disable sprite stencil
+     gl2d.enable_sprite_stencil(false)
+     '' black mode. Useful for shadows
+     gl2d.set_blend_mode(GL2D.E_BLACK)
+     glColor4ub(255, 255, 255, 255)  '' full black
+     gl2d.sprite_scale( 100,350,2, crono(char_index) )
+     gl2d.sprite_scale( 150,350,2, crono(6 + char_index) )
+     '' blend it by 1/2
+     '' no need to set E_BLENDED since E_BLACK is blended by default
+     glColor4ub(255, 255, 255, 128)
+     gl2d.sprite_scale( 200,350,2, crono(12+ char_index) )
+     '' normal color
+     glColor4ub(255,255,255,255)
+     '' limit fps to 60 frames per second
+     dim as single FPS = gl2d.fps_limit(60)
+	 
+     '' print
+     gl2d.set_blend_mode(GL2D.E_TRANS)   '' transparent
+     glColor4ub(0,0,0,255)  '' no transluceny
+     gl2d.print_scale(0, 10,2, &quot;Spriteset example      FPS = &quot; + str(fps))
+     gl2d.print_scale(0, 30,1.5, &quot;Crono sprite uses the texturepacker UV values.&quot;)
+     gl2d.print_scale(0, 50,1.5, &quot;BackGround tiles does not.&quot;)
+     '' print debug stuff
+     gl2d.print_scale(0, 80,1.5, &quot;MaxBGTiles    = &quot; + str(ubound(tiles)) )
+     gl2d.print_scale(0, 100,1.5, &quot;MaxCronoTiles = &quot; + str(ubound(crono)) )
+    flip
+     sleep 1,1
+Loop Until Multikey( FB.SC_ESCAPE )
+'' destroy tiles
+gl2d.destroy_sprites(tiles())
+gl2d.destroy_sprites(crono())
+gl2d.destroy()
+end
+sub draw_bg(sprites() as GL2D.image ptr, map() as ubyte)
+     dim as integer tiles_x = SCR_WIDTH\sprites(0)-&gt;width
+     dim as integer tiles_Y = SCR_HEIGHT\sprites(0)-&gt;height
+	 
+     gl2d.set_blend_mode(GL2D.E_TRANS)
+     glColor4ub(255,255,255,255)
+     dim as integer i = 0           
+     for y as integer = 0 to tiles_y
+           for x as integer = 0 to tiles_x
+                i += 1
+                gl2d.sprite( x * sprites(map(i))-&gt;width,y * sprites(map(i))-&gt;height, sprites(map(i)) )
+           next x
+     next y
+End Sub
+</pre>
+    </code></p>
+    <p>&nbsp;</p>
+    <p>Collisions</p>
+    <p>Collisions could be done via <a href="http://imortisoft.no-ip.org/b2b/?Issue_%231:2D_Convex_Polygon_Collision_using_SAT">SAT</a> (Article I wrote for the first issue of Back2BASIC).</p>
+    <p>Or you can do a sofware pixel-perfect collision. Yes, we can do software collisions while blitting via the hardware(The best of both worlds). Check out the example file I supplied with Easy GL2D for more info. Warning: Use the collision routine I supplied with sample code as I made a few changes to Mysoft's code to make it work with Easy GL2D.</p>
+    <p>PPCD example</p>
+    <p><code> </code></p>
+    <p><code>
+    <pre><a href="downloads/gl2d_part2_2.bas">gl2d_part2_2.bas</a></pre>
+    </code></p>
+    <p>&nbsp;</p>
+    <h4>Shiny  and Glowing stuff</h4>
+    <p>Easy GL2D comes equipped with a glowline drawing procedure. It uses an internal texture to achieve its glow.  It also has an optional parameter that can accept an Easy GL2D sprite as the texture to use.  So in effect, it not only acts as a glowlines function but as an oriented stretched sprite routine.</p>
+    <img width="600" height="450" alt="" src="images/image021.png">
+    <p>However you might want to glow sprites instead of lines. Easy GL2D can do that for you with little effort. You just need two versions of a sprite( The original sprite and the glow version).  The glow version is easily made by any image editor you could think of. I used a 2001 version of ACD systems' &quot;Fotocanvas&quot; and did a &quot;gaussian blur&quot; on the original image.</p>
+    <img width="435" height="267" alt="" src="images/image023.png">
+    <p>What you do to achieve glowing sprites is to:</p>
+    <ol>
+        <li>Draw the original imagein E_TRANS</li>
+        <li>Set blend mode to E_GLOW</li>
+        <li>Draw the blurred image</li>
+        <li>Done</li>
+    </ol>
+    <h4>Examples:</h4>
+    <p>1. A simple primitive drawing example</p>
+    <img width="600" height="450" alt="" src="images/image025.png">
+    <h4>2. Blobs</h4>
+    <img width="600" height="450" alt="" src="images/image027.png">
+    <p>A very cool effect you could do by setting blendmode to GLOW and drawing a bunch of metaballs</p>
+    <p>3. Sprites</p>
+    <img width="600" height="450" alt="" src="images/image029.png">
+    <p>A demo of about half of easy gl2d's sprite capabilities</p>
+    <p>4. Easy Zooming</p>
+    <img width="600" height="450" alt="" src="images/image021.png">
+    <p>With easy GL2D, you could zoom by any factor w/o the need to change your collision codes.</p>
+    <p>5. Lasers,  Lightsabers and more</p>
+    <img width="600" height="450" alt="" src="images/image031.png">
+    <p>With a little imagination, fire, lasers and lightsabers are easy to model.</p>
+    <p>6. 2d and 3d combined</p>
+    <img width="600" height="450" alt="" src="images/image033.png">
+    <p>Who says, easy GL2d is just 2d?  If you know how to do 3d in OpenGL, it's easy to integrate 3d with Easy GL2D.</p>
+    <p>Here is the whole zip for all the above examples.</p>
+    <p><a href="downloads/gl2d_tute_examples.zip">gl2d_examples.zip</a></p>
+    <p>This is it. Tutorial is done. I&rsquo;m not too happy with the result of how I made this article.  It feels too long and too non-focused.  But since I&rsquo;m on a deadline, this is what you get.</p>
+    <p>FAQS:</p>
+    <p>1. How about some eye-candies?  I want my sprites to glow!</p>
+    <p>Easy, just set blendmode to E_GLOW and yer good to go.</p>
+    <p>2. Can I combine a 3d background with 2d sprites?</p>
+    <p>Of course. Check out the example file above.</p>
+    <p>3. Can I do fire?</p>
+    <p>Yes, check the example.</p>
+    <p>4. How about a pure-white sprites?  Like when an enemy in a space-shooter gets hit by your barrage of projectiles?</p>
+    <p>Easy, enable_sprite_stencil and draw your sprite.</p>
+    <p>5. How many times have you used the word &quot;easy&quot; in this article?</p>
+    <p>A lot.  Don't forget to &quot;qualify&quot; Easy GL2D with the word &quot;Easy&quot;</p>
+    <p>Richard Eric M. Lope BSN RN (Relminator)</p>
+    <p>http://Rel.betterwebber.com</p>
+    <p>You can contact me through:</p>
+    <ol>
+        <li>My email (vic_viperph (at) yahoo.com)</li>
+        <li>The EasyGL2D thread on the FB forums</li>
+        <li>My almost dead forum.</li>
+    </ol>
+</div>
+</div>
+

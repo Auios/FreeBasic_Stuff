@@ -1,0 +1,135 @@
+<html>
+<head>
+<title>FMOD</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">FMOD</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Audio library supporting just about any format.<br \>
+<br \>
+Website: http://www.fmod.org/index.php/products#FMOD3ProgrammersAPI<br \>
+Platforms supported: Win32, Linux<br \>
+Headers to include: fmod.bi<br \>
+Header version: 3.75<br \>
+Examples: in examples/sound/FMOD/<br \>
+<br \>
+<div class="fb_sect_title">Example</div><div class="fb_sect_cont"><br \>
+<tt><div class="freebasic">
+<span class="def">#include&nbsp;once&nbsp;"fmod.bi"<br />
+</span><br />
+<span class="key">Const</span>&nbsp;<span class="wrd">SOUND_FILE</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"test.mod"</span><br />
+<br />
+<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">FSOUND_GetVersion</span><span class="oth">()</span>&nbsp;<span class="oth">&lt;</span>&nbsp;<span class="wrd">FMOD_VERSION</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"FMOD&nbsp;version&nbsp;mismatch"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">FSOUND_Init</span><span class="oth">(</span><span class="num">44100</span><span class="oth">,</span>&nbsp;<span class="num">32</span><span class="oth">,</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Could&nbsp;not&nbsp;initialize&nbsp;FMOD"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">FMUSIC_MODULE</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">song</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">FMUSIC_LoadSong</span><span class="oth">(</span><span class="wrd">SOUND_FILE</span><span class="oth">)</span><br />
+<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">song</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"FMOD&nbsp;could&nbsp;not&nbsp;load&nbsp;'"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">SOUND_FILE</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"'"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">FSOUND_Close</span><span class="oth">()</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+<span class="wrd">FMUSIC_PlaySong</span><span class="oth">(</span><span class="wrd">song</span><span class="oth">)</span><br />
+<br />
+<span class="key">Print</span>&nbsp;<span class="quo">"Sound&nbsp;playing;&nbsp;waiting&nbsp;for&nbsp;keypress&nbsp;to&nbsp;stop&nbsp;and&nbsp;exit..."</span><br />
+<span class="key">Sleep</span><br />
+<br />
+<span class="wrd">FMUSIC_FreeSong</span><span class="oth">(</span><span class="wrd">song</span><span class="oth">)</span><br />
+<span class="wrd">FSOUND_Close</span><span class="oth">()</span><br />
+</div></tt><br />
+<br \>
+<tt><div class="freebasic">
+<span class="com">''&nbsp;mp3&nbsp;player&nbsp;based&nbsp;on&nbsp;FMOD</span><br />
+<br />
+<span class="def">#include&nbsp;once&nbsp;"fmod.bi"<br />
+</span><br />
+<span class="key">Const</span>&nbsp;<span class="wrd">SOUND_FILE</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">"test.mp3"</span><br />
+<br />
+<span class="key">Sub</span>&nbsp;<span class="wrd">print_all_tags</span><span class="oth">(</span><span class="key">ByVal</span>&nbsp;<span class="wrd">stream</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">FSOUND_STREAM</span>&nbsp;<span class="key">Ptr</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">count</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">FSOUND_Stream_GetNumTagFields</span><span class="oth">(</span><span class="wrd">stream</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">count</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">For</span>&nbsp;<span class="wrd">i</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span>&nbsp;<span class="key">To</span>&nbsp;<span class="oth">(</span><span class="wrd">count</span>&nbsp;<span class="oth">-</span>&nbsp;<span class="num">1</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span>&nbsp;<span class="wrd">tagtype</span><span class="oth">,</span>&nbsp;<span class="wrd">taglen</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">ZString</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">tagname</span><span class="oth">,</span>&nbsp;<span class="wrd">tagvalue</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">FSOUND_Stream_GetTagField</span><span class="oth">(</span><span class="wrd">stream</span><span class="oth">,</span>&nbsp;<span class="wrd">i</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">tagtype</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">tagname</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">tagvalue</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">taglen</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="key">Left</span><span class="oth">(*</span><span class="wrd">tagname</span><span class="oth">,</span>&nbsp;<span class="wrd">taglen</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Next</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Sub</span><br />
+<br />
+<span class="key">Function</span>&nbsp;<span class="wrd">get_tag</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">(</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">stream</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">FSOUND_STREAM</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">tagv1</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">ZString</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">ByVal</span>&nbsp;<span class="wrd">tagv2</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">ZString</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">_</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="oth">)</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">String</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="wrd">tagname</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">ZString</span>&nbsp;<span class="key">Ptr</span><span class="oth">,</span>&nbsp;<span class="wrd">taglen</span>&nbsp;<span class="key">As</span>&nbsp;<span class="key">Integer</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">FSOUND_Stream_FindTagField</span><span class="oth">(</span><span class="wrd">stream</span><span class="oth">,</span>&nbsp;<span class="wrd">FSOUND_TAGFIELD_ID3V1</span><span class="oth">,</span>&nbsp;<span class="wrd">tagv1</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">tagname</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">taglen</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">taglen</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="key">Then</span>&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">FSOUND_Stream_FindTagField</span><span class="oth">(</span><span class="wrd">stream</span><span class="oth">,</span>&nbsp;<span class="wrd">FSOUND_TAGFIELD_ID3V2</span><span class="oth">,</span>&nbsp;<span class="wrd">tagv2</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">tagname</span><span class="oth">,</span>&nbsp;<span class="oth">@</span><span class="wrd">taglen</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Return</span>&nbsp;<span class="key">Left</span><span class="oth">(*</span><span class="wrd">tagname</span><span class="oth">,</span>&nbsp;<span class="wrd">taglen</span><span class="oth">)</span><br />
+<span class="key">End</span>&nbsp;<span class="key">Function</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">FSOUND_GetVersion</span>&nbsp;<span class="oth">&lt;</span>&nbsp;<span class="wrd">FMOD_VERSION</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"FMOD&nbsp;version&nbsp;"</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="key">Str</span><span class="oth">(</span><span class="wrd">FMOD_VERSION</span><span class="oth">)</span>&nbsp;<span class="oth">+</span>&nbsp;<span class="quo">"&nbsp;or&nbsp;greater&nbsp;required!"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span>&nbsp;<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">FSOUND_Init</span><span class="oth">(</span><span class="num">44100</span><span class="oth">,</span>&nbsp;<span class="num">4</span><span class="oth">,</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Could&nbsp;not&nbsp;initialize&nbsp;FMOD"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">FSOUND_Stream_SetBufferSize</span><span class="oth">(</span><span class="num">50</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Dim</span>&nbsp;<span class="key">As</span>&nbsp;<span class="wrd">FSOUND_STREAM</span>&nbsp;<span class="key">Ptr</span>&nbsp;<span class="wrd">stream</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="wrd">FSOUND_Stream_Open</span><span class="oth">(</span><span class="wrd">SOUND_FILE</span><span class="oth">,</span>&nbsp;<span class="wrd">FSOUND_MPEGACCURATE</span><span class="oth">,</span>&nbsp;<span class="num">0</span><span class="oth">,</span>&nbsp;<span class="num">0</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">stream</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="num">0</span><span class="oth">)</span>&nbsp;<span class="key">Then</span>&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"FMOD&nbsp;could&nbsp;not&nbsp;load&nbsp;'"</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="wrd">SOUND_FILE</span>&nbsp;<span class="oth">&amp;</span>&nbsp;<span class="quo">"'"</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">FSOUND_Close</span><span class="oth">()</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''&nbsp;Read&nbsp;out&nbsp;mp3&nbsp;tags&nbsp;to&nbsp;show&nbsp;some&nbsp;meta&nbsp;information</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Title:"</span><span class="oth">,</span>&nbsp;<span class="wrd">get_tag</span><span class="oth">(</span><span class="wrd">stream</span><span class="oth">,</span>&nbsp;<span class="quo">"TITLE"</span><span class="oth">,</span>&nbsp;<span class="quo">"TIT2"</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Album:"</span><span class="oth">,</span>&nbsp;<span class="wrd">get_tag</span><span class="oth">(</span><span class="wrd">stream</span><span class="oth">,</span>&nbsp;<span class="quo">"ALBUM"</span><span class="oth">,</span>&nbsp;<span class="quo">"TALB"</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Artist:"</span><span class="oth">,</span>&nbsp;<span class="wrd">get_tag</span><span class="oth">(</span><span class="wrd">stream</span><span class="oth">,</span>&nbsp;<span class="quo">"ARTIST"</span><span class="oth">,</span>&nbsp;<span class="quo">"TPE1"</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="com">''print_all_tags(stream)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Print</span>&nbsp;<span class="quo">"Playing&nbsp;mp3,&nbsp;press&nbsp;a&nbsp;key&nbsp;to&nbsp;exit..."</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">FSOUND_Stream_Play</span><span class="oth">(</span><span class="wrd">FSOUND_FREE</span><span class="oth">,</span>&nbsp;<span class="wrd">stream</span><span class="oth">)</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">While</span>&nbsp;<span class="oth">(</span><span class="key">Inkey</span><span class="oth">()</span>&nbsp;<span class="oth">=</span>&nbsp;<span class="quo">""</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">If</span>&nbsp;<span class="oth">(</span><span class="wrd">FSOUND_Stream_GetPosition</span><span class="oth">(</span><span class="wrd">stream</span><span class="oth">)</span>&nbsp;<span class="oth">&gt;=</span>&nbsp;<span class="wrd">FSOUND_Stream_GetLength</span><span class="oth">(</span><span class="wrd">stream</span><span class="oth">))</span>&nbsp;<span class="key">Then</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Exit</span>&nbsp;<span class="key">While</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">End</span>&nbsp;<span class="key">If</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Sleep</span>&nbsp;<span class="num">50</span><span class="oth">,</span>&nbsp;<span class="num">1</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">Wend</span><br />
+&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">FSOUND_Stream_Stop</span><span class="oth">(</span><span class="wrd">stream</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">FSOUND_Stream_Close</span><span class="oth">(</span><span class="wrd">stream</span><span class="oth">)</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="wrd">FSOUND_Close</span><span class="oth">()</span><br />
+</div></tt><br />
+<br \>
+</div>
+</div>
+</div> 
+</div> 
+</body>
+</html>

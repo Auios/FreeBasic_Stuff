@@ -1,0 +1,820 @@
+#include "fbgfx.bi" 
+Using FB
+
+' Our subroutine declarations will go here!
+DECLARE SUB MainMenu ' Sub that runs our main menu loop.
+DECLARE SUB MainLoop ' Sub that runs our main game loop.
+DECLARE SUB LoadGraphics ' Sub that loads all the program's graphics.
+DECLARE SUB InitVariables ' Sub that initiates the game variables
+                          ' (should be called before every new game).
+DECLARE SUB MoveDrawSheep ' Sub that moves and draws the sheep.
+DECLARE SUB MoveDrawPlayer ' Sub that moves and draws the player
+DECLARE SUB InitiateParticle (xpos AS SINGLE, ypos AS SINGLE, parttype AS INTEGER, partdirec AS INTEGER)
+DECLARE SUB ParticleLayer
+DECLARE SUB PrintScore
+
+' Useful constants (makes your code easier to read and write).
+const FALSE = 0
+const TRUE = 1
+
+DIM SHARED background1 AS ANY PTR ' A pointer that points to a memory
+                                  ' buffer holding the background graphics
+DIM SHARED background2 AS ANY PTR
+DIM SHARED WarriorSprite(12) AS ANY PTR ' A pointer that points to a memory
+                                        ' buffer holding warrior sprites
+
+DIM SHARED ExtraSprite(18) AS ANY PTR   ' An array that will hold
+                                        ' the additional sprites.
+                                            
+DIM SHARED workpage AS INTEGER ' Our work page
+DIM SHARED AS INTEGER Frame1, Frame2
+DIM SHARED AS INTEGER KeyPressed
+
+DIM SHARED AS INTEGER seconds, milsec
+DIM SHARED AS DOUBLE starttime
+
+SCREEN 18,8,2,0 ' Sets the graphic mode
+		' 18 means 640 * 480
+                ' 8 means 8bit color depth; 2 means two work pages and
+                ' 0 means window mode( 1 would be full screen mode).
+                ' When your program is running you can toggle
+                ' between full screen/window mode with ALT+ENTER.
+                
+SETMOUSE 0,0,0  ' Hides the mouse cursor.
+
+
+' Our user defined type containing 10 variables.
+TYPE ObjectType
+X          AS SINGLE
+Y          AS SINGLE
+Speed      AS SINGLE
+Frame      AS INTEGER
+Direction  AS INTEGER
+Move       AS INTEGER
+Attack     AS INTEGER
+Alive      AS INTEGER
+Typ        AS INTEGER
+Duration   AS INTEGER
+END TYPE
+
+DIM SHARED AS INTEGER numofsheep = 10
+DIM SHARED Player AS ObjectType ' Our player.
+DIM SHARED Sheep(numofsheep) AS ObjectType ' Our sheep.
+DIM SHARED Particle(1000) AS ObjectType ' Our particles (sheep bloody pieces and fireball in our case)
+
+LoadGraphics ' Load the program's graphics.
+MainMenu ' Initiate main menu.
+
+' Destroy our memory buffers before ending the program
+' (free memory).
+IMAGEDESTROY (background1)
+FOR imagepos AS INTEGER = 1 TO 12
+IMAGEDESTROY WarriorSprite(imagepos)
+NEXT imagepos
+FOR imagepos AS INTEGER = 1 TO 18
+IMAGEDESTROY ExtraSprite(imagepos)
+NEXT imagepos
+
+END ' End program.
+
+' MAIN MODULE ENDS HERE!
+' **********************
+
+SUB LoadGraphics
+    
+' Let's hide the work page since we are
+' going to load program graphics directly
+' on the screen.
+SCREENSET 1, 0
+
+' Load the background image and store
+' it into a memory buffer.
+background1 = IMAGECREATE (640, 480)
+BLOAD "BACKGRND.bmp", 0
+GET (0,0)-(639,479), background1
+
+background2 = IMAGECREATE (640, 480)
+BLOAD "mainmenu.bmp", 0
+GET (0,0)-(639,479), background2
+
+CLS ' Clear our screen since we
+    ' are loading a new image (not
+    ' neccesary but wise).
+
+' Load the sprites onto the screen and store them 
+' into an array.
+BLOAD "SPRITES.bmp", 0
+FOR imagepos AS INTEGER = 1 TO 12
+	WarriorSprite(imagepos) = IMAGECREATE (40, 40)
+	GET (0+(imagepos-1)*48,0)-(39+(imagepos-1)*48,39),  WarriorSprite(imagepos)
+NEXT imagepos
+
+' Load the image holding the additional sprites and store
+' them into the "ExtraSprite" array on specific positions.
+BLOAD "EXTRASPR.BMP", 0
+' Load the sheep sprites.
+FOR imagepos AS INTEGER = 1 TO 8
+    ExtraSprite(imagepos) = IMAGECREATE (40, 40)
+    GET (0+(imagepos-1)*48,0)-(39+(imagepos-1)*48,39), ExtraSprite(imagepos)
+NEXT imagepos
+' Load the bloody sheep meat.
+FOR meatpos AS INTEGER  = 1 TO 7
+    ExtraSprite(meatpos + 8) = IMAGECREATE (24, 19)
+    GET (12+(meatpos-1)*26,50)-(34+(meatpos-1)*26,68), ExtraSprite(meatpos + 8)
+NEXT meatpos
+' Load the fireball.
+ExtraSprite(16) = IMAGECREATE (24, 24)
+GET (22, 84)-(46, 106), ExtraSprite(16)
+' Load the mouse cursor.
+ExtraSprite(17) = IMAGECREATE (33, 42)
+GET (212, 44)-(246, 85), ExtraSprite(17)
+' Load the menu pointer.
+ExtraSprite(18) = IMAGECREATE (24, 25)
+GET (254, 50)-(278, 74), ExtraSprite(18)
+
+' The sprites are saved in the "ExtraSprite" array as follows:
+' ExtraSprite(1, 0) - sheep moving down image #1
+' ExtraSprite(2, 0) - sheep moving down image #2
+' ExtraSprite(3, 0) - sheep moving up image #1
+' ExtraSprite(4, 0) - sheep moving up image #2
+' ExtraSprite(5, 0) - sheep moving left image #1
+' ExtraSprite(6, 0) - sheep moving left image #2
+' ExtraSprite(7, 0) - sheep moving right image #1
+' ExtraSprite(8, 0) - sheep moving right image #2
+' ExtraSprite(9, 0) - ExtraSprite(15, 0) - 7 bloody meat pieces
+' ExtraSprite(16, 0) - the fireball sprite
+' ExtraSprite(17, 0) - the mouse cursor
+' ExtraSprite(18, 0) - the menu pointer
+
+END SUB
+
+SUB MainLoop
+    
+DIM GameEnd AS INTEGER
+
+WHILE MULTIKEY(SC_ENTER)
+    SLEEP 1
+WEND
+
+DO
+    
+    ' Our timer (millisecond precise).
+    ' starttime variable checks if
+    ' a millisecond has passed
+    ' using the TIMER statement.
+    ' & is used with variables
+    ' you want to return DOUBLE
+    ' PRECISION values. When 10
+    ' milliseconds has passed
+    ' add one seconds and return
+    ' the milliseconds to 0.
+    IF starttime + 0.1 <= TIMER& THEN
+        milsec = milsec + 1
+        IF milsec > 9 THEN
+            seconds = seconds + 1
+            milsec = 0
+        END IF
+        starttime = TIMER&
+    END IF    
+    
+    screenlock ' Lock our screen (nothing will be
+               ' displayed until we unlock the screen).
+    screenset workpage, workpage xor 1 ' Swap work pages.
+    
+    ' Frame1 changes from 1 to 2 or vice versa every
+    ' 16 cycles (set with Frame2 variable).
+    Frame2 = (Frame2 MOD 16) + 1
+    IF Frame2 = 10 THEN Frame1 = (Frame1 MOD 2) + 1
+    
+    ' Pastes the background.
+    PUT (0, 0), background1, PSET
+    
+    ParticleLayer ' Paste the particles.
+    MoveDrawPlayer ' Paste/move our player
+    MoveDrawSheep ' Paste/move our sheep
+    
+    LOCATE 1, 1
+    PRINT "Playtime: " + STR$(seconds) + "." + STR$(milsec)
+
+    workpage xor = 1 ' Swap work pages.
+    screenunlock ' Unlock the page to display what has been drawn.
+    
+    SLEEP 10, 1 ' Slow down the program and prevent 100 % CPU usage.
+
+    ' A round is over by deafult.
+    GameEnd = TRUE
+    ' Check all the sheep. If any of them is alive the
+    ' game should not end (round not completed).
+    FOR checksheep AS INTEGER = 1 TO numofsheep
+        IF Sheep(checksheep).Alive = TRUE THEN GameEnd = FALSE   
+    NEXT checksheep
+
+LOOP UNTIL MULTIKEY(SC_Q) OR MULTIKEY(SC_ESCAPE) OR GameEnd = TRUE
+' Execute the loop until the user presses Q or ESCAPE or the game ends.
+
+END SUB
+
+SUB MainMenu
+
+DIM AS INTEGER MPos
+DIM AS INTEGER mx, my, buttons
+
+' Default menu position is 1 (first from
+' the top).
+MPos = 1
+
+DO
+    
+    GETMOUSE mx, my, , buttons
+    
+    screenlock  ' Lock our screen (nothing will be
+                ' displayed until we unlock the screen).
+    screenset workpage, workpage xor 1 ' Swap work pages.
+
+    ' If the user pushed up and the key pushed
+    ' last time is released reduce menu
+    ' position by 1. Minimum menu position is 1.
+    IF MULTIKEY(SC_UP) AND KeyPressed = FALSE THEN 
+        MPos = MPos - 1
+        KeyPressed = TRUE 
+        IF MPos < 1 THEN MPos = 1 
+    END IF
+    ' If the user pushed down and the key pushed
+    ' last time is released increase menu
+    ' position by 1. Minimum menu position is 1.
+    IF MULTIKEY(SC_DOWN) AND KeyPressed = FALSE THEN 
+        MPos = MPos + 1
+        KeyPressed = TRUE
+        IF MPos > 4 THEN MPos = 4  
+    END IF
+    
+    ' If the user pushed enter execute
+    ' the current menu option(flagged
+    ' with MPos).
+    IF MULTIKEY(SC_ENTER) THEN
+        optionactivated:
+        SELECT CASE MPos
+            CASE 1  ' Play Sheep Massacre option
+                workpage xor = 1 
+                screenunlock
+                ' Load initial variables(player's position, etc.).
+                InitVariables
+                ' Call the main game loop.
+                MainLoop
+                ' Show the score screen if all sheep are killed.
+                PrintScore
+                MPos = 1
+                ' Loop while the user holds ESCAPE.
+                WHILE MULTIKEY(SC_ESCAPE)
+					SLEEP 1
+                WEND
+            CASE 2
+            ' Inactive!
+            CASE 3
+            ' Inactive!
+            CASE 4  ' Exit option
+                    ' Destroy our memory buffers before ending the program
+                    ' (free memory).
+                IMAGEDESTROY (background1)
+                IMAGEDESTROY (background2)
+                FOR imagepos AS INTEGER = 1 TO 12
+                IMAGEDESTROY WarriorSprite(imagepos)
+                NEXT imagepos
+                FOR imagepos AS INTEGER = 1 TO 18
+                IMAGEDESTROY ExtraSprite(imagepos)
+                NEXT imagepos    
+                END
+        END SELECT
+    END IF
+    
+    ' Pastes the menu background.
+    PUT (0, 0), background2, PSET
+    
+    ' Pastes the menu pointer according to MPos. The menu
+    ' pointer is stored on position 18 in the ExtraSprite 
+    ' array.
+    PUT (176, 150+((MPos-1)*26)), ExtraSprite(18), TRANS
+    
+    ' Key pressing variable won't be restored(key pressing
+    ' unlocked) until the user releases all these keys
+    ' (doesn't hold any of them).
+    IF NOT MULTIKEY(SC_ENTER) AND NOT MULTIKEY(SC_UP) AND NOT MULTIKEY(SC_DOWN) THEN KeyPressed = FALSE
+    
+    ' Paste the mouse cursor (image number 17)
+    PUT (mx, my), ExtraSprite(17), TRANS
+    
+    ' If the mouse cursors is on any of the options
+    ' change the current option to the one
+    ' on which the mouse it.
+    IF mx > 174 and mx < 500 THEN
+    IF my > 150 and my < 174 THEN MPos = 1
+    IF my > 178 and my < 200 THEN MPos = 2
+    IF my > 202 and my < 226 THEN MPos = 3
+    IF my > 228 and my < 252 THEN MPos = 4
+    ' If the user has clicked with the left
+    ' mouse button and the cursors is on
+    ' one of the options PAUSE until the
+    ' user releases the click and go to
+    ' the IF clause with SELECT CASE MPos.
+    IF buttons = 1 AND my > 150 AND my < 252 THEN 
+        buttons = 0
+        GOTO optionactivated:
+        END IF
+    END IF
+
+    ' Standard statements in each loop.
+    workpage xor = 1 ' Swap work pages.
+    screenunlock ' Unlock the page to display what has been drawn.
+    sleep 1
+
+LOOP
+
+END SUB
+
+SUB InitVariables
+    
+RANDOMIZE TIMER
+
+milsec = 0
+seconds = 0
+    
+' Warrior's(player's) initial
+' position, speed(constant)
+' and direction(1 = right).
+Player.X = 150
+Player.Y = 90
+Player.Speed = 1.5
+Player.Direction = 1
+
+' Initiate all the sheep(their positions, etc.).
+FOR countsheep AS INTEGER = 1 TO numofsheep
+    ' Randomize a number 1 to 600 (sheep's X position).
+    Sheep(countsheep).X = INT(RND * 600) + 1 
+    ' Randomize a number 1 to 440 (sheep's Y position).
+    Sheep(countsheep).Y = INT(RND * 440) + 1 
+    ' Randomize a number 1 to 4.
+    Sheep(countsheep).Direction = INT(RND * 4) + 1 
+    ' New game -> all sheep alive by deafult.
+    Sheep(countsheep).Alive = TRUE
+    ' Speed of all sheep.
+    Sheep(countsheep).Speed = 0.9
+NEXT countsheep
+
+' Reset all particles before each new game.
+FOR countparticle AS INTEGER = 1 TO 1000
+	Particle(countparticle).Alive = FALSE    
+NEXT countparticle
+    
+END SUB
+
+SUB MoveDrawPlayer
+    
+DIM AS INTEGER FireBFree ' used for firing the fireball below
+
+' Player.Direction = 1 -> warrior moving right
+' Player.Direction = 2 -> warrior moving left
+' Player.Direction = 3 -> warrior moving down
+' Player.Direction = 4 -> warrior moving up
+
+Player.Move = FALSE ' By deafult player is not
+                    ' moving.
+
+' According to pushed key move the
+' player and flag the proper direction.
+IF MULTIKEY(SC_RIGHT) THEN 
+    Player.X = Player.X + Player.Speed
+    Player.Direction = 1
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_LEFT) THEN 
+    Player.X = Player.X - Player.Speed
+    Player.Direction = 2
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_DOWN) THEN 
+    Player.Y = Player.Y + Player.Speed
+    Player.Direction = 3
+    Player.Move = TRUE
+END IF
+IF MULTIKEY(SC_UP) THEN 
+    Player.Y = Player.Y - Player.Speed
+    Player.Direction = 4
+    Player.Move = TRUE
+END IF
+
+' The following 4 conditions prevent
+' the warrior to walk off the screen.
+IF Player.X < 0 THEN 
+    Player.Move = FALSE
+    Player.X = 0
+END IF
+IF Player.X > 600 THEN 
+    Player.Move = FALSE
+    Player.X = 600
+END IF
+IF Player.Y < 0 THEN 
+    Player.Move = FALSE
+    Player.Y = 0
+END IF
+IF Player.Y > 440 THEN 
+    Player.Move = FALSE
+    Player.Y = 440
+END IF
+
+IF Player.Move = FALSE OR Frame1 = 0 THEN Frame1 = 1
+
+' Attack variable needs to reduce to 0 by 1 in
+' each cycle since we want for the attack to 
+' "time out" once we initiate it(swing with the
+' sword).
+Player.Attack = Player.Attack - 1
+IF Player.Attack < 0 THEN Player.Attack = 0
+
+' When the player presses SPACE and the SPACE
+' key is released from the last time you 
+' swung the sword (KeyPressed = FALSE)
+' initiate new attack (Player.Attack = 10) and
+' flag that SPACE is pressed (KeyPressed = TRUE).
+' KeyPressed variable is used to prevent the
+' player to be able to hold the SWING. This can
+' be done on more ways like prevent the player
+' to swing until Player.Attack = 0 (replace
+' KeyPressed = FALSE with this condition).
+IF MULTIKEY(SC_SPACE) AND KeyPressed = FALSE THEN
+	KeyPressed = TRUE
+	Player.Attack = 10
+END IF
+
+' If the player is attacking...
+IF Player.Attack >0 THEN
+    
+    ' If the player is swinging check for collision with the sheep.
+    ' In our specific range detector we have 3 main conditions.
+    ' First, the sheep must be alive for us to check collision with
+    ' it. Second, the warrior and the sheep must be less that 15 pixels
+    ' apart in horizontal direction. Third, the warrior and the sheep 
+    ' must be less than 15 pixels apart in vertical direction.
+    ' You can tweak the pixel distances if you want and can get a
+    ' better result. The secondary condition depends on the direction.
+    ' For example, if the warrior is facing right (Direction = 1) sheep
+    ' must be at least one pixel to the right from the warrior.
+    ' Anyway, if all conditions are met the sheep is killed(Alive = FALSE).
+    FOR checksheep AS INTEGER = 1 TO numofsheep
+        IF Sheep(checksheep).Alive = TRUE AND ABS(Player.X-Sheep(checksheep).X) < 30 AND ABS(Player.Y-Sheep(checksheep).Y) < 30 THEN
+            IF Player.Direction = 1 AND Sheep(checksheep).X > Player.X THEN Sheep(checksheep).Alive = FALSE
+            IF Player.Direction = 2 AND Sheep(checksheep).X < Player.X THEN Sheep(checksheep).Alive = FALSE
+            IF Player.Direction = 3 AND Sheep(checksheep).Y > Player.Y THEN Sheep(checksheep).Alive = FALSE
+            IF Player.Direction = 4 AND Sheep(checksheep).Y < Player.Y THEN Sheep(checksheep).Alive = FALSE
+            IF Sheep(checksheep).Alive = FALSE THEN
+                ' If the sheep is killed spawn 7 bloody meat pieces(particle type 1 
+                ' -> third parameter).
+                InitiateParticle Sheep(checksheep).X+20, Sheep(checksheep).Y+20, 1, 0
+                InitiateParticle Sheep(checksheep).X+23, Sheep(checksheep).Y+20, 1, 0
+                InitiateParticle Sheep(checksheep).X+19, Sheep(checksheep).Y+23, 1, 0
+                InitiateParticle Sheep(checksheep).X+18, Sheep(checksheep).Y+21, 1, 0
+                InitiateParticle Sheep(checksheep).X+22, Sheep(checksheep).Y+18, 1, 0
+                InitiateParticle Sheep(checksheep).X+21, Sheep(checksheep).Y+19, 1, 0
+                InitiateParticle Sheep(checksheep).X+21, Sheep(checksheep).Y+19, 1, 0
+            END IF
+        END IF
+    NEXT checksheep
+    
+END IF
+
+' If the player is attacking flag the proper attack
+' sprite according to player's direction.
+IF Player.Direction = 1 THEN Player.Frame = 12
+IF Player.Direction = 2 THEN Player.Frame = 11
+IF Player.Direction = 3 THEN Player.Frame = 10
+IF Player.Direction = 4 THEN Player.Frame = 9
+
+' According to player's direction flag the 
+' proper sprite (check in the tutorial on which
+' position each sprite is stored).
+IF Player.Direction = 1 THEN Player.Frame = 6 + Frame1
+IF Player.Direction = 2 THEN Player.Frame = 4 + Frame1
+IF Player.Direction = 3 THEN Player.Frame = 0 + Frame1
+IF Player.Direction = 4 THEN Player.Frame = 2 + Frame1
+
+' If the player is attacking flag the proper attack
+' sprite according to player's direction.
+IF Player.Attack >0 THEN
+	IF Player.Direction = 1 THEN Player.Frame = 12
+	IF Player.Direction = 2 THEN Player.Frame = 11
+	IF Player.Direction = 3 THEN Player.Frame = 10
+	IF Player.Direction = 4 THEN Player.Frame = 9	
+END IF
+
+' If the player pushes ENTER initiate a fireball but only
+' if another one is NOT ACTIVE (flagged with the FireBFree variable).
+IF MULTIKEY(SC_ENTER) THEN
+    FireBFree = TRUE ' By deafult the fireball is free.
+    ' Go through all the particles and check if an active one is
+    ' the fireball.
+    FOR countparticle AS INTEGER = 1 TO 1000
+    IF Particle(countparticle).Alive = TRUE AND Particle(countparticle).Typ = 2 THEN FireBFree = FALSE   
+    NEXT countparticle
+    ' Note how player's direction is passed into the sub (4th parameter).
+    IF FireBFree = TRUE THEN InitiateParticle Player.X+8, Player.Y+10, 2, Player.Direction
+END IF
+
+' Paste the warrior on Player.X and Player.Y coordinates, 
+' using sprite number Player.Frame, and skip background color.
+PUT (Player.X, Player.Y), WarriorSprite(Player.Frame), TRANS
+
+' Flag KeyPressed as FALSE (pressing is not locked!) only when
+' the player releases SPACE and ENTER.
+IF NOT MULTIKEY(SC_ENTER) AND NOT MULTIKEY(SC_SPACE) THEN KeyPressed = FALSE
+
+END SUB
+
+SUB MoveDrawSheep
+ 
+' Loop through all the sheep. 
+FOR countsheep AS INTEGER = 1 TO numofsheep
+	 
+	' The current sheep is not moving by default. 
+	Sheep(countsheep).Move = FALSE
+
+	' Sheep(countsheep).Direction = 1 -> sheep moving right
+	' Sheep(countsheep).Direction = 2 -> sheep moving left
+	' Sheep(countsheep).Direction = 3 -> sheep moving down
+	' Sheep(countsheep).Direction = 4 -> sheep moving up
+
+	' The next 4 IF clauses is the AS (artificial smart) algorithm. 
+	' In more demanding projects your AS code will most likely be more 
+	' complex so you will probably place it in a separate sub.
+	' Each IF checks if the player is less than 100 pixels away from
+	' the sheep in both directions (scope of detection - change all 100 to 
+	' higher or less number to get a different scope of detection/reaction). 
+	' The first condition in each IF checks where's the player according 
+	' to sheep (in X or Y direction) and then we flag the sheep's direction 
+	' if that condtition is met. The last two IFs have another condition 
+	' inside them which is just nitpicking and gives slightly better result.
+	IF Player.Y < Sheep(countsheep).Y AND ABS(Player.Y-Sheep(countsheep).Y) < 100 AND ABS(Player.X-Sheep(countsheep).X) < 100 THEN
+			Sheep(countsheep).Move = TRUE
+			Sheep(countsheep).Direction = 3
+	END IF
+	IF Player.Y > Sheep(countsheep).Y AND ABS(Player.Y-Sheep(countsheep).Y) < 100 AND ABS(Player.X-Sheep(countsheep).X) < 100 THEN
+			Sheep(countsheep).Move = TRUE
+			Sheep(countsheep).Direction = 4
+	END IF
+	IF Player.X > Sheep(countsheep).X AND ABS(Player.X-Sheep(countsheep).X) < 100 AND ABS(Player.Y-Sheep(countsheep).Y) < 100 THEN
+			Sheep(countsheep).Move = TRUE
+			IF ABS(Player.X-Sheep(countsheep).X) > 40 THEN Sheep(countsheep).Direction = 2
+	END IF
+	IF Player.X < Sheep(countsheep).X AND ABS(Player.X-Sheep(countsheep).X) < 100 AND ABS(Player.Y-Sheep(countsheep).Y) < 100 THEN
+			Sheep(countsheep).Move = TRUE
+			IF ABS(Player.X-Sheep(countsheep).X) > 40 THEN Sheep(countsheep).Direction = 1
+	END IF
+
+	' If the current sheep is moving change its position
+	' according to its direction (flagged with the AS code). 
+	' If the current sheep is out of bounds prevent it to
+	' walk off the screen. Note how the SELECT CASE statement
+	' works.
+	IF Sheep(countsheep).Move = TRUE THEN
+			SELECT CASE Sheep(countsheep).Direction
+				CASE 1
+				Sheep(countsheep).X = Sheep(countsheep).X + Sheep(countsheep).Speed
+				IF Sheep(countsheep).X > 600 THEN Sheep(countsheep).X = 600
+				CASE 2
+				Sheep(countsheep).X = Sheep(countsheep).X - Sheep(countsheep).Speed
+				IF Sheep(countsheep).X < 0 THEN Sheep(countsheep).X = 0
+				CASE 3
+				Sheep(countsheep).Y = Sheep(countsheep).Y + Sheep(countsheep).Speed
+				IF Sheep(countsheep).Y > 440 THEN Sheep(countsheep).Y = 440
+				CASE 4
+				Sheep(countsheep).Y = Sheep(countsheep).Y - Sheep(countsheep).Speed
+				IF Sheep(countsheep).Y < 0 THEN Sheep(countsheep).Y = 0
+			END SELECT
+	END IF
+
+	' The current sheep frame(sprite) by default(sheep not moving).
+	IF Sheep(countsheep).Direction = 1 THEN Sheep(countsheep).Frame = 7
+	IF Sheep(countsheep).Direction = 2 THEN Sheep(countsheep).Frame = 5
+	IF Sheep(countsheep).Direction = 3 THEN Sheep(countsheep).Frame = 1
+	IF Sheep(countsheep).Direction = 4 THEN Sheep(countsheep).Frame = 3
+
+	' If the current sheep is moving flag the proper sprite according 
+	' to its direction.
+	IF Sheep(countsheep).Move = TRUE THEN
+	IF Sheep(countsheep).Direction = 1 THEN Sheep(countsheep).Frame = 6 + Frame1
+	IF Sheep(countsheep).Direction = 2 THEN Sheep(countsheep).Frame = 4 + Frame1
+	IF Sheep(countsheep).Direction = 3 THEN Sheep(countsheep).Frame = 0 + Frame1
+	IF Sheep(countsheep).Direction = 4 THEN Sheep(countsheep).Frame = 2 + Frame1
+	END IF
+
+
+	' If the current sheep is ALIVE draw it!
+	IF Sheep(countsheep).Alive = TRUE THEN PUT (Sheep(countsheep).X, Sheep(countsheep).Y), ExtraSprite(Sheep(countsheep).Frame), TRANS
+
+NEXT countsheep
+    
+END SUB
+
+SUB InitiateParticle (xpos AS SINGLE, ypos AS SINGLE, parttype AS INTEGER, partdirec AS INTEGER)
+
+' Check the particles for a free one.
+FOR countparticle AS INTEGER = 1 TO 1000
+
+    ' If the current one is free (Alive = FALSE) activate 
+    ' it and pass certain values to it.
+    IF Particle(countparticle).Alive = FALSE THEN
+        
+        Particle(countparticle).Alive = TRUE
+        Particle(countparticle).Typ = parttype ' Pass the particle type
+                                               ' from parttype.
+        Particle(countparticle).X = xpos ' Pass the particle's position
+        Particle(countparticle).Y = ypos ' from xpos! and ypos!
+        
+        ' If the particle is type 1 (bloody meat pieces)
+        ' randomize its DIRECTION (from 1 to 8), set
+        ' its DURATION (with bloody meat pieces it flags
+        ' how much the piece will move once it's spawned),
+        ' set its speed (from 0.1 to 1) and its FRAME (sprite
+        ' from ExtraSprite array -> from 9 to 15, check
+        ' LoadGraphics sub).
+        IF Particle(countparticle).Typ = 1 THEN
+            Particle(countparticle).Direction = INT(RND * 8) + 1
+            Particle(countparticle).Duration = 10
+            Particle(countparticle).Speed = (INT(RND * 10) + 1) / 10
+            Particle(countparticle).Frame = INT(RND * 6) + 9
+        END IF
+        ' If the particle is type 2 (fireball) flag
+        ' its direction according to partdirec, its
+        ' duration and speed (modify this for faster
+        ' or slower fireball) and sprite (only one
+        ' image of fireball in the ExtraSprite array
+        ' placed on position 16).
+        IF Particle(countparticle).Typ = 2 THEN
+            Particle(countparticle).Direction = partdirec
+            Particle(countparticle).Duration = 100
+            Particle(countparticle).Speed = 2.8
+            Particle(countparticle).Frame = 16
+        END IF
+        
+        EXIT SUB ' Once the particle is initiated exit this sub.
+    
+    END IF
+    
+NEXT countparticle ' If a particle is not free in this slot
+                   ' seek in the next.
+
+END SUB
+
+SUB ParticleLayer
+
+' Go through all the particles...
+FOR countparticle AS INTEGER = 1 TO 1000
+
+    ' If the current particle is activated (Alive = TRUE)
+    ' manage and draw it.
+    IF Particle(countparticle).Alive = TRUE THEN
+    
+        ' If the current particle is type 1 (bloody meat piece)
+        ' reduce its duration from 10 to 0. While duration is
+        ' above 0 the particle it moved according to its
+        ' direction.
+        IF Particle(countparticle).Typ = 1 THEN
+            Particle(countparticle).Duration = Particle(countparticle).Duration - 1
+            IF Particle(countparticle).Duration < 0 THEN Particle(countparticle).Duration = 0
+            ' While duration is above 0 move the particle
+            ' according to its direction with preset speed.
+            ' Directions span from up(1), up-right(2), right(3), all
+            ' the way to up-left(8).
+            IF Particle(countparticle).Duration > 0 THEN
+                SELECT CASE Particle(countparticle).Direction
+                    CASE 1
+                    Particle(countparticle).Y = Particle(countparticle).Y - Particle(countparticle).Speed
+                    CASE 2
+                    Particle(countparticle).Y = Particle(countparticle).Y - Particle(countparticle).Speed
+                    Particle(countparticle).X = Particle(countparticle).X + Particle(countparticle).Speed
+                    CASE 3
+                    Particle(countparticle).X = Particle(countparticle).X + Particle(countparticle).Speed
+                    CASE 4
+                    Particle(countparticle).Y = Particle(countparticle).Y + Particle(countparticle).Speed
+                    Particle(countparticle).X = Particle(countparticle).X + Particle(countparticle).Speed
+                    CASE 5
+                    Particle(countparticle).Y = Particle(countparticle).Y + Particle(countparticle).Speed
+                    CASE 6
+                    Particle(countparticle).Y = Particle(countparticle).Y + Particle(countparticle).Speed
+                    Particle(countparticle).X = Particle(countparticle).X - Particle(countparticle).Speed
+                    CASE 7
+                    Particle(countparticle).X = Particle(countparticle).X - Particle(countparticle).Speed
+                    CASE 8
+                    Particle(countparticle).Y = Particle(countparticle).Y - Particle(countparticle).Speed
+                    Particle(countparticle).X = Particle(countparticle).X - Particle(countparticle).Speed
+                END SELECT
+            END IF  ' End if duration is above 0.
+        END IF  ' End if particle is type 1.
+        
+        ' If particle type is 2 (fireball)...
+        IF Particle(countparticle).Typ = 2 THEN
+            ' If the particle's life has expired (duration = 0) cancel it (Alive = FALSE).
+            Particle(countparticle).Duration = Particle(countparticle).Duration - 1
+            IF Particle(countparticle).Duration < 0 THEN Particle(countparticle).Alive = FALSE
+            ' According to particle's direction move it (right, left, down, up)
+            ' with preset speed.
+            SELECT CASE Particle(countparticle).Direction
+            CASE 1
+            Particle(countparticle).X = Particle(countparticle).X + Particle(countparticle).Speed
+            CASE 2
+            Particle(countparticle).X = Particle(countparticle).X - Particle(countparticle).Speed
+            CASE 3
+            Particle(countparticle).Y = Particle(countparticle).Y + Particle(countparticle).Speed
+            CASE 4
+            Particle(countparticle).Y = Particle(countparticle).Y - Particle(countparticle).Speed
+            END SELECT
+            
+            ' If the fireball goes off the screen cancel it.
+            IF Particle(countparticle).Y < -24 OR Particle(countparticle).Y > 480 OR Particle(countparticle).X < -24 OR Particle(countparticle).X > 640 THEN Particle(countparticle).Alive = FALSE
+            
+            ' Check all sheep if the fireball is in collision with any of them.
+            ' The collision is check from the centers of the sheep and the
+            ' fireball and they need to be less than 11 pixel apart.
+            FOR checksheep AS INTEGER = 1 TO numofsheep
+                ' If the fireball is active (not destroyed upon collision with
+                ' a previous sheep), the current sheep is alive and they are
+                ' in collision cancel the fireball and kill the sheep.
+                IF Particle(countparticle).Alive = TRUE AND Sheep(checksheep).Alive = TRUE AND ABS(Particle(countparticle).X+10-Sheep(checksheep).X-20) < 21 AND ABS(Particle(countparticle).Y+10-Sheep(checksheep).Y-20) < 21 THEN 
+                    Sheep(checksheep).Alive = FALSE ' Kill the fireball.
+                    Particle(countparticle).Alive = FALSE ' Kill the sheep.
+                    ' If the sheep is killed spawn 7 bloody meat pieces(particle type 1 
+                    ' -> third parameter).
+                    InitiateParticle Sheep(checksheep).X+20, Sheep(checksheep).Y+20, 1, 0
+                    InitiateParticle Sheep(checksheep).X+23, Sheep(checksheep).Y+20, 1, 0
+                    InitiateParticle Sheep(checksheep).X+19, Sheep(checksheep).Y+23, 1, 0
+                    InitiateParticle Sheep(checksheep).X+18, Sheep(checksheep).Y+21, 1, 0
+                    InitiateParticle Sheep(checksheep).X+22, Sheep(checksheep).Y+18, 1, 0
+                    InitiateParticle Sheep(checksheep).X+21, Sheep(checksheep).Y+19, 1, 0
+                    InitiateParticle Sheep(checksheep).X+21, Sheep(checksheep).Y+19, 1, 0
+                END IF
+            NEXT checksheep ' Check next sheep for collision.
+        
+        END IF ' End if particle is type 2.
+        
+        ' Draw the current particle on its position with its frame.
+        PUT (Particle(countparticle).X, Particle(countparticle).Y), ExtraSprite(Particle(countparticle).Frame), TRANS
+    
+    END IF ' End if particle is activated(Alive = TRUE).
+
+NEXT countparticle ' Check next particle.
+
+END SUB
+
+
+SUB PrintScore
+ 
+DIM message AS STRING 
+' This sub is executed when a game round 
+' is completed.
+
+CLS ' Clear the screen.
+
+' If any of the sheep is alive EXIT this sub since
+' the user aborted the game and no sense in
+' printing the score.
+FOR checksheep AS INTEGER= 1 TO numofsheep
+    IF Sheep(checksheep).Alive = TRUE THEN EXIT SUB   
+NEXT checksheep
+
+' Play a loop which ends until the use
+' pushes escape.
+DO
+
+    screenlock  ' Lock our screen (nothing will be
+                ' displayed until we unlock the screen).
+    screenset workpage, workpage xor 1 ' Swap work pages.
+
+    CLS 
+    
+    ' Print the number of seconds the round took
+    ' to complete.
+    LOCATE 2, 1
+    PRINT "You needed " + STR$(seconds) + "." + STR$(milsec)+" seconds"
+    LOCATE 3, 1
+    PRINT "to kill all the sheep."
+    
+    ' According to this time print a different
+    ' message. More time it took the player
+    ' to finish a round print a less
+    ' complimenting message.
+    message = "An ok score...for a granny!"
+    IF seconds < 16 THEN message = "Not bad!"
+    IF seconds < 11 THEN message = "Good job!"
+    IF seconds < 8 THEN message = "Excellent job!"
+    LOCATE 5, 1
+    PRINT message
+    LOCATE 7, 1
+    PRINT "Press ESCAPE to return to main menu."
+    
+    workpage xor = 1 ' Swap work pages.
+    screenunlock ' Unlock the page to display what has been drawn.
+    sleep 2
+
+    ' End loop when ESCAPE is pushed.
+LOOP UNTIL MULTIKEY(SC_ESCAPE)
+    
+END SUB
+

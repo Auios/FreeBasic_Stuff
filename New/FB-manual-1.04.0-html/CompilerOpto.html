@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>Compiler Option: -o</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="fb_body_wrapper">
+<div id="fb_tab">
+<div id="fb_tab_l">Compiler Option: -o</div>
+<div id="fb_tab_r">&nbsp;<img src="images/fblogo_mini.gif" /></div> 
+</div> 
+<div id="fb_pg_wrapper">
+<div id="fb_pg_body">
+	Set object file path/name<br \>
+<br \>
+<div class="fb_sect_title">Syntax</div><div class="fb_sect_cont"><tt><br \>
+<div class="fb_indent"><b>-o</b> &lt; <i>output file</i> &gt;<br \>
+</div></tt><br \>
+</div><div class="fb_sect_title">Parameters</div><div class="fb_sect_cont"><br \>
+<div class="fb_indent"><tt><i>output file</i></tt><br \>
+<div class="fb_indent">The name, with optional path, of the object file to create.<br \>
+<br \>
+</div></div></div><div class="fb_sect_title">Description</div><div class="fb_sect_cont"><br \>
+<div class="fb_indent">The <tt><b>-o</b></tt> option can be used to specify the file name for the object file created while compiling an input file. By default, the name for the object file (and other temporaries like assembly files) is based on the name of the corresponding input file, but with an <tt>.o</tt> extension. This option is useful for example in combination with <tt><a href="CompilerOptc.html">-c</a></tt>, or to force the compiler to create temporary object files in other directories (if, for example, the source code directory is or should be treated as read-only).<br \>
+<br \>
+Given <tt>-o</tt> options are only assigned to input files that need to be compiled, namely <tt>*.bas</tt>, <tt>*.rc</tt>, <tt>*.res</tt> and <tt>*.xpm</tt>.<br \>
+<br \>
+Note: <tt>-o</tt> options can appear in front of or behind the input file they correspond to, but there cannot be multiple <tt>-o</tt> options for one input file. For example, these are all accepted:<br \>
+<div class="fb_indent"><tt>fbc 1.bas -o 1.o</tt><br \>
+<tt>fbc -o 1.o 1.bas</tt><br \>
+<tt>fbc 1.bas -o 1.o 2.bas -o 2.o</tt><br \>
+<tt>fbc 1.bas -o 1.o -o 2.o 2.bas</tt><br \>
+</div>However, this is an error:<br \>
+<div class="fb_indent"><tt>fbc 1.bas 2.bas -o 1.o -o 2.o</tt><br \>
+</div>The <tt><a href="CompilerOptv.html">-v</a></tt> option makes the compiler show the actual file names that it uses.<br \>
+<br \>
+</div></div><div class="fb_sect_title">See also</div><div class="fb_sect_cont"><br \>
+<ul><li> <a href="CompilerOptb.html">Compiler Option: -b</a><br \>
+<li> <a href="CompilerOptc.html">Compiler Option: -c</a><br \>
+<li> <a href="CompilerCmdLine.html">Using the Command Line</a><br \>
+<br \>
+</ul></div>
+</div>
+</div> 
+</div> 
+</body>
+</html>
