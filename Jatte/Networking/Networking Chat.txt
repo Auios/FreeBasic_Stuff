@@ -1,27 +1,27 @@
-Wednesday, August 05, 2015
-9:53 PM - Dau: Jatte
-9:53 PM - Dau: Had a networking question
+Wednesday, August 05, 2014
+9:53 PM - Auios: Jatte
+9:53 PM - Auios: Had a networking question
 9:54 PM - Jattenalle: turn it off and on again
-9:54 PM - Dau: hehe
-9:54 PM - Dau: I wanted to know about how you do efficient things
-9:54 PM - Dau: the way you do things
-9:55 PM - Dau: If i had my player or w/e
-9:55 PM - Dau: the server needs to give other clients data about my client
-9:55 PM - Dau: such as position
-9:55 PM - Dau: would you send a header byte with your data to the client?
-9:55 PM - Dau: well i was thinking like
-9:56 PM - Dau: Header - Length- (x - y)
+9:54 PM - Auios: hehe
+9:54 PM - Auios: I wanted to know about how you do efficient things
+9:54 PM - Auios: the way you do things
+9:55 PM - Auios: If i had my player or w/e
+9:55 PM - Auios: the server needs to give other clients data about my client
+9:55 PM - Auios: such as position
+9:55 PM - Auios: would you send a header byte with your data to the client?
+9:55 PM - Auios: well i was thinking like
+9:56 PM - Auios: Header - Length- (x - y)
 9:56 PM - Jattenalle: dont do that
-9:56 PM - Dau: but I had a different idea
+9:56 PM - Auios: but I had a different idea
 9:56 PM - Jattenalle: the number one, huge mistake, people make with network code
-9:56 PM - Dau: Head - x - y - end
+9:56 PM - Auios: Head - x - y - end
 9:56 PM - Jattenalle: is they send each thing as its own packet
 9:56 PM - Jattenalle: it's a HORRIBLE idea
-9:56 PM - Dau: :o
+9:56 PM - Auios: :o
 9:57 PM - Jattenalle: a TCP packet for example, has a LOT of header data
 9:57 PM - Jattenalle: let's for the sake of argument, say your TCP packet has 50 bytes of header
 9:57 PM - Jattenalle: that is the TCP protocol header, not your code
-9:57 PM - Dau: jesus
+9:57 PM - Auios: jesus
 9:57 PM - Jattenalle: and you send 10 bytes
 9:57 PM - Jattenalle: that'sa  60 byte packet
 9:57 PM - Jattenalle: 50 of which is just "waste" (for your purposes)
@@ -36,16 +36,16 @@ Wednesday, August 05, 2015
 9:58 PM - Jattenalle: packet 1 = header, x, y, end, other header, some other data, end
 9:58 PM - Jattenalle: you want to pack as much data as possible into each packet
 9:59 PM - Jattenalle: a good way to set it up (in my opinion) is to have a cache you write your network data to
-9:59 PM - Dau: i see
+9:59 PM - Auios: i see
 9:59 PM - Jattenalle: and once every X milliseconds, if the cache contains data, you send it, then clear it
 9:59 PM - Jattenalle: so instead of doing: Send(mydata); all the time
 9:59 PM - Jattenalle: you basically do: addNetworkData(mydata);
-9:59 PM - Dau: Thats actually what I did on one of my first servers. Except i was using strings and converting the strings to numbers like a noob
-9:59 PM - Dau: :P
+9:59 PM - Auios: Thats actually what I did on one of my first servers. Except i was using strings and converting the strings to numbers like a noob
+9:59 PM - Auios: :P
 10:00 PM - Jattenalle: and every 16 milliseconds or so, you do: Send(allmydata); clearNetworkData();
-10:00 PM - Dau: oh ya ya
-10:00 PM - Dau: ok ok
-10:00 PM - Dau: :D
+10:00 PM - Auios: oh ya ya
+10:00 PM - Auios: ok ok
+10:00 PM - Auios: :D
 10:00 PM - Jattenalle: but in regards to your question
 10:00 PM - Jattenalle: if you pack your x,y in binary
 10:00 PM - Jattenalle: for example, x and y are both integers
@@ -53,25 +53,25 @@ Wednesday, August 05, 2015
 10:00 PM - Jattenalle: you know this, it is a fact
 10:01 PM - Jattenalle: so for your "position" packet (identified via its header) you know there will be 8 bytes to read
 10:01 PM - Jattenalle: no need for an "end" marker, or a length marker
-10:01 PM - Dau: well
+10:01 PM - Auios: well
 10:01 PM - Jattenalle: for "text" (say, chat, player names, whatever) you should probably use a length marker
-10:01 PM - Dau: yes need if theres dynamic
+10:01 PM - Auios: yes need if theres dynamic
 10:01 PM - Jattenalle: ie: header, length, name-data
-10:01 PM - Dau: ah ya
-10:01 PM - Dau: i made this simple server client thing right now
-10:01 PM - Dau: and it has a map
-10:01 PM - Dau: of 50x20
-10:02 PM - Dau: it sends 9x9 tiles of data that is around the client
-10:02 PM - Dau: to the client
-10:02 PM - Dau: but if its next to the edge of the map
-10:02 PM - Dau: no need to send tiles that dont exist
-10:02 PM - Dau: so the client doesnt always get 9x9 tiles
-10:02 PM - Dau: thats when I started using end byte
+10:01 PM - Auios: ah ya
+10:01 PM - Auios: i made this simple server client thing right now
+10:01 PM - Auios: and it has a map
+10:01 PM - Auios: of 50x20
+10:02 PM - Auios: it sends 9x9 tiles of data that is around the client
+10:02 PM - Auios: to the client
+10:02 PM - Auios: but if its next to the edge of the map
+10:02 PM - Auios: no need to send tiles that dont exist
+10:02 PM - Auios: so the client doesnt always get 9x9 tiles
+10:02 PM - Auios: thats when I started using end byte
 10:02 PM - Jattenalle: the problem with an end byte
 10:02 PM - Jattenalle: is taht you are effectively restricting yourself
-10:02 PM - Dau: but i do like yours however I dont know how id do it
-10:03 PM - Dau: also how
-10:03 PM - Dau: ?
+10:02 PM - Auios: but i do like yours however I dont know how id do it
+10:03 PM - Auios: also how
+10:03 PM - Auios: ?
 10:03 PM - Jattenalle: the way i'd do it (and do, in GaI, for planet resource stockpiles for example)
 10:03 PM - Jattenalle: is: header, numtiles, [tiledata]
 10:03 PM - Jattenalle: where tiledata is repeated numtiles, times
@@ -90,20 +90,20 @@ Wednesday, August 05, 2015
 10:06 PM - Jattenalle: yeah
 10:06 PM - Jattenalle: this way, you know when you begin reading the data, EXACTLY how much you need to read
 10:06 PM - Jattenalle: as opposed to reading it all, until you hit the end
-10:06 PM - Dau: header - fornext(tile,x,y)
-10:06 PM - Dau: if tile = endbyte then dont grab x,y
-10:07 PM - Dau: and stop waiting for data
+10:06 PM - Auios: header - fornext(tile,x,y)
+10:06 PM - Auios: if tile = endbyte then dont grab x,y
+10:07 PM - Auios: and stop waiting for data
 10:07 PM - Jattenalle: yeah which is messy code
 10:07 PM - Jattenalle: header, read numtiles, for(numtiles, read the data)
-10:07 PM - Dau: ok this is good
-10:07 PM - Dau: i guess I have some rewriting to do
-10:07 PM - Dau: but next question
-10:07 PM - Dau: i send my x,y as two shorts
-10:08 PM - Dau: and tile ID as a ubyte
-10:08 PM - Dau: and you said you have this
-10:08 PM - Dau: addDataBuffer(data); thing
+10:07 PM - Auios: ok this is good
+10:07 PM - Auios: i guess I have some rewriting to do
+10:07 PM - Auios: but next question
+10:07 PM - Auios: i send my x,y as two shorts
+10:08 PM - Auios: and tile ID as a ubyte
+10:08 PM - Auios: and you said you have this
+10:08 PM - Auios: addDataBuffer(data); thing
 10:08 PM - Jattenalle: i have a helper thing set up to handle it
-10:08 PM - Dau: how can I add data to the buffer and the computer know what data is a byte and whats not a byte
+10:08 PM - Auios: how can I add data to the buffer and the computer know what data is a byte and whats not a byte
 10:08 PM - Jattenalle: needs some code, obviously
 10:09 PM - Jattenalle: but basically, i have a buffer that is set to MAX_NETWORKPACKETSIZE
 10:09 PM - Jattenalle: (which differs)
@@ -115,28 +115,28 @@ Wednesday, August 05, 2015
 10:11 PM - Jattenalle: sendData(){ NET.Send(myCache, cacheWritePosition); mem_fill(myCache, cacheWritePosition, 0); cacheWritePosition = 0; }
 10:11 PM - Jattenalle: give or take, pseudocode
 10:11 PM - Jattenalle: note that "cacheWritePosition" gives you the amount of data in the cache, for free basically
-10:11 PM - Dau: ok
-10:12 PM - Dau: its the size of the data you're sending
-10:12 PM - Dau: ?
+10:11 PM - Auios: ok
+10:12 PM - Auios: its the size of the data you're sending
+10:12 PM - Auios: ?
 10:12 PM - Jattenalle: well it's obviously the size, since it goes up every time you add data
-10:12 PM - Dau: right right
+10:12 PM - Auios: right right
 10:13 PM - Jattenalle: if you add 1 bute, the cacheWritePosition goes up by 1 :P
 10:13 PM - Jattenalle: so 1 byte written, and position is now 1, so.. it works out very well
-10:13 PM - Dau: yes
-10:13 PM - Dau: :)
-10:13 PM - Dau: but something my novice education doesnt comprehend yet
-10:14 PM - Dau: &hFF &hAA23 &hD3
-10:14 PM - Dau: thats 4 bytes right there
-10:14 PM - Dau: when I add FF to the buffer
-10:14 PM - Dau: and then AA23
-10:14 PM - Dau: wont it look like
-10:14 PM - Dau: FFAA23
-10:14 PM - Dau: in the buffer?
-10:14 PM - Dau: er
-10:14 PM - Dau: Cache
-10:14 PM - Dau: how does the computer know that FF is its own data
+10:13 PM - Auios: yes
+10:13 PM - Auios: :)
+10:13 PM - Auios: but something my novice education doesnt comprehend yet
+10:14 PM - Auios: &hFF &hAA23 &hD3
+10:14 PM - Auios: thats 4 bytes right there
+10:14 PM - Auios: when I add FF to the buffer
+10:14 PM - Auios: and then AA23
+10:14 PM - Auios: wont it look like
+10:14 PM - Auios: FFAA23
+10:14 PM - Auios: in the buffer?
+10:14 PM - Auios: er
+10:14 PM - Auios: Cache
+10:14 PM - Auios: how does the computer know that FF is its own data
 10:14 PM - Jattenalle: when you read it
-10:14 PM - Dau: and AA23 are together
+10:14 PM - Auios: and AA23 are together
 10:14 PM - Jattenalle: if you read a byte
 10:15 PM - Jattenalle: it will read a byte
 10:15 PM - Jattenalle: which in your example would be &HFF
@@ -145,32 +145,32 @@ Wednesday, August 05, 2015
 10:15 PM - Jattenalle: and if you tell it to read an integer (4 bytes) your program will crash
 10:15 PM - Jattenalle: because there are only three bytes to read
 10:15 PM - Jattenalle: :D
-10:16 PM - Dau: im just worried that
-10:16 PM - Dau: data might get
-10:16 PM - Dau: askewed
-10:16 PM - Dau: and itll throw the entire buffer off by a byte or something
+10:16 PM - Auios: im just worried that
+10:16 PM - Auios: data might get
+10:16 PM - Auios: askewed
+10:16 PM - Auios: and itll throw the entire buffer off by a byte or something
 10:16 PM - Jattenalle: then you fucked up
-10:16 PM - Dau: ya
-10:16 PM - Dau: so
-10:16 PM - Dau: when should I use UDP
+10:16 PM - Auios: ya
+10:16 PM - Auios: so
+10:16 PM - Auios: when should I use UDP
 10:17 PM - Jattenalle: whwnever only the LAST packet matters
 10:17 PM - Jattenalle: and you dont care about anything that came before
-10:17 PM - Dau: well all data is important
+10:17 PM - Auios: well all data is important
 10:17 PM - Jattenalle: also if you use UDP, remember to add a value int he header that just goes up by 1 every time you send a packet
 10:17 PM - Jattenalle: because UDP can arrive in any order
 10:17 PM - Jattenalle: not in the order they were sent
-10:17 PM - Dau: so
+10:17 PM - Auios: so
 10:18 PM - Jattenalle: so you have a way to know if a pcket is "older "than one you already recieved
 10:18 PM - Jattenalle: and just ignore it
-10:18 PM - Dau: when using UDP add an extra byte to tell the order?
+10:18 PM - Auios: when using UDP add an extra byte to tell the order?
 10:18 PM - Jattenalle: yeah, one or two bytes
 10:18 PM - Jattenalle: depending on how often you send packets
 10:18 PM - Jattenalle: one byte isnt enough if you send several packets per second
-10:18 PM - Dau: well if its recv
-10:18 PM - Dau: recv'd in any order
-10:18 PM - Dau: what if my header byte
-10:18 PM - Dau: is after the actual data
-10:18 PM - Dau: because UDP
+10:18 PM - Auios: well if its recv
+10:18 PM - Auios: recv'd in any order
+10:18 PM - Auios: what if my header byte
+10:18 PM - Auios: is after the actual data
+10:18 PM - Auios: because UDP
 10:19 PM - Jattenalle: ok
 10:19 PM - Jattenalle: well UDP and TCP work the same in regards to datagrams
 10:19 PM - Jattenalle: all your data will arrive at the same time if it's part of the same packet
@@ -193,90 +193,90 @@ Wednesday, August 05, 2015
 10:21 PM - Jattenalle: read the next packet, it's header 3rd packet (duh)
 10:22 PM - Jattenalle: 3 is more than 2, it's a newer packet! handle it!
 10:22 PM - Jattenalle: and increase the integer to 3
-10:22 PM - Dau: !
+10:22 PM - Auios: !
 10:22 PM - Jattenalle: at some point you will need to reset that counter btw
 10:22 PM - Jattenalle: i suggest a special packet just for that
 10:22 PM - Jattenalle: so server sends: reset UDP counter
 10:22 PM - Jattenalle: and client.. well does just that :P
-10:22 PM - Dau: Amazing :D
+10:22 PM - Auios: Amazing :D
 10:22 PM - Jattenalle: mind you! if you set that up wrong, you can end up with some issues
 10:23 PM - Jattenalle: ie: reset UDP counter -> arrives at client, client resets -> an OLD udp packet arrives very late, has a UDP counter of 50'000!
-10:23 PM - Dau: the server would have to keep track of all the client's UDP counters then eh
+10:23 PM - Auios: the server would have to keep track of all the client's UDP counters then eh
 10:23 PM - Jattenalle: client goes: oh hey! 50k is more than 0! guess 50k is the new counter!
-10:23 PM - Dau: haha
+10:23 PM - Auios: haha
 10:23 PM - Jattenalle: so you should also discard any packet that is WAY higher than current
-10:23 PM - Dau: and they wouldnt get the newer data
+10:23 PM - Auios: and they wouldnt get the newer data
 10:23 PM - Jattenalle: exactly :P
-10:23 PM - Dau: because newdata < 50,000
+10:23 PM - Auios: because newdata < 50,000
 10:23 PM - Jattenalle: indeed
-10:24 PM - Dau: because UDP previous packets
-10:24 PM - Dau: still can arrive out of order
-10:24 PM - Dau: ok
-10:24 PM - Dau: ya simple conditional statements then can fix that
+10:24 PM - Auios: because UDP previous packets
+10:24 PM - Auios: still can arrive out of order
+10:24 PM - Auios: ok
+10:24 PM - Auios: ya simple conditional statements then can fix that
 10:24 PM - Jattenalle: so what i do is check if the clientCounter is less than X difference
 10:24 PM - Jattenalle: yeah it's pretty simple
-10:24 PM - Dau: if the new packet difference is more than n
-10:24 PM - Dau: ah
-10:24 PM - Dau: beat me to it
-10:24 PM - Dau: :)
+10:24 PM - Auios: if the new packet difference is more than n
+10:24 PM - Auios: ah
+10:24 PM - Auios: beat me to it
+10:24 PM - Auios: :)
 10:25 PM - Jattenalle: clientCounter needs to be LESS than the packet counter, AND packet counter needs to be less than X larger than the client counter
 10:25 PM - Jattenalle: messy english, but you get it
-10:25 PM - Dau: yea
+10:25 PM - Auios: yea
 10:25 PM - Jattenalle: and as for keeping track of each clients counter
 10:25 PM - Jattenalle: nope, that's the beauty
 10:25 PM - Jattenalle: you can just use a single one for all clients
-10:25 PM - Dau: o
+10:25 PM - Auios: o
 10:25 PM - Jattenalle: just remember to code for that
-10:25 PM - Dau: OH
-10:25 PM - Dau: ya
-10:25 PM - Dau: thats right
+10:25 PM - Auios: OH
+10:25 PM - Auios: ya
+10:25 PM - Auios: thats right
 10:26 PM - Jattenalle: also, if one client might recieve a LOT of packets that arent sent to all other clients... yeah you want to separate that
-10:25 PM - Dau: ok!
+10:25 PM - Auios: ok!
 10:26 PM - Jattenalle: but if it's data that all clients get.. yeah just use one counter
-10:26 PM - Dau: ok
+10:26 PM - Auios: ok
 10:26 PM - Jattenalle: anyhow, TCP is a lot easier, since it always arrives in order
-10:26 PM - Dau: well my game has a lot of private data for each individual client
-10:26 PM - Dau: and for now ill use TCP
+10:26 PM - Auios: well my game has a lot of private data for each individual client
+10:26 PM - Auios: and for now ill use TCP
 10:26 PM - Jattenalle: yeah, another thing with UDP is you dont know if it arrived or not
-10:26 PM - Dau: ya mysoft told me that
+10:26 PM - Auios: ya mysoft told me that
 10:27 PM - Jattenalle: in fact, with UDP, you dont even know if there's a connection at all
-10:27 PM - Dau: didnt know that one
+10:27 PM - Auios: didnt know that one
 10:27 PM - Jattenalle: you can just send UDP packets to anything
 10:27 PM - Jattenalle: you will get no reply
 10:27 PM - Jattenalle: UDP is "connectionless"
 10:27 PM - Jattenalle: for example, you could literally send UDP to 0.0.0.0 or 255.255.255.1
 10:27 PM - Jattenalle: and you would get no indication that anything is wrong
 10:27 PM - Jattenalle: .... or right :PÖ
-10:27 PM - Dau: :o
+10:27 PM - Auios: :o
 10:28 PM - Jattenalle: but with TCP, if you tried to connec to 0.0.0.0 it would tell you to stop being dumb :3
-10:28 PM - Dau: hehe
-10:28 PM - Dau: Thanks Jatte
-10:29 PM - Dau: I guess I have some things to code now
+10:28 PM - Auios: hehe
+10:28 PM - Auios: Thanks Jatte
+10:29 PM - Auios: I guess I have some things to code now
 10:29 PM - Jattenalle: write a binary helper first
 10:29 PM - Jattenalle: it's always nice to have
-10:29 PM - Dau: why do i need that?
+10:29 PM - Auios: why do i need that?
 10:29 PM - Jattenalle: ie: writeByte(data); that writes a single byte to your cache memory
 10:29 PM - Jattenalle: and: readByte(memory) that reads a single byte from memory
-10:29 PM - Dau: yes ah
-10:29 PM - Dau: ok
-10:29 PM - Dau: binary helper though?
+10:29 PM - Auios: yes ah
+10:29 PM - Auios: ok
+10:29 PM - Auios: binary helper though?
 10:30 PM - Jattenalle: you'll figure it out ;)
 10:30 PM - Jattenalle: well that's what i call it
-10:30 PM - Dau: whys that
+10:30 PM - Auios: whys that
 10:30 PM - Jattenalle: read and write data, and it's in binary as opposed to strings?
-10:30 PM - Dau: sounds like a...
-10:30 PM - Dau: Cache helper to me
-10:30 PM - Dau: well
+10:30 PM - Auios: sounds like a...
+10:30 PM - Auios: Cache helper to me
+10:30 PM - Auios: well
 10:30 PM - Jattenalle: YEH WELL! MY NAME IS BETTER!
-10:30 PM - Dau: everything is in binary :o
+10:30 PM - Auios: everything is in binary :o
 10:30 PM - Jattenalle: AND YOU'RE WRONG!
 10:30 PM - Jattenalle: *cries*
 10:30 PM - Jattenalle: actually, let me check what i named mine
-10:30 PM - Dau: im naming my helper cachehelper.bas just to spite you
+10:30 PM - Auios: im naming my helper cachehelper.bas just to spite you
 10:30 PM - Jattenalle: i think i named it PacketHelper
-10:30 PM - Dau: ok i can deal with that :)
+10:30 PM - Auios: ok i can deal with that :)
 10:31 PM - Jattenalle: ah
-10:31 PM - Dau: oh you didnt answer my question
+10:31 PM - Auios: oh you didnt answer my question
 10:31 PM - Jattenalle: PacketHandler
 10:31 PM - Jattenalle: function PH_ReadInteger(byval i as PH_Packet ptr) as integer
 if i->readPtr + 4 > i->maxSize then i->error = PH_ERROR_OVERFLOW: return 0
@@ -284,23 +284,23 @@ dim as integer ret = cast(integer ptr, i->data+i->readPtr)[0]
 i->readPtr+=4
 return ret
 end function
-10:31 PM - Dau: that looks like
-10:31 PM - Dau: FB
+10:31 PM - Auios: that looks like
+10:31 PM - Auios: FB
 10:31 PM - Jattenalle: of course it is
-10:31 PM - Dau: which answers my question
-10:31 PM - Dau: :)
+10:31 PM - Auios: which answers my question
+10:31 PM - Auios: :)
 10:31 PM - Jattenalle: sub PH_AddInteger(byval p as PH_Packet ptr, byval s as integer)
 if p->size + 4 > p->maxSize then PH_PacketGrow(p, 128)
 cast(integer ptr, p->data + p->size)[0] = s
 p->size+=4
 end sub
 10:32 PM - Jattenalle: i could just send you this file if you want
-10:31 PM - Dau: omg yes
+10:31 PM - Auios: omg yes
 10:34 PM - Jattenalle: gonna have to add you to the copy notice
 10:34 PM - Jattenalle: man! all this work!
 10:34 PM - Jattenalle: look what you made me do!
-10:35 PM - Dau: copy notice? :o
-10:35 PM - Dau: Whats a copy notice? x.x
+10:35 PM - Auios: copy notice? :o
+10:35 PM - Auios: Whats a copy notice? x.x
 10:36 PM - Jattenalle: (REMOVED LINK)
 10:36 PM - Jattenalle: paste expires in an hour
 10:36 PM - Jattenalle: be sure to save it
@@ -311,9 +311,9 @@ end sub
 10:37 PM - Jattenalle: PH_AddByte(@myVariable, 50)
 10:38 PM - Jattenalle: PH_Reset(@myVariable)
 10:38 PM - Jattenalle: print PH_ReadByte(@myVariable)
-10:38 PM - Dau: saved thanks
+10:38 PM - Auios: saved thanks
 10:38 PM - Jattenalle: that should get you started
 10:38 PM - Jattenalle: that should get you started
 10:39 PM - Jattenalle: just remember to PH_DeletePacket(@myPacket) when you want to remove it
-10:39 PM - Dau: Right
+10:39 PM - Auios: Right
 10:39 PM - Jattenalle: or PH_ResetPacket(@myPacket) if you want to keep the packet variable, but remove all data
