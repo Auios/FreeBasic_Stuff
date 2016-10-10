@@ -1,0 +1,365 @@
+Never tell your password to anyone.
+11:29 AM - Jattenalle: lol
+11:29 AM - Jattenalle: you fucked up
+11:30 AM - Auios: My power bar flipped out
+11:30 AM - Jattenalle: your power bar?
+11:30 AM - Auios: The power adapter bar yaknow
+11:30 AM - Jattenalle: ?
+11:30 AM - Auios: Aa
+11:30 AM - Jattenalle: do you mean extension cord?
+11:31 AM - Jattenalle: i dont?
+11:31 AM - Jattenalle: what?
+11:31 AM - Jattenalle: adapter for a PC?
+11:31 AM - Jattenalle: desktop pc*
+11:31 AM - Auios: Yea we call it a power bar. Extension cord
+11:31 AM - Jattenalle: "PowerBar, Inc. is an American maker of energy bars and other related products particularly sports drinks, gel-based foodstuffs for distance athletes, and the Pria bars targeted at women."
+11:31 AM - Jattenalle: :3
+11:31 AM - Auios: Gg
+11:31 AM - Auios: It's like soda vs coke vs pop
+11:32 AM - Auios: Joining
+11:32 AM - Jattenalle: http://www.toolstop.co.uk/components/com_virtuemart/shop_image/product/EL43.jpg
+11:32 AM - Jattenalle: you mean one of those, right?
+11:32 AM - Jattenalle: plugs may or may not be as fucked up as that
+11:35 AM - Jattenalle: 17:32 - Jattenalle: http://www.toolstop.co.uk/components/com_virtuemart/shop_image/product/EL43.jpg
+11:36 AM - Jattenalle: https://ae01.alicdn.com/kf/HTB1yxmBMpXXXXXDXVXXq6xXFXXXI/EU-Plug-3-Outlet-Power-250V-10A-font-b-Extension-b-font-font-b-Cable-b.jpg
+11:40 AM - Jattenalle: 17:24 - Jattenalle: so im making it so GaI settings can be changed without a full restart
+17:24 - Jattenalle: but it crashes if i do that ~10 times or so (just as it hits ~1gb of RAM usage)
+17:24 - Jattenalle: there's a memoryleak in there somewhere, but i can't find it
+11:43 AM - Jattenalle: bytes = recv(socket, @buffer, buffersize)
+11:43 AM - Auios: bytesIn = hReceive(sock,cast(any ptr,@buffer),sizeof(buffer))
+11:44 AM - Auios: dim as string buffer = space(8192)
+11:44 AM - Jattenalle: strptr(buffer)
+11:44 AM - Jattenalle: RECV_BUFFER_SIZE
+11:45 AM - Jattenalle: type string
+11:45 AM - Jattenalle: header * x bytes
+11:45 AM - Jattenalle: data as any ptr
+11:45 AM - Jattenalle: end type
+11:46 AM - Auios: function hReceive( byval ss as SOCKET, byval buffer as zstring ptr, byval bytes as integer ) as integer
+11:46 AM - Auios: function = recv( ss, buffer, bytes, 0 )
+11:46 AM - Auios: end function
+11:48 AM - Auios: function hSelect( ss as SOCKET, CheckForWrite as integer = 0, iTimeoutMS as integer = 0) as integer
+    dim as timeval tTimeOut = any
+    if iTimeoutMS then 
+      tTimeout = type(iTimeoutMS\1000,(iTimeOutMS mod 1000)*1000)  
+    else
+      tTimeout = type(0,0)
+    end if
+    if CheckForWrite then
+      dim as fd_set2 WriteSock = type(1,ss)    
+      return select_(null,null,cast(any ptr,@WriteSock),null,@tTimeout)
+    else
+      dim as fd_set2 ReadSock = type(1,ss)
+      return select_(null,cast(any ptr,@ReadSock),null,null,@tTimeout)
+    end if
+  end function
+11:49 AM - Auios: http://mysoft.zapto.org:8000/wshelper.bas
+11:51 AM - Auios: function hSelectError( ss as SOCKET ) as integer
+    dim as timeval tTimeOut = type(0,0)    
+    dim as fd_set2 ErrorSock = type(1,ss)
+    return select_(null,null,null,cast(any ptr,@ErrorSock),@tTimeout)  
+  end function
+11:54 AM - Jattenalle: function nw_recv(byval cc as _CONNECTION_, byval buffer as any ptr, byval bufferlen as integer=RECVBUFFLEN) as integer
+dim as integer bytes = recv( cc.socket, buffer, bufferlen, 0 )
+if bytes < 0 then debug "ERROR: nw_ERR"& bytes &" when receiving on socket "& cc.socket &" ["& cc.ip &"]"
+return bytes
+end function
+11:55 AM - Jattenalle: '// Add a connection to the socket sets
+function nw_set(byval cc as _CONNECTION_) as integer
+FD_ZERO(@SOCKETS_Read)
+FD_ZERO(@SOCKETS_Write)
+FD_ZERO(@SOCKETS_Exception)
+FD_SET_(cc.socket, @SOCKETS_Read)
+FD_SET_(cc.socket, @SOCKETS_Write)
+FD_SET_(cc.socket, @SOCKETS_Exception)
+return TRUE
+end function
+11:56 AM - Jattenalle: '// Check socket for activity using socket sets, returns number of active sockets in the set (should just be 1 or 0)
+function nw_select() as integer
+return select_(0, @SOCKETS_Read, @SOCKETS_Write, @SOCKETS_Exception, @TIMEOUT)
+end function
+11:56 AM - Jattenalle: nw_set(someconnection)
+11:56 AM - Jattenalle: if nw_select(someconnection) then
+11:58 AM - Jattenalle: http://pastebin.com/m5qpRnx0
+11:59 AM - Jattenalle: http://pastebin.com/vvFF9rbY
+12:01 PM - Jattenalle: cast(ubyte ptr, @myConnection.ip)[0], cast(ubyte ptr, @myConnection.ip)[1], cast(ubyte ptr, @myConnection.ip)[2], cast(ubyte ptr, @myConnection.ip)[3]
+12:08 PM - Jattenalle: 1
+12:08 PM - Jattenalle: 4
+12:08 PM - Jattenalle: 2
+12:08 PM - Jattenalle: 8
+12:08 PM - Jattenalle: 1
+12:08 PM - Jattenalle: 8
+12:08 PM - Jattenalle: 6
+12:08 PM - Jattenalle: 0
+12:09 PM - Jattenalle: 1235134
+12:09 PM - Auios: buffer+=data
+12:09 PM - Jattenalle: 8734
+12:09 PM - Jattenalle: 98127349
+12:09 PM - Jattenalle: 123
+12:09 PM - Jattenalle: 4857239854
+12:10 PM - Jattenalle: 71235134
+12:10 PM - Auios: 071235134
+12:11 PM - Jattenalle: 7123
+12:12 PM - Jattenalle: 51343156
+12:13 PM - Jattenalle: dim as string fuckYou = space(128)
+12:13 PM - Jattenalle: mid(fuckYou, 64) = chr(0)
+12:13 PM - Jattenalle: print len(fuckYou)
+12:15 PM - Jattenalle: setsockopt(ss,IPPROTO_TCP,TCP_NODELAY,cast(any ptr,@iNoDelay),sizeof(iNoDelay))
+12:16 PM - Jattenalle: setsockopt(ss,IPPROTO_TCP,TCP_NODELAY,cast(any ptr,@iNoDelay),sizeof(iNoDelay))
+12:19 PM - Jattenalle: function = 5
+12:25 PM - Auios: if bytes < 0 then debug "ERROR: nw_ERR"& bytes &" when receiving on socket "& cc.socket &" ["& cc.ip &"]"
+12:26 PM - Jattenalle: sub debug(byval tsd as string)
+open cons for output as #234
+print #234, tsd
+close #234
+mkdir "../logs"
+open "../logs/client_debug-"& logTimeStamp &".txt" for append as #234
+print #234, time &" "& tsd
+close #234
+end sub
+12:28 PM - Jattenalle: #include once "win/winsock.bi"
+12:29 PM - Jattenalle: dim shared as fd_set SOCKETS_Read, SOCKETS_Write, SOCKETS_Exception
+12:29 PM - Jattenalle: dim shared as timeval TIMEOUT
+TIMEOUT.tv_sec=0
+TIMEOUT.tv_usec=0
+12:31 PM - Jattenalle: #define SD_RECEIVE &h00
+#define SD_SEND &h01
+#define SD_BOTH &h02
+12:33 PM - Jattenalle: https://msdn.microsoft.com/en-us/library/windows/desktop/ms740481(v=vs.85).aspx
+12:34 PM - Jattenalle: do
+12:34 PM - Jattenalle: nw_set(connectionToServer)
+12:35 PM - Jattenalle: if nw_isset(connectionToServer, S_RECV) then
+12:35 PM - Jattenalle: READ DATA FROM SERVER!
+12:35 PM - Jattenalle: end if
+12:35 PM - Jattenalle: loop
+12:36 PM - Jattenalle: if nw_isset(conncetionToServer, S_SEND) then
+12:36 PM - Jattenalle: SEND SOME DATA!
+12:36 PM - Jattenalle: end if
+12:36 PM - Jattenalle: if nw_isset(connection, S_ERROR) then
+12:36 PM - Jattenalle: OH GOD EVERYTHING IS ON FIRE!
+12:36 PM - Jattenalle: end if
+12:38 PM - Jattenalle: client(whatever).buffer = allocate(RECVBUFFLEN)
+12:39 PM - Jattenalle: cLEARallocate
+12:39 PM - Jattenalle: allocate
+12:40 PM - Jattenalle: bytes = nw_recv(client(wahtever).connection, client(wahtever).buffer, RECVBUFFLEN)
+12:40 PM - Jattenalle: actualdata = left(client(whatever).buffer, bytes)
+12:42 PM - Auios: if(bytes < 0) then client[i].killConnection()
+12:42 PM - Auios: sv.kick(i)
+12:43 PM - Auios: #include "netWrapper.bi"
+
+type AuClient
+    as zstring*32 userName
+    
+    as _CONNECTION_ cc
+end type
+12:44 PM - Jattenalle: .cc.kill = TRUE
+12:44 PM - Jattenalle: if .cc.kill = FALSE then
+12:44 PM - Jattenalle: if .cc.kill = TRUE then
+12:44 PM - Jattenalle: disconnect
+12:44 PM - Jattenalle: cleanup
+12:44 PM - Jattenalle: whatever
+12:44 PM - Jattenalle: end if
+12:46 PM - Jattenalle: http://pastebin.com/RU0ZQ0K6
+12:48 PM - Jattenalle: Connection(clientID) = Connection(connectedClients)
+12:49 PM - Jattenalle: Connection(clientID) = Connection(connectedClients)
+12:50 PM - Jattenalle: PH_AddHeader(p, PH_SEND_BLD_UNLINK)
+PH_AddInteger(p, pid)
+PH_AddInteger(p, bsrc)
+PH_AddInteger(p, bdst)
+12:50 PM - Jattenalle: PH_ReadHeader(p)
+12:50 PM - Auios: #define PutBuff(A_) *cptr(TypeOf(A_) ptr ,pBuff+iPos) = A_ : iPos += sizeof(typeof(A_))
+12:51 PM - Auios: #define GetBuff(A_) A_ = *cptr(TypeOf(A_) ptr, pbuff) : memcpy(pBuff,pBuff+sizeof(A_),iPos-sizeof(A_)) : iPos-=sizeof(A_)
+12:51 PM - Jattenalle: PH_AddHeader(p, PH_RE_PLANET)
+PH_AddInteger(p, Planet(pid)->Parent)
+PH_AddByte(p, Planet(pid)->Belt)
+PH_AddFloat(p, Planet(pid)->Phase)
+PH_AddString(p, Planet(pid)->Name)
+PH_AddByte(p, Planet(pid)->Resource(RES_PLANETMETAL).Amount)
+PH_AddByte(p, Planet(pid)->Resource(RES_PLANETLIFE).Amount)
+PH_AddByte(p, Planet(pid)->Resource(RES_PLANETGAS).Amount)
+PH_AddByte(p, Planet(pid)->Resource(RES_PLANETBONUS).Amount)
+PH_AddFloat(p, getInfluence(pid, uid))
+PH_AddFloat(p, getRawInfluence(pid, uid))
+PH_AddInteger(p, getMajorPlanetDeity(pid))
+PH_AddInteger(p, Planet(pid)->Haulers)
+PH_AddFloat(p, Planet(pid)->HaulerSpeed)
+12:51 PM - Jattenalle: sub PH_AddFloat(byval p as PH_Packet ptr, byval s as single)
+if p->size + 4 > p->maxSize then PH_PacketGrow(p, 128)
+cast(single ptr, p->data + p->size)[0] = s
+p->size+=4
+end sub
+12:53 PM - Jattenalle: http://pastebin.com/QaY8z72t
+12:54 PM - Jattenalle: '// ERROR constants
+#define PH_OK0
+#define PH_ERROR_OVERFLOW32001
+'// DATA constants
+#define PH_DATA_NOTHING0
+#define PH_DATA_INTEGER4
+#define PH_DATA_SHORT8
+#define PH_DATA_BYTE12
+#define PH_DATA_FLOAT16
+#define PH_DATA_DOUBLE20
+#define PH_DATA_STRING24
+#define PH_DATA_VECTOR28
+#define PH_DATA_LONGINT32
+12:55 PM - Jattenalle: mem_copy(from, to, len)
+12:55 PM - Jattenalle: memcpy(to, from, len)
+12:57 PM - Jattenalle: __VECTOR__
+12:57 PM - Jattenalle: Vector3f
+12:57 PM - Jattenalle: NULL_VECTOR
+12:57 PM - Jattenalle: NULL_VECTOR.x = 0
+12:57 PM - Jattenalle: NULL_VECTOR.y = 0
+12:57 PM - Jattenalle: NULL_VECTOR.z = 0
+12:59 PM - Auios: #define mem_copy_(f,t,l) memcpy(t,f,l)
+1:00 PM - Jattenalle: PH_AddHash
+1:02 PM - Jattenalle: function mem_dumpstr ( memorya as any ptr, byval mlen as uinteger, byval rethex as integer = FALSE ) as string
+dim memory as ubyte ptr = memorya
+dim i as integer
+dim as string t, a
+if rethex then
+for i = 1 to mlen
+t = hex(memory[i-1])
+a = a + string$(2-len(t), 48) + t
+next
+else
+for i = 1 to mlen
+a = a + chr(memory[i-1])
+next
+end if
+mem_dumpstr = a
+end function
+1:03 PM - Jattenalle: ------
+1:03 PM - Jattenalle: sub mem_fill ( memorya as any ptr, value as ubyte, byval mlen as uinteger )
+dim i as integer
+dim memory as uinteger ptr = memorya
+dim memoryb as ubyte ptr = memorya
+dim ll as uinteger
+dim lli as uinteger
+ll = mlen \ 4
+lli = mlen mod 4
+if ll then
+dim valuei as uinteger
+dim vp as ubyte ptr
+vp = cptr(ubyte ptr, @valuei)
+vp[0] = value: vp[1] = value: vp[2] = value: vp[3] = value
+for i = 1 to ll
+memory[i-1] = valuei
+next
+end if
+if lli then
+lli -= 1
+for i = (ll*4) to (ll*4) + lli
+memoryb[i] = value
+next
+end if
+end sub
+1:14 PM - Jattenalle: dim as PH_Packet myPacket
+
+myPacket = PH_CreatePacket()
+
+PH_AddInteger(@myPacket, 500)
+
+PH_Reset(@myPacket)
+
+print PH_ReadInteger(@myPacket)
+
+sleep
+1:16 PM - Auios: myPacket.create()
+myPacket.addInteger(500)
+1:16 PM - Jattenalle: dim as PH_Packet myPacket
+
+myPacket = PH_CreatePacket()
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+
+PH_AddInteger(@myPacket, 500)
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+
+PH_Reset(@myPacket)
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+
+print PH_ReadInteger(@myPacket)
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+
+sleep
+1:20 PM - Jattenalle: myPacket = PH_CreatePacket(4, FALSE)
+1:20 PM - Jattenalle: myPacket.data = @someInteger
+1:21 PM - Jattenalle: myPacket = PH_CreatePacket(RECVBUFFLEN, FALSE)
+1:21 PM - Jattenalle: myPacket.data = cc.buffer
+1:22 PM - Jattenalle: dim as PH_Packet myPacket
+dim as integer dickButts = 555
+
+myPacket = PH_CreatePacket(4, FALSE)
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+
+myPacket.data = @dickButts
+
+PH_Reset(@myPacket)
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+
+print PH_ReadInteger(@myPacket)
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+1:22 PM - Jattenalle: ----------------------
+1:22 PM - Jattenalle: dim as PH_Packet myPacket
+dim as integer dickButts = 555
+
+myPacket = PH_CreatePacket(4, FALSE)
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+
+myPacket.data = @dickButts
+
+PH_Reset(@myPacket)
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+
+print PH_ReadInteger(@myPacket)
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+1:25 PM - Jattenalle: myPacket = PH_CreatePacket(RECVBUFFLEN, FALSE)
+1:25 PM - Jattenalle: myPacket.data = cc.buffer
+1:25 PM - Jattenalle: PH_SetMaxRead(myPacket, bytes)
+1:26 PM - Jattenalle: do until PH_Error(myPacket) = PH_ERROR_OVERFLOW
+1:26 PM - Jattenalle: '// read data
+1:26 PM - Jattenalle: loop
+1:28 PM - Jattenalle: dim as PH_Packet myPacket
+dim as string dickButts = "Auios"
+
+myPacket = PH_CreatePacket(4, FALSE)
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+
+myPacket.data = strptr(dickButts)
+
+PH_Reset(@myPacket)
+if PH_Error(myPacket) then
+print "Error: "& PH_Error(myPacket)
+end if
+
+print chr(PH_ReadByte(@myPacket));
+print chr(PH_ReadByte(@myPacket));
+print chr(PH_ReadByte(@myPacket));
+print chr(PH_ReadByte(@myPacket));
+print chr(PH_ReadByte(@myPacket))
+
+sleep
+1:31 PM - Jattenalle: data = PH_ReadByte(@myPacket)
+1:32 PM - Jattenalle: if PH_Error(myPacket) = PH_OK then
+1:32 PM - Jattenalle: '// use data
+1:32 PM - Jattenalle: end if
