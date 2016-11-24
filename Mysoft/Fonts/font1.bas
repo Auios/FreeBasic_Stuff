@@ -112,7 +112,7 @@ drawfont(,10,90,"Hello World!",CSM,40,rgb(0,200,0))
 drawfont(,10,200,"Hello World!",CN,30,rgb(200,0,0),FS_BOLD)
 drawfont(,10,250,"Hello World!",A,60,rgb(200,100,0), FS_ITALIC or FS_BOLD)
 drawfont(,10,350,"Hello World!",V,70,rgb(200,100,100))
-drawfont(,10,550,"Hello World!",TNR,10)
+drawfont(,10,550,"Hello World!",TNR,50)
 
 drawfont(,200,450,"F.P.S. = "&(framecounter),"script",100,rgb(0,0,0),FS_BOLD)
 
