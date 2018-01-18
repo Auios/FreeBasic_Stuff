@@ -1,0 +1,6 @@
+1,Pronto.
+2,Arquivo
+3,Abrir
+4,Sair
+5,Janelas
+6,Fechar Todas

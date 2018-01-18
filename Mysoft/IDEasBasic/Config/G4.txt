@@ -1,0 +1,2 @@
+assert,assertwarn,bit,bitset,bitreset,defined,hibyte,hiword,lobyte,loword,rgb
+rgba,va_first,va_arg,va_next,pragma

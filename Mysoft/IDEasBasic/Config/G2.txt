@@ -1,0 +1,4 @@
+any,byval,const,defint,deflng,defsng,defstr,double,defdbl,string,single,byte
+byref,cptr,defbyte,defubyte,defshort,defushort,defuint,ptr,pointer,short,ubyte
+ushort,uinteger,unsigned,integer,longint,ulongint,zstring,wstring,deflongint
+defulongint,cast

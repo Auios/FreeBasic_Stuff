@@ -1,0 +1,4 @@
+FB_PROGRAM_ICON                     ICON        "Res\editor.ico"
+NOVODOC                             ICON        "Res\newdoc.ico"
+CREATEPROCESS_MANIFEST_RESOURCE_ID  RT_MANIFEST "Res\v6.manifest"
+;TSTBMP                             BITMAP      "editor.bmp"

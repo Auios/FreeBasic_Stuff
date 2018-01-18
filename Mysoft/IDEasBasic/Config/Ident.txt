@@ -1,0 +1,30 @@
+; Is Open     > "open/add" the ident space (in the next line)
+; Is Close    > "end" the ident (same line)
+; Have End    > have a end pair (block/end block)
+; Need Word   > need a second word to open ident
+; Need Last   > need another word in the end of the line to open ident
+; SingleLine  > can have the end part in the same line (do:loop) [ignored if need last]
+; Recursive   > can open a second without need to close one first (for>for>next>next)
+
+;----------------------------------------------------------------------------------------------
+;    Name    | Is Open | Is Close | Have End | Need Word | Need Last | SingleLine | Recursive |
+;----------------------------------------------------------------------------------------------
+ type        ,  True   ,   False  ,   True   ,   False   ,   False   ,    False   ,   False
+ while       ,  True   ,   False  ,   False  ,   False   ,   False   ,    True    ,   True
+ do          ,  True   ,   False  ,   False  ,   False   ,   False   ,    True    ,   True
+ enum        ,  True   ,   False  ,   True   ,   False   ,   False   ,    False   ,   False
+ sub         ,  True   ,   False  ,   True   ,   False   ,   False   ,    False   ,   False
+ scope       ,  True   ,   False  ,   True   ,   False   ,   False   ,    False   ,   True
+ namespace   ,  True   ,   False  ,   True   ,   False   ,   False   ,    False   ,   True
+ with        ,  True   ,   False  ,   True   ,   False   ,   False   ,    False   ,   False
+ block       ,  True   ,   False  ,   True   ,   False   ,   False   ,    False   ,   True
+ function    ,  True   ,   False  ,   True   ,   False   ,   False   ,    False   ,   False
+ select case ,  True   ,   False  ,   True   ,   True    ,   False   ,    False   ,   True
+ if then     ,  True   ,   False  ,   True   ,   False   ,   True    ,    False   ,   True
+ for         ,  True   ,   False  ,   False  ,   False   ,   False   ,    True    ,   True
+ elseif then ,  True   ,   True   ,   True   ,   False   ,   True    ,    False   ,   True
+ end         ,  False  ,   True   ,   True   ,   False   ,   False   ,    Null    ,   Null
+ wend        ,  False  ,   True   ,   False  ,   False   ,   False   ,    Null    ,   Null
+ loop        ,  False  ,   True   ,   False  ,   False   ,   False   ,    Null    ,   NUll
+ next        ,  False  ,   True   ,   False  ,   False   ,   False   ,    Null    ,   Null
+ else        ,  True   ,   True   ,   False  ,   False   ,   True    ,    Null    ,   Null

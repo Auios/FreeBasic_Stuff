@@ -1,0 +1,1 @@
+and,or,shl,shr,not,xor,mod,eqw,imp
