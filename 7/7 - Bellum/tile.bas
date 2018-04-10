@@ -14,12 +14,20 @@ end enum
 
 type Tile
     as integer x,y
-    as Terrain terrain
+    as Terrain trn
     as Empire owner
     
     declare sub render()
 end type
 
 sub Tile.render()
-    
+    select case this.trn
+    case Terrain.void
+    case Terrain.water
+    case Terrain.sand
+    case Terrain.dune
+    case Terrain.plain
+    case Terrain.hill
+    case Terrain.mountain
+    end select
 end sub
