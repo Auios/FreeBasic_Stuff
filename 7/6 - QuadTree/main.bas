@@ -63,7 +63,7 @@ while(runApp)
         PrintScale(5,5,1,str(FPSCnt.getFPS()))
     end2D()
     
-    limitFPS(60)
+    'limitFPS(60)
     sleep(1,1)
     flip()
     
