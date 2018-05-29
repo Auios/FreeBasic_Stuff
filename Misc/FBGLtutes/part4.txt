@@ -1,0 +1,136 @@
+Part IV
+Introduction
+
+	Last time we explored scaling and rotation on our triangle. But a single triangle looks boring after a while. Today we would try to rotate a cube instead of a triangle. I could have used a more algorithmic way to define a cube but I used the model used my Nehe as I believe it's much easier to understand for someone new to OpenGL. After we finish the first program which load the cube using multiple glVertex calls we would progress to using Data Arrays to manage our models easier.
+
+Let's begin by the newest sub called the Draw_cube sub. This sub basically just draws a cube in the center of the current GL cursor. I took this from Nehe's tutorial. I numbered some of it for purposes of explaining.
+
+[code]
+Sub Draw_Cube()
+
+        1 glBegin GL_QUADS
+    		' Front Face
+    		2 glColor3f   1.0,  0.0,  0.0      'Color of first quad = RED
+    		3 glVertex3f -1.0, -1.0,  1.0      'the following 4 vertices would make
+    		4 glVertex3f  1.0, -1.0,  1.0      'a quad(4 sided polygon)
+    		5 glVertex3f  1.0,  1.0,  1.0      '
+    		6 glVertex3f -1.0,  1.0,  1.0      '
+    		'Back Face
+    		glColor3f   0.7,  0.0,  0.5
+    		glVertex3f -1.0, -1.0, -1.0
+    		glVertex3f -1.0,  1.0, -1.0
+    		glVertex3f  1.0,  1.0, -1.0
+    		glVertex3f  1.0, -1.0, -1.0
+    		'Top Face
+    		glColor3f   0.0,  1.0,  0.7
+    		glVertex3f -1.0,  1.0, -1.0
+    		glVertex3f -1.0,  1.0,  1.0
+    		glVertex3f  1.0,  1.0,  1.0
+    		glVertex3f  1.0,  1.0, -1.0
+    		'Bottom Face
+    		glColor3f   0.0,  0.0,  1.0
+    		glVertex3f -1.0, -1.0, -1.0
+    		glVertex3f  1.0, -1.0, -1.0
+    		glVertex3f  1.0, -1.0,  1.0
+    		glVertex3f -1.0, -1.0,  1.0
+    		'Right face
+    		glColor3f   0.0,  1.0,  0.0
+    		glVertex3f  1.0, -1.0, -1.0
+    		glVertex3f  1.0,  1.0, -1.0
+    		glVertex3f  1.0,  1.0,  1.0
+    		glVertex3f  1.0, -1.0,  1.0
+    		'Left Face
+    		glColor3f   0.9,  1.0,  1.0
+    		glVertex3f -1.0, -1.0, -1.0
+    		glVertex3f -1.0, -1.0,  1.0
+    		glVertex3f -1.0,  1.0,  1.0
+    		glVertex3f -1.0,  1.0, -1.0
+    	7 glEnd
+
+End Sub
+
+[code]
+
+#1 Sets the Drawing primitive to GL_QUADS. Ie "Quadrilateral" which is a 4-sided polygon.  So a quarilateral needs 4 vertices. 
+#2 Sets the color of the first face to RED
+#3 - #6 Defines the 4 vertices of our first face(a GL_QUAD)
+
+Note: You can draw multiple GL_QUADS in between a single glBegin-glEnd bracket as long as the vertices are arranged in 4's. ie: The first 4 vertices would draw the first quad, the next 4 would draw quad number 2 and so on. I'm setting  a different color for each face so that you'll see each face.
+
+Then in the draw_scene sub, we call draw_cube instead of the triangle. Wahla! a rotating cube.
+Here's the source: <gl_tute_cube.bas>
+
+
+
+
+Making it better
+
+	With the above draw_cube sub's multiple glVertex calls one might say: "Do I have to write glVertex3f for each vertex I want?". Fortunately, the answer is NO.  We could store our vertices and color values in an array and use a FOR_NEXT loop to draw the cube.  But where do we store the data before loading to the array? You could store it in a file or you could store it in DATA statements like this:
+
+I only put here the values for the first face to save article space.
+[code]
+     ' x     y     z
+DATA -1.0, -1.0,  1.0
+DATA  1.0, -1.0,  1.0
+DATA  1.0,  1.0,  1.0
+DATA -1.0,  1.0,  1.0
+[/code]
+
+
+Then we would change our draw_cube sub drastically like so:
+
+[code]
+Sub Draw_Cube()
+        1 dim i as integer, j as integer
+        2 static color_init
+
+        3 if color_init = 0 then                          'is it initialized already?
+
+        4    static colors(23, 2) as GLfloat
+        5    static cube(23, 2) as GLfloat
+
+            'put values to each elements by looping
+        6    for i = 0 to 23
+        7        for j = 0 to 2
+        8            colors(i, j) = rnd                  'Color range are from 0 to 1 
+        9            read cube(i,j)			'read cubes coords from data statements
+        10       next i
+        11   next j
+
+        12    color_init = -1
+        13 end if
+
+
+        14 glBegin GL_QUADS	'Draw the cube
+   	15	    for i = 0 to 23      'Draw the cube with smooth colors
+	16	              glColor3f   colors(i,0), colors(i,1), colors(i,2)
+	17	              glVertex3f  cube(i,0), cube(i,1), cube(i,2)
+	18	    next i
+    	19 glEnd
+
+End Sub
+
+[/code]
+
+#1 declares our loop counters
+#2 declares a color_init variable that we use to check if we have initialized the arrays
+#3 If color init is not initialized, declare arrays and put values to our color array and vertex array.
+#4 - #5 declares color and vertex arrays as STATIC so that they retain values between sub calls
+#6 - #11 Puts some floating point values on our color and vertex arrays. I just randomized each  vertex colors and read vertices from data statements.
+#12 - #13  Sets color_init to TRUE(-1) so that we don't reinitialize our arrays in the next draw_cube call.
+#14 Sets drawing primitive to GL_QUADS
+#15 - #18 Loops to the 24 vertices of the cube, passing array elements to both glColor and glVertex instead of typing a lot of glVertex/glColor calls.
+#19 You tell me. :*)
+
+Here's the source and exe:
+<url for gl_tute_cube_smooth.bas/exe>
+
+Special thanks to Nehe for the Cube model.
+
+Well, I hope this and the previous articles helped you get yourself acquainted to OpenGL, Try to play with it and you'll be surprised how easy it is compared to using QB to make 3d stuff. I would suggest you read my QB 3d articles because it would be easier to use OpenGL once you master the 3d series.  Next time I'll teach you how to use the *vector* implementation of some GL commands to speed up your rendering, TextureMapping, Blending, Landcapes, bitmaps, FPS and 3rd persom Cameras, lighting, fogs, billboarding, etc and I'll probably use the FBGFX windowing system instead of SDL so that we won't need SDL.DLL for our programs. So until next time...
+
+
+Sites that teaches a lot of GL stuff:
+Nehe.Gamedev.net -> Lots of OpenGL tutes (download the CHM file)
+OpenGL.org -> Read the examples, the RedBook and the blue book as they are essential to every GL coder
+GameTutorials.com -> Intermediate to Advanced OpenGL tutorials(notably the camera)

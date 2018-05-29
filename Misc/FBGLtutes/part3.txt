@@ -1,0 +1,156 @@
+
+Part III
+
+Introduction
+
+	Rel back again for another short FreeBASIC OpenGL tutorial. This time we would try to do some standard 3d transforms like rotation and scaling. Here are some of the new glCommands.
+
+1. glScalef -> produces a general scaling along the x, y, and z axes. The three arguments indicate the desired scale factors along each of the three axes. The resulting matrix is like the scaling matrix in my matrix article in my QB 3d series.
+	The current matrix mode (likely to be MODELVIEW) is multiplied by the scale matrix with the product replacing the current matrix. ie. M = M * S 
+	example:
+	glScalef 2.0, 1.5, 1
+	Would scale the current matrix 2x in the x-axis, 1.5x in the y-axis and does not scale in the z-axis.
+
+2. glRotatef ->Specifies the angle of rotation, in degrees. Computes a matrix that performs a counterclockwise rotation of angle (in degrees) about the vector from the origin through the point (x, y, z).
+
+	Example:
+	glRotatef 270, 1, 0, 0
+		Rotates the current matrix 270 degrees on the x-axis.
+	glRotatef 30, 0.1, 0.4, 0.6
+		Rotates the current matrix 30 degrees about the vector (0.1, 0.4, 0.6)
+
+
+
+Now for the code...
+
+[code]
+Sub draw_scene()
+
+    static theta as integer     'NEW!!!Rotation degrees
+    dim xtrans   as single      'NEW!!!xtanslation
+    dim ytrans   as single      'NEW!!!ytanslation
+    dim ztrans   as single      'NEW!!!ztanslation
+    dim scalefactor as single   'NEW!!!Scaling factor
+
+
+    'clear the screen
+    'GL_COLOR_BUFFER_BIT = to black(remember glClearColor?)
+    'GL_DEPTH_BUFFER_BIT set depth buffer to 1 (remember glClearDepth?)
+    glClear  GL_COLOR_BUFFER_BIT OR GL_DEPTH_BUFFER_BIT
+
+    'Push matrix to the matrix stack so that we start fresh
+    glPushMatrix
+
+    'Reset the matrix to identity
+    glLoadIdentity
+
+    ''NEW!!! Our translation factor
+    'Try to change these arguments
+    xtrans = -0.9
+    ytrans = -1.5
+    ztrans = -10
+    glTranslatef xtrans, ytrans, ztrans
+
+    ''NEW!!! Our scale factor
+    Scalefactor = 2.5
+
+    'NEW!!!
+    'glScalef scalefactor, scalefactor, scalefactor
+    'Scales our modelview matrix 3x in the x, y, z axes
+    'try to change its arguments to different values
+    glScalef scalefactor, scalefactor, scalefactor
+
+    'NEW!!!
+    'glRotatef angle, x, y, z  rotates your model
+    'angle = Specifies the angle of rotation, in degrees
+    'x, y, z = Specify the x, y, and z coordinates of a vector
+    'So to rotate your 3d object theta degrees in the x axis you would write:
+    'we will meke use of some other values for x,y ans z coords in later tutes
+
+    glRotatef theta, 1, 0, 0        'angle, x axis = 1, all other axis are zero
+    glRotatef theta, 0, 1, 0        'rotate in the y axis
+    glRotatef theta, 0, 0, 1        'rotate in the z axis
+
+
+    'Draw our geometry
+    glBegin GL_TRIANGLES
+                '1st vert
+                glColor3f  1.0, 0.0, 0.0
+                glVertex3f 0.0, -1.0, 0.0
+
+                '2nd vert
+                glColor3f  0.0, 1.0, 0.0
+                glVertex3f -1.0, 0.0, 0.0
+
+                '3rd vert
+                'NEW!!! changed the y coord to so that tri is centered in rotation
+                glColor3f  0.0, 0.0, 1.0
+                glVertex3f 1.0, 1.0, 0.0
+    glEnd
+
+    glPopMatrix
+    Theta = theta + 1
+    'Force completion of drawing
+    glFlush
+end sub
+
+[/code]
+
+
+Here are the explanations code by code...
+
+f
+Define some variables at the top of our draw_scene sub
+
+[code]
+    1 static theta as integer     
+    2 dim xtrans   as single      
+    3 dim ytrans   as single      
+    4 dim ztrans   as single      
+    5 dim scalefactor as single   
+[code]
+
+#1 Theta is declared as static because we want it to retain its value after every call to the sub.
+#2. xtrans, ytrans, and ztrans are translation factors used be glTranslatef
+#5 scalefactor is the scaling factor that we would pass to glScalef 
+
+[code]
+    6  xtrans = -0.9
+    7  ytrans = -1.5
+    8  ztrans = -10
+    9  glTranslatef xtrans, ytrans, ztrans
+    10 Scalefactor = 2.5
+    11 glScalef scalefactor, scalefactor, scalefactor
+[/code]
+
+#6-#8 Sets our translation factor
+#9 Translates our matrix
+#10 Sets the scaling factor
+#11 Scales our current matrix
+
+[code]
+    12 glRotatef theta, 1, 0, 0        'angle, x axis = 1, all other axis are zero
+    13 glRotatef theta, 0, 1, 0        'rotate in the y axis
+    14 glRotatef theta, 0, 0, 1        'rotate in the z axis
+[/code]
+
+#12 - #14 Rotates our matrix theta degrees about the x, y and z axes respectively.
+
+
+Then we still draw our old triangle after that.  The increment our angle by calling this:
+
+[code]
+Theta = theta + 1
+[/code]
+
+Theta should retain it's value in between calls because we declared it as static.
+
+That's all for now. Try to play with the parameters in glScalef and glRotatef to familiarize yourself of their effects to your triangle.  Here's the source: <url to gl_tute_rotation.bas/exe>
+
+Ciao!!!
+
+Richard Eric M. Lope BSN RN aka Relsoft 
+Rel.BetterWebber.com
+
+
+

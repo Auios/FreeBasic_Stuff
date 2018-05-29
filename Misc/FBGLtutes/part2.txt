@@ -1,0 +1,263 @@
+PART II
+
+Introduction
+
+	This time, we would draw a smooth shaded triangle on our OpenGL application. I would introduce you to some new GL commands and how to modify those commands and play with it.  I believe the best way to learn OpenGL is to play with it. You may experience some crashes but it would make you understand GL better.
+
+OpenGL overview
+
+	OpenGL is a sofware interface to GFX hardware. What it means is that GL is an API that lets you call your hardware graphics functions via OpenGL commands. It's a device independent interface, meaning OpenGL would work on any GFX card that supports it. Open GL is also a "STATE MACHINE". You can picture out OpenGL as a console with switches on it. And once a switch is turned ON, the effect of that switch stays until you turn it off. Like a light switch, the light stays off until you turn it on and it would go on until you switch it off. More on this later...
+
+OpenGL syntax
+
+	Before we try to draw something, let me introduce you to a little OpenGL program. Warning, do not compile this. I took this from the GL redbook. I've numbered it to make it more readable.
+
+[code]
+   'Init window here
+
+   1  glClearColor  0.0, 0.0, 0.0, 0.0
+   2  glClear GL_COLOR_BUFFER_BIT
+   3  glColor3f 1.0, 1.0, 1.0
+   4  glOrtho -1.0, 1.0, -1.0, 1.0, -1.0, 1.0
+   5  glBegin GL_POLYGON
+   6     glVertex2f -0.5, -0.5
+   7     glVertex2f -0.5, 0.5
+   8     glVertex2f 0.5, 0.5
+   9     glVertex2f 0.5, -0.5
+   10 glEnd
+   11 glFlush
+
+[/code]
+#1 sets the clear color to Black. But it actually does not clear the screen. 
+
+#2 does that, GL_COLOR_BUFFER_BIT means that GL_Clear would clear the screen to black. As you can see glClearColor accepts 4 single data types (FB's single or GL's GLfloat) arguments in this order: r, g, b  and a. "r" = red, "g" and "b" are self explanatory and "a" is the alpha value.  
+
+#3 sets the current drawing color to bright white(1,1,1). The "3f" in glColor3f means that glcolor accepts "3 floating point arguments" ie. 3 singles/GLfloat.
+
+#4 specifies the coordinate system OpenGL assumes as it draws the final image and how the image gets mapped to the screen. ie. standard 2d mapping. More on ortho later when we draw bitmaps.
+
+#5 to 10 are open gl calls in between glBegin and glEnd. All calls to between those two are executed by OpenGL and drawing is done to GL_COLOR_BUFFER_BIT. glVertex2f means: "glVertex accepts 2 floating point arguments".  Each call to glVertex define a coordinate in 2d space meaning (x, y).  Each call to glVertex would put the current cursor to the call's arguments. Say line 6 would put the cursor to (-0.5, -0.5) then calling glVertex2f -0.5, 0.5 would move the cursor from  (0.0, 0.0), -0.5 units in the x direction and -0.5 units in the y direction (Assuming that you did not call glTranslate beforehand). Suffice it to say that OpenGL's glVertex calls are relative to the last call to glTranslate. Then we glFlush it to complete the drawing.
+
+Here's a little table that summarizes the OpenGL suffixes. ie. "2f" in glVertex2f.
+
+[code]
+Suffix 	Data Type  Typical 	    FreeBASIC DataType 	  OpenGL Type Definition 
+b 	8-bit 	   integer 	      byte 			GLbyte 
+s 	16-bit     integer 	      short 			GLshort 
+i 	32-bit     integer 	      integer/long 		GLint, GLsizei 
+f 	32-bit     floating-point     single 			GLfloat, GLclampf 
+d 	64-bit     floating-point     double 			GLdouble, GLclampd 
+ub 	8-bit      unsigned integer   unsigned byte 		GLubyte, GLboolean 
+us 	16-bit     unsigned integer   unsigned short 		GLushort 
+ui 	32-bit     unsigned integer   unsigned intger/long 	GLuint, GLenum, GLbitfield 
+
+[/code]  
+
+Examples are:
+
+"b" -> glVertex3b 1, 1, 2  -> sets the cursor to (1,1,2) using bytes as arguments
+"d" -> glColor3ub 255, 0, 255  -> sets the current color purple using unsigned bytes
+
+
+I would rather use the  "OpenGL Type Definition"  when coding in FB since I've converted the C #defines to FB #defines. So when declaring and angle:
+
+You could:
+
+[code]
+Dim angle as GLfloat
+[/code]
+
+instead of:
+
+[code]
+dim angle as single
+[/code]
+
+
+Now that you know the basic OpenGL syntax, let's draw something to that boring screen! There wouldn't be much addition to our last articles code. In fact I've already explained almost all the stuff I added to our template to make it draw something. ;*)
+
+Our Init funk:
+
+[code]
+SUB Init_GL_SDL(SDLscreen as SDL_Surface ptr)
+
+    dim Result as unsigned integer      'checker value for SDL initialization
+    dim SDL_flags as integer            'Flags for SDL screen
+
+    'OpenGL params for gluPerspective
+	dim FOVy as double            'Feild of view angle in Y
+	dim Aspect as double          'Aspect of screen
+	dim znear as double           'z-near clip distance
+	dim zfar as double            'z-far clip distance
+
+
+    'Let's set up our sdl flags variable
+
+    SDL_flags = SDL_HWSURFACE                   'use Hardware surface
+    SDL_flags = SDL_flags or SDL_DOUBLEBUF      'doublebuffer to prevent flicker
+    SDL_flags = SDL_flags or SDL_OPENGL         'activate OpenGL
+    'SDL_flags = SDL_flags or SDL_FULLSCREEN     'FullScreen(REM for windowed)
+
+    'Init everything for SDL(video,audio, key, joy, etc)
+	result = SDL_Init(SDL_INIT_EVERYTHING)
+	if result <> 0 then                     'error?
+  		end 1                               'then quit
+	end if
+
+    'Set 640*480*32
+    'SCR_WIDTH/HEIGHT/BITSPP are CONSTANTS declared at the main module
+	SDLscreen = SDL_SetVideoMode(SCR_WIDTH, SCR_HEIGHT, BITSPP, SDL_flags)
+	if SDLscreen = 0 then
+		SDL_Quit
+		end 1
+	end if
+
+	SDL_WM_SetCaption "Sdl Triangles", ""       'Make caption if windowed
+
+    'Set OpenGL ViewPort to screen dimensions
+	glViewport 0, 0, SCR_WIDTH, SCR_HEIGHT
+
+	'Set current Mode to projection(ie: 3d)
+	glMatrixMode GL_PROJECTION
+
+    'Load identity matrix to projection matrix
+	glLoadIdentity
+
+    'Set gluPerspective params
+    FOVy = 80/2                                     '45 deg fovy
+    Aspect = SCR_WIDTH / SCR_HEIGHT                 'aspect = x/y
+    znear = 1                                       'Near clip
+    zfar = 200                                      'far clip
+
+    'use glu Perspective to set our 3d frustum dimension up
+	gluPerspective FOVy, aspect, znear, zfar
+
+    'Modelview mode
+    'ie. Matrix that does things to anything we draw
+    'as in lines, points, tris, etc.
+	glMatrixMode GL_MODELVIEW
+	'load identity(clean) matrix to modelview
+	glLoadIdentity
+
+	glShadeModel GL_SMOOTH                 'set shading to smooth(try GL_FLAT)
+	glClearColor 0.0, 0.0, 0.0, 0.0        'set Clear color to BLACK
+	glClearDepth 1.0                       'Set Depth buffer to 1(z-Buffer)
+	glEnable GL_DEPTH_TEST                 'Enable Depth Testing so that our z-buffer works
+
+	'compare each incoming pixel z value with the z value present in the depth buffer
+	'LEQUAL means than pixel is drawn if the incoming z value is less than
+    'or equal to the stored z value
+	glDepthFunc GL_LEQUAL
+
+    'have one or more material parameters track the current color
+    'Material is your 3d model
+	glEnable GL_COLOR_MATERIAL
+
+	'Tell openGL that we want the best possible perspective transform
+	glHint GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST
+
+END SUB
+
+[/code]
+
+I added some code to our init sub the first ones are these:
+
+[code]
+    1 glViewport 0, 0, SCR_WIDTH, SCR_HEIGHT
+    2 glMatrixMode GL_PROJECTION
+    3 glLoadIdentity
+
+    4 FOVy = 80/2                                     '45 deg fovy
+    5 Aspect = SCR_WIDTH / SCR_HEIGHT                 'aspect = x/y
+    6 znear = 1                                       'Near clip
+    7 zfar = 200                                      'far clip
+
+    8 gluPerspective FOVy, aspect, znear, zfar
+
+[/code]
+
+#1 Sets out OpenGL viewport to the screen dimensions
+#2 Sets the matrix mode to GL_PROJECTION. The projection matrix is the matrix that does the perspective transforms to your 3d scene.
+#3 Loads an identity matrix to our projection matrix(the current matrix is the projection matrix because of the fact that openGL is a state machine. With that in mind the current matrix stays to be the projection matrix until we change the matrix state). Calling glLoadIdentity loads our current matrix to the matrix stack.
+#4 Sets a 45 degree angle for our FOVy. It specifies a 45 degree angle of our "Field of View" in the y-Direction
+#5 Specifies the aspect ratio that determines the field of view in the x direction. The aspect ratio is the ratio of x (width) to y (height).
+#6 Specifies the distance from the viewer to the near clipping plane (always positive). Never use 0 or any other value lower than 0.1 for this.
+#7 Specifies the distance from the viewer to the far clipping plane (always positive).
+#8 Calls gluPerspective to load those values to our Projection matrix 
+
+The above gluPerspective parameters are somewhat the standard so you will almost always use the above values.
+
+
+The next code fragment does something to our modelview matrix.
+[code]
+	9 glMatrixMode GL_MODELVIEW
+
+	10 glLoadIdentity
+
+	11 glShadeModel GL_SMOOTH                 'set shading to smooth(try GL_FLAT)
+	12 glClearColor 0.0, 0.0, 0.0, 0.0        'set Clear color to BLACK
+	13 glClearDepth 1.0                       'Set Depth buffer to 1(z-Buffer)
+	14 glEnable GL_DEPTH_TEST                 'Enable Depth Testing 
+
+	15 glDepthFunc GL_LEQUAL
+
+	16 glEnable GL_COLOR_MATERIAL
+	17 glHint GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST
+
+[/code]
+
+#9 Sets the current matrix to to GL_MODELVIEW. The model view matrix is the matrix that does all the transforms to your objects.
+#10 Resets the matrix to identity( we always reset the matrix whenever we switch matrix modes)
+#11 Sets the shading to GL_SMOOTH. GL_SMOOTH makes our polys, lines, etc look better. Try to change GL_SMOOTH to GL_FLAT.
+#12 Sets the clear color in our COLOR_BUFFER_BIT to black with 0 alpha value.
+#13 Sets the clear depth to 1. ie: The DepthBuffer after a call to glClear GL_DEPTH_BUFFER_BIT the depth buffer would be filled by 1's.  The depth buffer is where GL does the depth sorting or z-buffering.
+#14 Enables our depth testing so that each pixel is sorted via their z-coordinate
+#15 Specifies the function used to compare each incoming pixel z-value with the z-value present in the depth buffer. GL_LEQUAL means "Less than or equal to".  Which means that if the z-value of the current pixel is less than or equal to the z-value of the stored pixel already there would pass.
+#16 Let OpenGL track multiple material parameters.
+#18 We tell OpenGL that we want the best perspective correction possible.
+
+
+Another sub we changed is the draw_scene sub. Here's the whole sub:
+
+[code]
+Sub draw_scene()
+    1 glClear  GL_COLOR_BUFFER_BIT OR GL_DEPTH_BUFFER_BIT
+    2 glPushMatrix
+    3 glLoadIdentity
+    4 glTranslatef 0.0, 0.0, -10.0
+    5 glBegin GL_TRIANGLES
+    6            glColor3f  1.0, 0.0, 0.0	'1st color
+    7            glVertex3f 0.0, -1.0, 0.0	'1st vertex
+    8            glColor3f  0.0, 1.0, 0.0	'2nd color
+    9            glVertex3f -1.0, 0.0, 0.0	'2nd vertex
+    10           glColor3f  0.0, 0.0, 1.0
+    11           glVertex3f 1.0, 0.0, 0.0
+    12 glEnd  
+    13 glPopMatrix
+    14 glFlush
+End sub
+[/code]
+
+#1 Clears both the color buffer bit and depth buffer bit simultaneously as clearing simultaneously is a lot faster than multiple glClear calls.
+#2 Push our current matrix to the matrix stack so that we can use another copy of the matrix for 3d transforms
+#3 Resets the current matrix 
+#4 glTranslatef 0.0,0.0,-10.0 moves the current 3d cursor 0 units x, 0 units y and -10 units z. -10 because of the fact that GL uses a right handed 3d coordinate system. For more info on right handed systems, read my QB 3d series that I spammed on the first article. Specifically read projection.
+#5 The following code that is bracketed by glBegin and gl End draws the triangle by specifying GL_TRIANGLES as argument to glBegin. As you can see #6 sets the current color to RED and #7 sets the first vertex, #8 sets the color to GREEN and #10 sets the color to BLUE. When GL draws the filled triangle, it interpolates between these 3 color values to acheive a smooth color transition between vertices.
+#13 Returns to our old  matrix
+#14 Forces completion of Drawing.
+
+
+Those are the only things that we changed in our last tute. Try to change some values in glColor3f, glVertex3f and glTranslate to see how they change the triangle's view.  The source could be downloaded here <url for gl_tute_triangles.bas/exe>. Try to play with it and see some changes. BTW, the new added lines are labeled with "NEW!!!"
+
+Okay, now that you know how to draw a triangle, why not try to draw some GL_QUADS and pass 4 vertices or GL_LINES and pass 2 verts. So long and until next time.
+
+Richard Eric M. Lope BSN RN aka Relsoft 
+Rel.BetterWebber.com
+
+
+
+
+
+
+
+	

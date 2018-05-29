@@ -1,0 +1,265 @@
+Part I
+
+Introduction
+
+	Hi peeps.  Due to insistent public demand, I'm back again with a string of OpenGL tutorials for use with the coolest BASIC compiler around. That is, FreeBASIC <FreeBASIC.Net>.  As I was the one who ported the GL and GLU headers from the C implementation, I felt that it's my duty to write tutorials on how to use OpenGL in FB. You might not know this but OpenGL does not have a windowing system of it's own so any OpenGL program would need a windowing function to run on Windows, Linux etc. The reason why SGI( OpenGL implementors ) did not add windowing functions to it's implementations is that they want OpenGL to be Cross-Platform. Meaning it would run on any machine that supports OpenGL.  With that in mind, I myself would not delve deep into the windows API for windowing but use SDL <libSDL.org> for all Windowing, Audio, and input functions. All the Graphics will be done by OpenGL itself. Note: Since FB 0.12 OpenGL is implemented in the GFX module but I hate rewriting code and have written this tute in FB 0.11.  Converting all the windowing funks would prolly take you 10 mins max so I'd stick with SDL for a while.  A word of warning, I'm not an OpenGL expert myself nor I'm an expert in SDL. What I know may be very minimal but I got some request from the community to make a series of tutes on OpenGL. It's also notable that I would not discuss matrix operations, vector operations and most of 3d math here because I've already written 5 chapters that explains it all for you in a very BASIC way.  So you might want to read those tutorials before delving into OpenGL beacuse it would make OpenGL easy for you.  You can download the 1st 4 chapters of those tutes in my site <Rel.betterwebber.com> and the fifth chapter in a previous issue of this mag. <url for the 3d series here>.  You might wan't to read chapter 3(Vectors, except the triangle rasterizers) and 4(Matrices) because they explain very well what openGL does with your points. So wihout further ado...
+
+
+Setting Up
+
+	As I've said we will use SDL(Simple Direct Media Layer developed by Sam Lantiga) for windowing and input as SDL is pretty much the standard for windowing in OpenGL, add to that the fact that SDL, like OpenGL, is cross-platform makes our code portable.  First thing we need is to download SDL.DLL at the SDL site and put that DLL in your \windows\system folder for win9x or \windows\system32 for WinXP. Chances are you don't need to download openGL.DLL since your video card should provide its own. Lets start with the declarations:
+
+The following constants would define what type of window we will have.  With the following consts we would have a 640 * 480 screen in 32 bit color.
+
+[code]
+const SCR_WIDTH = 640                   'Width of the screen
+const SCR_HEIGHT = 480                  'height of the screen
+const BITSPP = 32                       '32 bits per pixel format
+[/code]
+
+
+The next section would include the necessary headers(BI files) that enables us to call SDL(sdl.bi), OpenGL(gl.bi) and GLU(glu.bi).  GLU stands for the OpenGL Utility Library which is a standard lib that works on top of OpenGL. We would need to provide an *Option Explicit* statement so that errors are minimized and the interface between SDL/OpenGL/GLU and FB would be as seamlessly a possible.
+
+[code]
+option explicit                         'Force declaration
+
+'$include: "\sdl\sdl.bi"                'sdl function and constants declaration
+'$include: "\gl\gl.bi"                  'OpenGL funks and consts
+'$include: "\gl\glu.bi"                 'GL standard utility lib
+
+[/code]
+
+
+WE also have to declare the functions and subs that we made before using them in our code because that's what FB require. We have 3 funks so...
+
+[code]
+'Declarations
+DECLARE SUB Init_GL_SDL(SDLscreen as SDL_Surface ptr)
+Declare Sub SDL_GetEvents(EscapeVal as Integer)
+Declare Sub draw_scene()
+[/code]
+
+
+I would explain to you what each sub does and why we need them. First we should make function that intitializes SDL and OpenGL.  We will call it  Init_GL_SDL. It needs an SDL surface pointer as an argument.
+
+[code]
+SUB Init_GL_SDL(SDLscreen as SDL_Surface ptr)
+
+    dim Result as unsigned integer      'checker value for SDL initialization
+    dim SDL_flags as integer            'Flags for SDL screen
+
+    'OpenGL params for gluPerspective
+	dim FOVy as double            'Feild of view angle in Y
+	dim Aspect as double          'Aspect of screen
+	dim znear as double           'z-near clip distance
+	dim zfar as double            'z-far clip distance
+
+
+    'Let's set up our sdl flags variable
+
+    SDL_flags = SDL_HWSURFACE                   'use Hardware surface
+    SDL_flags = SDL_flags or SDL_DOUBLEBUF      'doublebuffer to prevent flicker
+    SDL_flags = SDL_flags or SDL_OPENGL         'activate OpenGL
+    'SDL_flags = SDL_flags or SDL_FULLSCREEN     'FullScreen(REM for windowed)
+
+    'Init everything for SDL(video,audio, key, joy, etc)
+	result = SDL_Init(SDL_INIT_EVERYTHING)
+	if result <> 0 then                     'error?
+  		end 1                               'then quit
+	end if
+
+    'Set 640*480*32
+    'SCR_WIDTH/HEIGHT/BITSPP are CONSTANTS declared at the main module
+	SDLscreen = SDL_SetVideoMode(SCR_WIDTH, SCR_HEIGHT, BITSPP, SDL_flags)
+	if SDLscreen = 0 then
+		SDL_Quit
+		end 1
+	end if
+
+	SDL_WM_SetCaption "Sdl Template", ""       'Make caption if windowed
+
+    'Set OpenGL ViewPort to screen dimensions
+	glViewport 0, 0, SCR_WIDTH, SCR_HEIGHT
+
+	'Set current Mode to projection(ie: 3d)
+	glMatrixMode GL_PROJECTION
+
+    'Load identity matrix to projection matrix
+	glLoadIdentity
+
+    'Set gluPerspective params
+    FOVy = 80/2                                     '45 deg fovy
+    Aspect = SCR_WIDTH / SCR_HEIGHT                 'aspect = x/y
+    znear = 1                                       'Near clip
+    zfar = 200                                      'far clip
+
+    'use glu Perspective to set our 3d frustum dimension up
+	gluPerspective FOVy, aspect, znear, zfar
+
+    'Modelview mode
+    'ie. Matrix that does things to anything we draw
+    'as in lines, points, tris, etc.
+	glMatrixMode GL_MODELVIEW
+	'load identity(clean) matrix to modelview
+	glLoadIdentity
+
+	glShadeModel GL_SMOOTH                 'set shading to smooth(try GL_FLAT)
+	glClearColor 0.0, 0.0, 0.0, 0.0        'set Clear color to BLACK
+	glClearDepth 1.0                       'Set Depth buffer to 1(z-Buffer)
+	glEnable GL_DEPTH_TEST                 'Enable Depth Testing so that our z-buffer works
+
+	'compare each incoming pixel z value with the z value present in the depth buffer
+	'LEQUAL means than pixel is drawn if the incoming z value is less than
+    'or equal to the stored z value
+	glDepthFunc GL_LEQUAL
+
+    'have one or more material parameters track the current color
+    'Material is your 3d model
+	glEnable GL_COLOR_MATERIAL
+
+	'Tell openGL that we want the best possible perspective transform
+	glHint GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST
+
+END SUB
+
+
+[/code]
+
+Let me explain to you what each code fragment does. Basically we dim all variables that we want to use because of Option Explicit.
+
+[code]
+    dim Result as unsigned integer      'checker value for SDL initialization
+    dim SDL_flags as integer            'Flags for SDL screen
+
+    'OpenGL params for gluPerspective
+	dim FOVy as double            'Feild of view angle in Y
+	dim Aspect as double          'Aspect of screen
+	dim znear as double           'z-near clip distance
+	dim zfar as double            'z-far clip distance
+
+    SDL_flags = SDL_HWSURFACE                   'use Hardware surface
+    SDL_flags = SDL_flags or SDL_DOUBLEBUF      'doublebuffer to prevent flicker
+    SDL_flags = SDL_flags or SDL_OPENGL         'activate OpenGL
+    'SDL_flags = SDL_flags or SDL_FULLSCREEN     'FullScreen(REM for windowed)
+
+    'Init everything for SDL(video,audio, key, joy, etc)
+	result = SDL_Init(SDL_INIT_EVERYTHING)
+	if result <> 0 then                     'error?
+  		end 1                               'then quit
+	end if
+
+[/code]
+
+	Result is a value that will be returned by SDL_INIT if it's 0 then SDL_Init is successful and 1 or -1 otherwise. SDL_flags is a value that sets up our SDL Screen. The follwing declarations would be needed by GLUPERSPECTIVE to set up out Projection matrix. You can forget about those values for now as I'll be explaining it to you as we go on.
+
+	Then initialize SDL_flags by OR-ing the parameters and loading them into SDL_flags.  SDL_HWSURFACE makes use of HARDWARE surfaces. Try SDL_SWSURFACE for sofware. SDL_DOUBLEBUF means double buffer. Basically reduces flicker like in QB. SDL_OPENGL is a flag that would let us use OpenGL drawing primitives on our SDL surface. SDL_FULLSCREEN is REMmed for development purposes as it's easier to close an application in windowed mode as opposed to full screen. We should UNREM it later when we are sure that our OpenGL program is bug free since Full screen is faster that windowed mode. If all goes well, Result would be 0 and we could continue.
+
+	Passing SDL_INIT_EVERYTHING into SDL_init would initialize our OpenGL screen, audio capabilities, keyboard funks, joystick, etc. Basically every stuff SDL supports are initialized. If you want just video, you should pass SDL_VIDEO.
+
+
+Okay, next sub...
+
+[code]
+Sub SDL_GetEvents(EscapeVal as Integer)
+  'SDL event is type in the SDL inc directory
+  dim event as SDL_Event
+
+        'poll events
+		while( SDL_PollEvent ( @event ) )
+			select case event.type
+				case SDL_KEYDOWN:               'if a key is pressed quit proggie
+				    EscapeVal = -1
+				case SDL_MOUSEBUTTONDOWN:
+			end select
+		wend
+End Sub
+
+[/code]
+
+The above sub is just a way to get events from SDL so that we could handle the mouse, keyboard, etc. For now it would return -1 when we press any key.
+
+
+Last sub....
+
+[code]
+Sub draw_scene()
+    'clear the screen
+    'GL_COLOR_BUFFER_BIT = to black(remember glClearColor?)
+    'GL_DEPTH_BUFFER_BIT set depth buffer to 1 (remember glClearDepth?)
+    glClear  GL_COLOR_BUFFER_BIT OR GL_DEPTH_BUFFER_BIT
+
+    'Draw our geometry
+    'Nothing yet. Just a black screen
+
+    'Force completion of drawing
+    glFlush
+end sub
+
+In this sub we would draw everything we want. For now, we only clear the screen and the depth-buffer(z-buffer). glflush just forces completion of drawing before we flip the page.
+
+[/code]
+
+
+The main code....
+
+[code]
+
+    dim vpage as SDL_Surface ptr            'The screen we want to draw to
+    dim Finished as integer                 'Quit or not?
+
+    Init_GL_SDL vpage                       'init GL SDL stuff
+
+    Finished = 0                            'set finished to false
+	do
+	    SDL_GetEvents(Finished)             'handle events
+        draw_scene                          'Draw something
+		SDL_GL_SwapBuffers                  'Flip to screen
+		SDL_PumpEvents                      'force an event queue update(input, etc)
+	loop until Finished
+
+	SDL_Quit                                'quit SDL
+
+    end
+
+[/code]
+
+Now that the subs are all done for, we can make our module level code. Vpage is a Pointer to screen surface or the screen that would would be displayed.  Note: We can't use the word "screen" because it's a reserved FB keyword since FB 0.11.  Finished is a variable that we will use to check if we wan't to close the application. Before doing any SDL/GL stuff we should call our init sub:
+Finished is set to zero(0) so that we could loop around.
+
+[code]
+    Init_GL_SDL vpage                       'init GL SDL stuff
+
+    Finished = 0                            'set finished to false
+[/code]
+
+The main loop:
+
+[code]
+	do
+	    SDL_GetEvents(Finished)             'handle events
+            draw_scene                          'Draw something
+  	    SDL_GL_SwapBuffers                  'Flip to screen
+	    SDL_PumpEvents                      'force an event queue update(input, etc)
+	loop until Finished
+
+[/code]
+
+The do::Loop construct allows our application to run indefinitely until we press a key. Before drawing, we call SDL_GetEvents and pass "Finished" as an argument. When a key is pressed, finished would return -1 and we exit the loop.  Then we call draw_scene for screen drawing(nothing for now).  SDL_GL_SwapBuffers is like flipping pages and showing the completed drawing to screen. SDL_PumpEvents forces events completion on the SDL side of things.  After we exit the loop, we call SDL_Quit so that our SDL screen would close and END so that FB would end.
+
+
+Well that's it for now. Not much, just giving you a "feel" of OpenGL in SDL. Next time we will draw an OpenGL primitive so that we could see the power of OpenGL.  Here's the source to what we discussed on this article. Until next time.
+<gl_tute_template.bas/exe>
+
+Richard Eric M. Lope BSN RN aka Relsoft
+Rel.Betterwebber.com
+March 5, 2005
+
+
+
+
+
+
+
+
+
+
