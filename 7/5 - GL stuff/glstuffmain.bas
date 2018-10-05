@@ -3,20 +3,26 @@
 
 randomize(timer())
 
+dim shared as windowObj wnd
+
 sub clearScreen()
     glClear(GL_COLOR_BUFFER_BIT OR GL_DEPTH_BUFFER_BIT)
 end sub
 
-sub drawPoint(x as single, y as single, size as single)
-    glColor3f(1*rnd(),1*rnd(),1*rnd())
+sub drawPoint(x as single, y as single, size as single, r as single, g as single, b as single)
+    glColor3f(r,g,b)
     glPointSize(size)
     glBegin(GL_POINTS)
         glVertex2i(x, y)
     glEnd()
 end sub
 
-sub drawSquare(x as single, y as single, size as single)
-    
+sub drawSquare(x as single, y as single, size as single, r as single, g as single, b as single)
+    glColor3f(r,g,b)
+    glPointSize(size)
+    glBegin(GL_POINTS)
+        glVertex2i(x, y)
+    glEnd()
 end sub
 
 '-------------------------------------------------------------------------------
@@ -34,11 +40,11 @@ sub getInput cdecl(key as ubyte, mx as integer, my as integer)
 end sub
 
 sub render cdecl()
-    'clearScreen()
-    'glMatrixMode(GL_PROJECTION)
+    clearScreen()
+    glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     gluOrtho2D(0.0, 800.0, 0.0, 600.0)
-    drawPoint()
+    drawPoint(100, 100, 16, 0.9, 0.2, 0.2)
     glutSwapBuffers()
 end sub
 
@@ -49,7 +55,6 @@ end sub
 
 '-------------------------------------------------------------------------------
 
-dim shared as windowObj wnd
 wnd.init(__FB_ARGC__, *__FB_ARGV__)
 wnd.create(800,600,"Test")
 

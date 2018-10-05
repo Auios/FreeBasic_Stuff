@@ -289,7 +289,7 @@ do
         pset(x(1),y(1)),0
         
         if multikey(sc_space) then
-            pset(x(0),y(0)),0
+            pset(x(0),y(0)),1
             
             x(0)=x(5)
             y(0)=y(5)
@@ -306,7 +306,3 @@ do
     
     sleep 75,1
 loop until multikey(sc_escape)
-
-screen 0
-
-end 0
