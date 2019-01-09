@@ -1,6 +1,6 @@
 #include "fbgfx.bi"
 using fb
-#include "wshelper.bas"
+#include "wshelper.bi"
 randomize timer
 
 hstart()
