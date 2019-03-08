@@ -60,6 +60,6 @@ end function
 
 'Command to compile as -dll
 function basToDLL(fileName as string) as integer
-    return shell("C:\FreeBasic\fbc.exe -dll " & fileName)
+    return shell("fbc -dll " & fileName)
     'return shell("C:\FreeBasic\pre-fbc.exe -dll " & fileName)
 end function
