@@ -1,9 +1,9 @@
-#include "auios/auios.bi"
+#include "aulib.bi"
 #include "fbgfx.bi"
 
 randomize timer
 
-using auios
+using aulib
 
 type fire
     as integer x,y
@@ -15,8 +15,8 @@ dim shared as integer i,k,movechoice,startY = 300,startX = 300
 dim shared as AuWindow wnd
 dim shared as fire fr(1 to 300)
 
-wnd = AuWindowInit(800,600,"Application",32,1,0)
-AuWindowCreate(wnd)
+wnd.init(800,600,32,1,0)
+wnd.show()
 
 for i = lbound(fr) to ubound(fr)
     with fr(i)
@@ -63,5 +63,3 @@ do
     
     sleep 20,1
 loop until inkey = chr(27)
-
-end AuWindowDestroy(wnd)

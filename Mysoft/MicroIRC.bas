@@ -10,7 +10,7 @@
   'StartExceptions()
 #endif
 
-#include "wshelper.bas"
+#include "wshelper.bi"
 hStart()
 
 enum CharCode
