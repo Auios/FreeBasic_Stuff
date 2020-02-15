@@ -1,4 +1,4 @@
-#include "scrn.bas"
+'#include "scrn.bas"
 #include "fbgfx.bi"
 using fb
 
@@ -13,9 +13,10 @@ declare sub render()
 
 declare function Dist_2d(x1 as single,y1 as single,x2 as single,y2 as single) as single
 
-scrn(,,,,,"Graphing")
+'scrn(,,,,,"Graphing")
+screenRes(800, 600, 32, 1, 0)
 
-dim shared as integer half:half = sc.y/2
+dim shared as integer half:half = 600/2
 dim shared as uinteger c
 dim as ubyte entmax
 dim shared as event e
@@ -43,13 +44,13 @@ sub init()
             .ID = i
             
             if i = lbound(ent) then
-                .v = (sc.y*rnd-half)/2
+                .v = (600*rnd-half)/2
             else
                 var mm = 50
                 .v = ent(i-1).v+(mm*rnd-mm/2)
             end if
             
-            .x = i*(sc.x/ubound(ent))-((sc.x/ubound(ent))/2)
+            .x = i*(800/ubound(ent))-((800/ubound(ent))/2)
             .y = half-.v
         end with
     next i
@@ -84,8 +85,8 @@ end sub
 sub render()
     screenlock
     cls
-    c = 50: line(0,0)-(sc.x,sc.y),rgb(c,c,c),"bf"
-    c = 128:line(0,half)-(sc.x,half),rgb(c,c,c)
+    c = 50: line(0,0)-(800,600),rgb(c,c,c),"bf"
+    c = 128:line(0,half)-(800,half),rgb(c,c,c)
     
     for i as integer = lbound(ent) to ubound(ent)
         var j=i+1

@@ -1,10 +1,10 @@
-#include "scrn.bas"
+'#include "scrn.bas"
 #include "fbgfx.bi"
 using fb
 
 randomize timer
 
-scrn()
+screenRes(800, 600)
 
 dim shared as integer pause = 0 'When you press space it will pause the game.
 dim shared as double start 'For timer.
@@ -26,8 +26,8 @@ end type
 dim shared as jointprop joint(min to max)
 
 constructor jointprop
-    this.x = sc.x*rnd
-    this.y = sc.y*rnd
+    this.x = 800*rnd
+    this.y = 600*rnd
     this.force = 50
     this.tag = 0
 end constructor
@@ -57,8 +57,8 @@ sub math()' Do calculations and border control here.
             .y+=.vy
             
             'Border check
-            if .x < 0 or .x > sc.x then .x-=.vx:.vx*=-1
-            if .y < 0 or .y > sc.y then .y-=.vy:.vy*=-1
+            if .x < 0 or .x > 800 then .x-=.vx:.vx*=-1
+            if .y < 0 or .y > 600 then .y-=.vy:.vy*=-1
             
             'Diminish velocity
             .vx*=.95

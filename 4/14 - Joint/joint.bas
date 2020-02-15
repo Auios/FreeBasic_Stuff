@@ -1,10 +1,11 @@
-#include "scrn.bas"
+'#include "scrn.bas"
 #include "fbgfx.bi"
 using fb
 
 randomize timer
 
-scrn(1)
+'scrn(1)
+screenRes(800, 600, 32, 1, 0)
 
 dim shared as integer pause = 0 'When you press space it will pause the game.
 dim shared as double start 'For timer.
@@ -29,8 +30,8 @@ end type
 dim shared as jointprop joint(min to max)
 
 constructor jointprop
-    this.x = sc.x*rnd
-    this.y = sc.y*rnd
+    this.x = 800*rnd
+    this.y = 600*rnd
     this.force = 50
     this.tag = 0
 end constructor
@@ -67,8 +68,8 @@ sub math()' Do calculations and border control here.
             avgY+=.y
             
             'Border check
-            if .x < 0 or .x > sc.x then .x-=.vx:.vx*=-1
-            if .y < 0 or .y > sc.y then .y-=.vy:.vy*=-1
+            if .x < 0 or .x > 800 then .x-=.vx:.vx*=-1
+            if .y < 0 or .y > 600 then .y-=.vy:.vy*=-1
             
             'Diminish velocity
             .vx*=.95
@@ -113,8 +114,8 @@ sub render()
     next i
     
     'Trying to find a way to fill the triangle. Idk how
-'    for y as integer = 0 to sc.y
-'        for x as integer = 0 to sc.x
+'    for y as integer = 0 to 600
+'        for x as integer = 0 to 800
 '            if point(x,y) = rgb(255,255,255) then
 '                line(0,y)-(x,y),rgb(100,100,100)
 '                exit for

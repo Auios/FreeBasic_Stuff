@@ -1,10 +1,10 @@
-#include "scrn.bas"
+'#include "scrn.bas"
 #include "fbgfx.bi"
 using fb
 
 randomize timer
 
-scrn()
+screenRes(800, 600, 32, 1, 0)
 
 dim shared as ubyte tile(1 to 10, 1 to 10)
 

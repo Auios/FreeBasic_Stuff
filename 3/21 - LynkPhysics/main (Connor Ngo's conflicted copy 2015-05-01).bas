@@ -1,4 +1,4 @@
-#include "scrn.bas"
+'#include "scrn.bas"
 #include "fbgfx.bi"
 using fb
 
@@ -13,7 +13,7 @@ declare sub Math()
 declare sub Render()
 declare sub Controller()
 
-scrn(1200,600,32,0,"Gravity Sim")
+screenRes(1200,600,32,0)
 
 'Types
 type EntProp
@@ -51,8 +51,8 @@ sub Init()
         with ent(i)
             .Used = 1
             .ID = GiveID()
-            .x = sc.x*rnd
-            .y = sc.y*rnd
+            .x = 1200*rnd
+            .y = 600*rnd
             .mass = 10*rnd
         end with
     next i
@@ -79,8 +79,8 @@ sub Math()
                     .x+=.vx
                     .y+=.vy
                     
-                    if .x < 0 or .x > sc.x then .x-=.vx:.vx*=-1:TotalBounces+=1
-                    if .y < 0 or .y > sc.y then .y-=.vy:.vy*=-1:TotalBounces+=1
+                    if .x < 0 or .x > 1200 then .x-=.vx:.vx*=-1:TotalBounces+=1
+                    if .y < 0 or .y > 600 then .y-=.vy:.vy*=-1:TotalBounces+=1
                     
                 end with
             end if

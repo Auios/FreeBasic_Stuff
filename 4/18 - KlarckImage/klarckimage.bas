@@ -1,10 +1,11 @@
 #include "fbgfx.bi"
-#include "scrn.bas"
+'#include "scrn.bas"
 using fb
 
 randomize timer
 
-scrn()
+'scrn()
+screenRes(800, 600, 32, 1, 0)
 
 dim shared as uinteger oldsz,sz = 1
 dim shared as ubyte R,G,B
@@ -17,9 +18,9 @@ sub saveImage()
     var ff = freefile
     
     open filename for output as #ff
-    print #ff,sc.x,sc.y,sz
-    for x as integer = 0 to sc.x-1
-        for y as integer = 0 to sc.y-1
+    print #ff,800,600,sz
+    for x as integer = 0 to 800-1
+        for y as integer = 0 to 600-1
             buffer = point(x,y)
             print #ff,buffer
         next y
@@ -59,10 +60,10 @@ sub calc()
 end sub
 
 sub generateImage()
-    for x as integer = 0 to sc.x step sz
-        for y as integer = 0 to sc.y step sz
-            var tx = (x - sc.x / 2) / sc.x * 16
-            var ty = (y - sc.y / 2) / sc.x * 16
+    for x as integer = 0 to 800 step sz
+        for y as integer = 0 to 600 step sz
+            var tx = (x - 800 / 2) / 800 * 16
+            var ty = (y - 600 / 2) / 600 * 16
             R = (cos(sin(tx)*ty+sin(ty)*tx) * 127 + 128)
             G = (sin(cos(tx)*ty+sin(ty)*tx) * 127 + 128)
             B = (sin(sin(tx)*ty+cos(ty)*tx) * 127 + 128)

@@ -1,10 +1,10 @@
-#include "scrn.bas"
+'#include "scrn.bas"
 #include "fbgfx.bi"
 using fb
 randomize timer
 
 'Make window
-scrn()
+screenRes(800, 600, 32, 1, 0)
 
 'Declare the laws of physics
 type physicsprop
@@ -27,7 +27,7 @@ sub init()
     with phy
         .g = .6
         .drag = .2
-        .floor = sc.y/1.3
+        .floor = 600/1.3
     end with
     
     'Tell the player what-for and how it's gonna be. If the player does not like his genetics then idk
@@ -92,9 +92,9 @@ sub render()
     cls
     
     c = 75 'So simple
-    line(0,phy.floor+50)-(sc.x,sc.y),rgb(c,c,c),"bf" 'The gray box
-    line(0,0)-(sc.x,phy.floor),rgb(80,157,225),"bf" 'The sky
-    line(0,phy.floor)-(sc.x,phy.floor+50),rgb(120,220,10),"bf" 'The ground platform
+    line(0,phy.floor+50)-(800, 600),rgb(c,c,c),"bf" 'The gray box
+    line(0,0)-(800,phy.floor),rgb(80,157,225),"bf" 'The sky
+    line(0,phy.floor)-(800,phy.floor+50),rgb(120,220,10),"bf" 'The ground platform
     
     'Genesis 1:27 ~ So God created mankind in his own image, a fat blob circle.
     with pl

@@ -1,10 +1,10 @@
-#include "scrn.bas"
+'#include "scrn.bas"
 #include "fbgfx.bi"
 using fb
 
 randomize timer
 
-scrn()
+screenRes(800, 600, 32, 1, 0)
 
 dim shared as integer max = 6
 
@@ -19,8 +19,8 @@ sub init()
     for i as integer = 0 to max
         with ent(i)
             .id = i
-            .x = sc.x*rnd
-            .y = sc.y*rnd
+            .x = 800*rnd
+            .y = 600*rnd
             .direct = 3*rnd
         end with
     next i
@@ -37,17 +37,17 @@ sub calc()
         with ent(i)
             select case .direct
             case 0 'North East
-                .x+=1:if .x > sc.x  then .direct = 1
+                .x+=1:if .x > 800  then .direct = 1
                 .y-=1:if .y < 0     then .direct = 2
             case 1 'North West
                 .x-=1:if .x < 0     then .direct = 0
                 .y-=1:if .y < 0     then .direct = 3
             case 2 'South East
-                .x+=1:if .x > sc.x  then .direct = 3
-                .y+=1:if .y > sc.y  then .direct = 0
+                .x+=1:if .x > 800  then .direct = 3
+                .y+=1:if .y > 600  then .direct = 0
             case 3 'South West
                 .x-=1:if .x < 0     then .direct = 2
-                .y+=1:if .y > sc.y  then .direct = 1
+                .y+=1:if .y > 600  then .direct = 1
             end select
         end with
     next i
@@ -57,7 +57,7 @@ sub render()
     cls
     
     dim as integer d,c = 200
-    line(0,0)-(sc.x,sc.y),rgb(c,c,c),"bf"
+    line(0,0)-(800, 600),rgb(c,c,c),"bf"
     for i as integer = 0 to max
         with ent(i)
             for j as integer = 0 to max

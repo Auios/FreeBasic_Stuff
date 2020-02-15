@@ -1,4 +1,4 @@
-#include "scrn.bas"
+'#include "scrn.bas"
 #include "fbgfx.bi"
 using fb
 randomize timer
@@ -10,7 +10,8 @@ function Distance(x1 as single, y1 as single, x2 as single, y2 as single) as sin
     return sqr((x2 - x1)^2 + (y2 - y1)^2)
 end function
 
-scrn(800,600,16,0)
+'scrn(800,600,16,0)
+screenRes(800, 600, 16, 0)
 
 dim shared as integer Slots
 dim shared as integer Alive
@@ -33,8 +34,8 @@ dim shared as EntProp Ent(Slots)
 sub Initialize(i as integer)
     with ent(i)
         .ID = i
-        .x = sc.x*rnd
-        .y = sc.y*rnd
+        .x = 800*rnd
+        .y = 600*rnd
         .mass = 500 * rnd
         .used = 1
         .radius = sqr(.mass)
@@ -49,8 +50,8 @@ end sub
 Sub NewBody1(i as integer)
     with ent(i)
         .ID = i
-        .x = sc.x*rnd
-        .y = sc.y*rnd
+        .x = 800*rnd
+        .y = 600*rnd
         .mass = 500 * rnd
         .used = 1
         .radius = sqr(.mass)
@@ -120,17 +121,17 @@ end sub
 
 Sub EdgeLoopBody(i as integer)
     with ent(i)
-        if .x > sc.x then .x-=sc.x
-        if .y > sc.y then .y-=sc.y
-        if .x < 0 then .x+=sc.x
-        if .y < 0 then .y+=sc.y
+        if .x > 800 then .x-=800
+        if .y > 600 then .y-=600
+        if .x < 0 then .x+=800
+        if .y < 0 then .y+=600
     end with
 end sub
 
 Sub EdgeLoopNew(i as integer)
     with ent(i)
-        if .x > sc.x then NewBody1(i)
-        if .y > sc.y then NewBody1(i)
+        if .x > 800 then NewBody1(i)
+        if .y > 600 then NewBody1(i)
         if .x < 0 then NewBody1(i)
         if .y < 0 then NewBody1(i)
     end with
@@ -174,5 +175,6 @@ do
         next
         RenderSingle()
     screenunlock
-    sleep 10/timescale
+    sleep 1,1
+    'sleep 10/timescale
 loop until multikey(sc_escape)

@@ -1,10 +1,11 @@
-#include "scrn.bas"
+'#include "scrn.bas"
 #include "fbgfx.bi"
 using fb
 
 randomize timer
 
-scrn(,,,,"Texture Background")
+'scrn(,,,,"Texture Background")
+screenRes(800, 600, 32, 1, 0)
 
 dim shared as any ptr img
 
@@ -39,8 +40,8 @@ dim shared as worldProp world
 
 sub init
     with ent
-        .x = sc.x*rnd
-        .y = sc.y*rnd
+        .x = 800*rnd
+        .y = 600*rnd
         .walkSpeed = .7
         .jumpSpeed = 2
         .scale = 50
@@ -68,12 +69,12 @@ end sub
 sub calc()
     with ent
         'Check borders
-        if .x > sc.x   then .x = sc.x
+        if .x > 800   then .x = 800
         if .x < 0      then .x = 0
         if .y < 0      then .vy = 0
-        if .y+.scale/2 > sc.y   then
+        if .y+.scale/2 > 600   then
             .jumping = 0
-            .y = sc.y-.scale/2
+            .y = 600-.scale/2
         end if
         
         if .jumping then
@@ -90,7 +91,7 @@ end sub
 sub render()
     screenlock
     cls
-    line(0,0) - (sc.x,sc.y),rgba(255,255,255,100),"bf"
+    line(0,0) - (800,600),rgba(255,255,255,100),"bf"
     
     'Render Entity
     with ent
@@ -98,8 +99,8 @@ sub render()
         circle(.x,.y),.scale/2,.clr,,,,f
     end with
     
-    for ix as integer = 0 to sc.x step 500
-        for iy as integer = 0 to sc.y step 500
+    for ix as integer = 0 to 800 step 500
+        for iy as integer = 0 to 600 step 500
             put(ix,iy),img
         next iy
     next ix
