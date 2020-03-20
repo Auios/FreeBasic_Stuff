@@ -1,9 +1,9 @@
 #include "fbgfx.bi"
 using fb
 
-dim as string key,keyalpha = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-dim as string kchar,achar
-dim as integer ID,tID
+dim as string key, keyalpha = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+dim as string kchar, achar
+dim as integer ID, tID
 var eop=0
 
 do
